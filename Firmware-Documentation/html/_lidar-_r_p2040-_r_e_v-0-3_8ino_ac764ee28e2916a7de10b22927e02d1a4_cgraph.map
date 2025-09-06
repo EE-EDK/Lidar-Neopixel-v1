@@ -1,0 +1,9 @@
+<map id="setup1" name="setup1">
+<area shape="rect" id="Node000001" title="Core 1 setup. Initializes pins, storage, and the Core 1 state machine." alt="" coords="5,31,66,57"/>
+<area shape="rect" id="Node000002" href="$init_8cpp.html#ab00ca9d3a5d427081236d97067ef034c" title=" " alt="" coords="114,31,223,57"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="66,41,98,41,98,47,66,47"/>
+<area shape="rect" id="Node000003" href="$globals_8cpp.html#a08e3a40d2bbfade972d374e55dfea047" title=" " alt="" coords="273,5,389,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="223,33,257,27,258,33,224,38"/>
+<area shape="rect" id="Node000004" href="$globals_8cpp.html#a205a8897e51a398ea1b7fd38b79310cd" title=" " alt="" coords="271,56,391,83"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="224,50,256,55,255,60,223,55"/>
+</map>

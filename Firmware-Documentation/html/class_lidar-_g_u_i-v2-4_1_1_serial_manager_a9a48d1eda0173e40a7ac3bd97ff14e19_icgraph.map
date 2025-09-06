@@ -1,0 +1,20 @@
+<map id="Lidar&#45;GUI&#45;v2&#45;4.SerialManager.is_connected" name="Lidar&#45;GUI&#45;v2&#45;4.SerialManager.is_connected">
+<area shape="rect" id="Node000001" title=" " alt="" coords="540,129,747,172"/>
+<area shape="rect" id="Node000002" href="$class_lidar-_g_u_i-v2-4_1_1_serial_manager.html#a656f18d0d0b00e1fe3d56d18d18858e0" title=" " alt="" coords="5,20,228,46"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="612,119,560,71,527,48,491,32,452,20,411,13,328,8,250,13,184,22,183,17,249,7,328,3,411,8,453,15,493,27,529,44,563,67,616,116"/>
+<area shape="rect" id="Node000003" href="$class_lidar-_g_u_i-v2-6-mobile_1_1_serial_manager.html#a5f6b225bfef628a9b5b733023cc005f8" title=" " alt="" coords="24,100,209,142"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="524,147,209,129,210,124,525,141"/>
+<area shape="rect" id="Node000004" href="$class_lidar-_g_u_i-v2-4_1_1_serial_manager.html#a9ea67200d2fe85c975aa509db254664a" title=" " alt="" coords="285,41,482,84"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="563,126,448,87,450,82,565,121"/>
+<area shape="rect" id="Node000005" href="$class_lidar-_g_u_i-v2-6-mobile_1_1_serial_manager.html#a8ea16fbd0f14ab891d39a0282dcd033e" title=" " alt="" coords="291,158,476,201"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="525,167,477,172,477,167,524,161"/>
+<area shape="rect" id="Node000006" href="$class_lidar-_g_u_i-v2-5_1_1_serial_device.html#aa9dd29c910e038be61a16266bbe27810" title=" " alt="" coords="277,249,490,276"/>
+<area shape="poly" id="edge8_Node000001_Node000006" title=" " alt="" coords="579,181,418,251,416,246,577,176"/>
+<area shape="rect" id="Node000007" href="$class_lidar-_g_u_i-v2-5_1_1_serial_device.html#ab8838b4e69950f724afe9ea3a6767118" title=" " alt="" coords="276,324,492,350"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="614,185,560,237,493,290,458,310,423,326,421,321,456,305,491,286,557,233,610,181"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="270,53,228,48,228,43,270,47"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="271,90,210,103,209,98,270,85"/>
+<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="276,159,209,144,210,139,277,154"/>
+<area shape="poly" id="edge9_Node000006_Node000006" title=" " alt="" coords="429,237,414,230,384,228,356,230,341,235,338,240,345,247,341,250,333,240,338,231,355,225,384,222,415,225,431,232"/>
+<area shape="poly" id="edge11_Node000007_Node000007" title=" " alt="" coords="429,311,414,305,384,302,356,304,341,309,338,315,345,322,341,325,333,315,338,305,355,299,384,297,415,300,431,307"/>
+</map>

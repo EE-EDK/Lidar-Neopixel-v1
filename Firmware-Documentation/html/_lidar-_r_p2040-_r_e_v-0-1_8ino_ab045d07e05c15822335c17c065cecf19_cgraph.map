@@ -1,0 +1,41 @@
+<map id="processGuiCommands" name="processGuiCommands">
+<area shape="rect" id="Node000001" title="Non&#45;blocking GUI packet parser and command processor." alt="" coords="5,360,160,387"/>
+<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a04778dbb5ed9f5bac24e53e11538dfe0" title="Calculate 8&#45;bit checksum for data buffer." alt="" coords="775,5,931,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="87,358,130,276,164,224,206,177,254,136,297,110,402,67,487,34,577,16,671,9,759,10,759,15,671,14,578,21,489,39,404,72,299,115,257,140,210,181,168,227,134,279,92,361"/>
+<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a9955f7842e7ef7e68f5ff4e4785f4861" title="Execute validated GUI command packet." alt="" coords="208,259,355,285"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="109,357,239,290,241,295,112,362"/>
+<area shape="rect" id="Node000007" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af6020ad975c3a06156bc4e985701be92" title="Thread&#45;safe serial output with newline." alt="" coords="795,284,911,311"/>
+<area shape="poly" id="edge24_Node000001_Node000007" title=" " alt="" coords="109,385,213,435,286,463,370,489,459,507,551,513,596,510,641,503,684,490,725,472,747,459,766,442,799,402,823,360,839,324,844,326,828,362,803,405,770,446,750,463,728,477,686,495,642,508,597,515,551,518,458,512,368,494,285,468,211,440,107,390"/>
+<area shape="rect" id="Node000008" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a6ad4b694f90641aa05829c1b90f172e2" title="Thread&#45;safe serial output without newline." alt="" coords="599,436,705,463"/>
+<area shape="poly" id="edge23_Node000001_Node000008" title=" " alt="" coords="160,383,403,420,584,440,583,446,403,425,159,389"/>
+<area shape="rect" id="Node000013" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a6107d518302c3e551b151bccac4528cc" title="Send NAK (negative acknowledge) with error code." alt="" coords="430,81,503,108"/>
+<area shape="poly" id="edge25_Node000001_Node000013" title=" " alt="" coords="94,358,141,306,206,245,300,175,402,118,414,112,416,117,404,122,302,179,209,249,145,310,98,361"/>
+<area shape="rect" id="Node000014" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a57190bd6f3a9bed26f0a8fafb362b0d9" title="Calculate elapsed milliseconds with overflow protection." alt="" coords="220,537,343,564"/>
+<area shape="poly" id="edge22_Node000001_Node000014" title=" " alt="" coords="95,386,139,447,172,484,209,517,228,528,225,533,206,521,168,488,135,451,90,389"/>
+<area shape="rect" id="Node000004" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#aaad6f5d477ff96137b7e88dbec15ff30" title="Perform complete factory reset operation." alt="" coords="418,233,514,260"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="355,259,402,253,403,258,356,265"/>
+<area shape="poly" id="edge10_Node000003_Node000007" title=" " alt="" coords="308,283,379,319,428,339,483,358,542,372,604,381,666,381,726,371,779,348,822,318,825,323,781,352,727,376,666,387,603,386,541,378,481,363,426,344,377,324,305,288"/>
+<area shape="poly" id="edge9_Node000003_Node000008" title=" " alt="" coords="298,284,344,323,404,364,449,386,497,404,584,431,583,436,495,409,447,391,402,369,340,327,295,288"/>
+<area shape="rect" id="Node000009" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#abbd1ddf437f3edf0122a986a09a04359" title="Save current configuration to LittleFS persistent storage." alt="" coords="403,284,529,311"/>
+<area shape="poly" id="edge11_Node000003_Node000009" title=" " alt="" coords="356,279,388,284,387,289,355,285"/>
+<area shape="rect" id="Node000011" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a59b26f9d4fce762d3b68c583c703b638" title="Send ACK (acknowledge) response." alt="" coords="430,132,502,159"/>
+<area shape="poly" id="edge16_Node000003_Node000011" title=" " alt="" coords="297,256,342,218,402,175,421,164,423,168,404,180,346,222,300,260"/>
+<area shape="rect" id="Node000012" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a87ac2a3520c596f8bbf5acbd89f59c10" title="Send complete response packet to GUI." alt="" coords="577,31,727,57"/>
+<area shape="poly" id="edge21_Node000003_Node000012" title=" " alt="" coords="314,256,402,219,439,207,469,200,497,190,528,169,544,149,552,130,560,110,575,87,607,63,610,68,579,91,564,112,557,132,548,152,531,173,499,194,471,205,441,212,404,224,316,261"/>
+<area shape="poly" id="edge19_Node000003_Node000013" title=" " alt="" coords="293,257,353,188,374,151,384,135,401,118,414,110,417,114,405,122,389,138,379,154,357,191,297,260"/>
+<area shape="rect" id="Node000005" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a08e3a40d2bbfade972d374e55dfea047" title="Thread&#45;safe debug enable flag checker." alt="" coords="795,132,911,159"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="502,231,527,213,543,188,548,163,555,139,563,128,576,118,604,104,635,97,666,94,698,96,758,107,808,123,806,128,756,112,697,101,666,100,636,102,606,109,579,122,567,132,560,142,553,165,548,190,531,217,505,235"/>
+<area shape="rect" id="Node000006" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#aa9cd4ec7874ed2e350be0be38fbae2f1" title="Load factory default configuration parameters." alt="" coords="589,132,715,159"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="496,230,528,212,552,194,576,175,599,163,601,168,579,180,555,198,531,217,498,235"/>
+<area shape="poly" id="edge8_Node000004_Node000007" title=" " alt="" coords="515,249,727,276,780,284,779,289,726,281,515,255"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="715,143,779,143,779,148,715,148"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="673,157,824,273,820,277,670,161"/>
+<area shape="poly" id="edge13_Node000009_Node000005" title=" " alt="" coords="502,281,801,162,803,167,504,286"/>
+<area shape="poly" id="edge15_Node000009_Node000007" title=" " alt="" coords="530,295,779,295,779,300,530,300"/>
+<area shape="poly" id="edge14_Node000009_Node000008" title=" " alt="" coords="485,309,624,424,621,428,482,313"/>
+<area shape="rect" id="Node000010" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#ac24e4949b7569796e2d9e2725c759b4d" title="Calculate configuration checksum for integrity verification." alt="" coords="584,335,720,361"/>
+<area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="519,309,587,328,585,333,517,314"/>
+<area shape="poly" id="edge17_Node000011_Node000012" title=" " alt="" coords="501,131,528,118,552,96,576,74,597,62,600,67,579,78,555,100,531,122,504,136"/>
+<area shape="poly" id="edge18_Node000012_Node000002" title=" " alt="" coords="727,32,759,28,760,33,727,37"/>
+<area shape="poly" id="edge20_Node000013_Node000012" title=" " alt="" coords="503,82,585,59,586,65,504,87"/>
+</map>

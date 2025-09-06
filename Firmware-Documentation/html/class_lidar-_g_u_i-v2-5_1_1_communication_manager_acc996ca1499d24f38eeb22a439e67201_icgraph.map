@@ -1,0 +1,24 @@
+<map id="Lidar&#45;GUI&#45;v2&#45;5.CommunicationManager.send_command" name="Lidar&#45;GUI&#45;v2&#45;5.CommunicationManager.send_command">
+<area shape="rect" id="Node000001" title=" " alt="" coords="522,272,723,315"/>
+<area shape="rect" id="Node000002" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#ad05808a205303d2f3dfe2c05fab17b1c" title=" " alt="" coords="264,5,465,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="606,259,586,214,557,161,519,107,472,62,454,51,457,46,476,58,523,104,561,158,590,211,611,256"/>
+<area shape="rect" id="Node000003" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#a21593c028631b01aa6697a6bdb7137c3" title=" " alt="" coords="264,72,465,115"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="598,261,545,194,511,159,473,129,451,117,453,113,475,124,515,155,549,190,602,258"/>
+<area shape="rect" id="Node000004" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#abf18d5d278ce576a403b7af8cd12dbb1" title=" " alt="" coords="264,139,465,181"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="581,265,531,229,473,196,446,184,448,179,475,191,534,225,584,260"/>
+<area shape="rect" id="Node000005" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#af7665b9e39ee71cd20117be8ff2f6cc2" title=" " alt="" coords="264,205,465,248"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="522,270,449,251,450,246,523,265"/>
+<area shape="rect" id="Node000006" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#a48feb7d87f509bf3ce5ef186124d20f8" title=" " alt="" coords="258,272,471,315"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="506,296,471,296,471,291,506,291"/>
+<area shape="rect" id="Node000007" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#aca682234f3b4d78ac23d28d945018cf9" title=" " alt="" coords="255,339,474,381"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="523,322,450,341,449,335,522,317"/>
+<area shape="rect" id="Node000008" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#a5f8beb0fd7376ff4683bad20083c539e" title=" " alt="" coords="257,405,472,448"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="584,326,534,362,475,396,448,407,446,402,473,391,531,358,581,322"/>
+<area shape="rect" id="Node000009" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#afbed2cc160b3a9e7c38fe061a9aab09f" title=" " alt="" coords="264,472,465,515"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="602,329,549,397,515,432,475,462,453,474,451,469,473,458,511,428,545,393,598,326"/>
+<area shape="rect" id="Node000010" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#aae3367d28c47887c087fe154e73e90bd" title=" " alt="" coords="264,539,465,581"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="611,330,590,375,561,429,523,483,476,529,457,541,454,536,472,525,519,479,557,426,586,373,606,328"/>
+<area shape="rect" id="Node000011" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#a55f99754a23eb20fe49f57bc6d54a96d" title=" " alt="" coords="5,539,207,581"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="248,563,207,563,207,557,248,557"/>
+<area shape="poly" id="edge11_Node000011_Node000011" title=" " alt="" coords="148,526,132,520,106,517,81,519,66,524,60,530,62,537,57,539,55,529,64,520,80,514,106,512,133,514,150,521"/>
+</map>

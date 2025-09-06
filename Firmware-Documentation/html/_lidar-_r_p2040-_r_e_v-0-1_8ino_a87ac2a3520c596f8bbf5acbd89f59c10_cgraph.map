@@ -1,0 +1,5 @@
+<map id="sendResponsePacket" name="sendResponsePacket">
+<area shape="rect" id="Node000001" title="Send complete response packet to GUI." alt="" coords="5,5,155,32"/>
+<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a04778dbb5ed9f5bac24e53e11538dfe0" title="Calculate 8&#45;bit checksum for data buffer." alt="" coords="203,5,359,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="155,16,187,16,187,21,155,21"/>
+</map>

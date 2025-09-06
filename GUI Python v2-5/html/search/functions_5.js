@@ -1,0 +1,5 @@
+var searchData=
+[
+  ['load_5fconfig_5ffrom_5ffile_0',['load_config_from_file',['../class_lidar-_g_u_i-v2-5_1_1_lidar_gui.html#a084006a112f68e43290fefc4d8f6c9ec',1,'Lidar-GUI-v2-5::LidarGui']]],
+  ['log_5ftext_5fmessage_1',['log_text_message',['../class_lidar-_g_u_i-v2-5_1_1_lidar_gui.html#a9033db09cc07f962f29bdd7982c64064',1,'Lidar-GUI-v2-5::LidarGui']]]
+];

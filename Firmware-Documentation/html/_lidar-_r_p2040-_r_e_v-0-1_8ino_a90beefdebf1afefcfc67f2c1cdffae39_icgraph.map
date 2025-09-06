@@ -1,0 +1,5 @@
+<map id="processLidarSerial" name="processLidarSerial">
+<area shape="rect" id="Node000001" title="Process incoming LiDAR serial data with frame parsing and validation." alt="" coords="99,5,227,32"/>
+<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#afe461d27b9c48d5921c00d521181f12f" title="Core 0 main loop &#45; handles LiDAR data collection." alt="" coords="5,5,51,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,21,51,21,51,16,83,16"/>
+</map>

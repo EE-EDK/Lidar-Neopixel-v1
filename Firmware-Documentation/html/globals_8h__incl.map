@@ -1,0 +1,15 @@
+<map id="Lidar&#45;RP2040&#45;REV&#45;0&#45;3/globals.h" name="Lidar&#45;RP2040&#45;REV&#45;0&#45;3/globals.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="250,5,392,48"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,96,82,123"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="250,51,97,95,96,90,249,46"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="106,96,184,123"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="277,51,187,92,185,87,274,46"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="208,96,322,123"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="309,50,284,85,280,82,304,47"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="346,96,410,123"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="338,47,363,82,358,85,333,50"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="435,96,495,123"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="359,46,430,86,428,90,357,51"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="519,96,584,123"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="381,46,506,89,504,94,379,51"/>
+</map>

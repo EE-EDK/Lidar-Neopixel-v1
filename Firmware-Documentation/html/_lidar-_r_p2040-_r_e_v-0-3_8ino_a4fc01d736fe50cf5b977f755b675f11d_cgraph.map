@@ -1,0 +1,11 @@
+<map id="setup" name="setup">
+<area shape="rect" id="Node000001" title="Core 0 setup. Initializes serial, mutexes, and the Core 0 state machine." alt="" coords="5,56,59,83"/>
+<area shape="rect" id="Node000002" href="$init_8cpp.html#a540549f467d97d230852ec1402b201e8" title=" " alt="" coords="107,56,195,83"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="59,67,91,67,91,72,59,72"/>
+<area shape="rect" id="Node000003" href="$globals_8cpp.html#a08e3a40d2bbfade972d374e55dfea047" title=" " alt="" coords="245,5,361,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="193,53,246,35,247,40,194,58"/>
+<area shape="rect" id="Node000004" href="$globals_8cpp.html#a205a8897e51a398ea1b7fd38b79310cd" title=" " alt="" coords="243,56,363,83"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="195,67,227,67,227,72,195,72"/>
+<area shape="rect" id="Node000005" href="$globals_8cpp.html#af6020ad975c3a06156bc4e985701be92" title=" " alt="" coords="245,107,361,133"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="194,81,247,99,246,104,193,86"/>
+</map>

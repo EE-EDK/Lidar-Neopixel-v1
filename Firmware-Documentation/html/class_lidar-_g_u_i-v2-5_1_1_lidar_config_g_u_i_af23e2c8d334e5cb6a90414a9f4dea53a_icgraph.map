@@ -1,0 +1,10 @@
+<map id="Lidar&#45;GUI&#45;v2&#45;5.LidarConfigGUI.send_trigger_rules" name="Lidar&#45;GUI&#45;v2&#45;5.LidarConfigGUI.send_trigger_rules">
+<area shape="rect" id="Node000001" title=" " alt="" coords="678,35,855,77"/>
+<area shape="rect" id="Node000002" href="$class_lidar-_g_u_i-v2-5_1_1_lidar_config_g_u_i.html#a88845d30d6929ff41b33e33380789e03" title=" " alt="" coords="454,5,630,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="663,45,631,41,631,36,663,40"/>
+<area shape="rect" id="Node000003" href="$class_lidar-_g_u_i-v2-5_1_1_lidar_config_g_u_i.html#af793a23808eed58e63be502d78858013" title=" " alt="" coords="230,35,406,77"/>
+<area shape="poly" id="edge4_Node000001_Node000003" title=" " alt="" coords="663,62,630,63,454,63,406,62,407,56,454,57,630,57,662,57"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="439,43,407,47,406,42,438,38"/>
+<area shape="rect" id="Node000004" href="$class_lidar-_g_u_i-v2-5_1_1_lidar_config_g_u_i.html#ae421461030d3c9b3dda315c0d2fe4197" title=" " alt="" coords="5,35,182,77"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="214,59,182,59,182,53,214,53"/>
+</map>

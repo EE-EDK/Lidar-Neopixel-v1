@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['core0_5fbaud_5frate_5fwait_0',['CORE0_BAUD_RATE_WAIT',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49ac706f6823a6919718528c5706dc61f46',1,'globals.h']]],
+  ['core0_5flidar_5fcleanup_1',['CORE0_LIDAR_CLEANUP',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49a7be842b42d21873c460d1165e05df72b',1,'globals.h']]],
+  ['core0_5flidar_5fenable_2',['CORE0_LIDAR_ENABLE',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49a8fc58985044785adf426489ba55c1ec8',1,'globals.h']]],
+  ['core0_5flidar_5frate_3',['CORE0_LIDAR_RATE',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49a1fc2ebe7b14946e553de6b0deba8c6e9',1,'globals.h']]],
+  ['core0_5flidar_5fstop_4',['CORE0_LIDAR_STOP',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49ab01a551d5ca5ff72bfd741b43eba4163',1,'globals.h']]],
+  ['core0_5fready_5',['CORE0_READY',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49af0b4b83e3ce2f921a1499c05ca2f8d62',1,'globals.h']]],
+  ['core0_5fsave_5fsettings_6',['CORE0_SAVE_SETTINGS',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49a1202e1463c4a1ecc9bc3057524454d71',1,'globals.h']]],
+  ['core0_5fserial_5finit_5fhigh_7',['CORE0_SERIAL_INIT_HIGH',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49aae4237c4b65b0d2bce7a327ce65e8cc7',1,'globals.h']]],
+  ['core0_5fserial_5finit_5flow_8',['CORE0_SERIAL_INIT_LOW',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49aafde244bc4ba5edb94e51d416da348f3',1,'globals.h']]],
+  ['core0_5fset_5fbaud_5frate_9',['CORE0_SET_BAUD_RATE',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49a29730af8a1609501a29f5c237214fe26',1,'globals.h']]],
+  ['core0_5fstartup_10',['CORE0_STARTUP',['../globals_8h.html#ae5b77f423c594d9ddc120dfa2c160a49a4dab601ac4d67f594afc4f30c56d8df3',1,'globals.h']]],
+  ['core1_5fconfig_5fload_11',['CORE1_CONFIG_LOAD',['../globals_8h.html#a43fb1b85794d27bce8651b05c848d142a93bd2256806b657aaf50c4299799518f',1,'globals.h']]],
+  ['core1_5fconfig_5fmode_5fcheck_12',['CORE1_CONFIG_MODE_CHECK',['../globals_8h.html#a43fb1b85794d27bce8651b05c848d142a854396727f2fb9d8f85939c1c4d2ab09',1,'globals.h']]],
+  ['core1_5fpins_5finit_13',['CORE1_PINS_INIT',['../globals_8h.html#a43fb1b85794d27bce8651b05c848d142a2e5e2a611ae6610b59f43ef4f2fb9d98',1,'globals.h']]],
+  ['core1_5fready_14',['CORE1_READY',['../globals_8h.html#a43fb1b85794d27bce8651b05c848d142a8a5752bef974b9ca7ea4c8356a68d881',1,'globals.h']]],
+  ['core1_5fstartup_15',['CORE1_STARTUP',['../globals_8h.html#a43fb1b85794d27bce8651b05c848d142ac2eaabeae0390052ad2717ab5282a9a2',1,'globals.h']]]
+];

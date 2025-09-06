@@ -1,0 +1,36 @@
+<map id="loop" name="loop">
+<area shape="rect" id="Node000001" title="Core 0 main loop &#45; handles LiDAR data collection." alt="" coords="5,208,51,235"/>
+<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a22c14a080dd8fe28a63afc62bc4fe962" title="Core 0 state machine processor for initialization sequence." alt="" coords="99,157,281,184"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="50,210,98,193,121,186,123,191,100,199,52,215"/>
+<area shape="rect" id="Node000004" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#abd7359ce01efd935dd61a755a4892df3" title="Thread&#45;safe Core 1 ready flag getter." alt="" coords="360,5,501,32"/>
+<area shape="poly" id="edge19_Node000001_Node000004" title=" " alt="" coords="37,206,62,175,97,143,160,105,227,75,292,51,351,34,352,39,294,56,229,79,162,110,100,147,66,179,41,209"/>
+<area shape="rect" id="Node000005" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a57190bd6f3a9bed26f0a8fafb362b0d9" title="Calculate elapsed milliseconds with overflow protection." alt="" coords="369,360,492,387"/>
+<area shape="poly" id="edge20_Node000001_Node000005" title=" " alt="" coords="37,234,60,278,78,301,100,320,130,337,162,349,229,366,295,374,354,376,354,381,295,379,228,372,160,355,128,341,97,325,74,305,55,281,32,236"/>
+<area shape="rect" id="Node000010" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a90beefdebf1afefcfc67f2c1cdffae39" title="Process incoming LiDAR serial data with frame parsing and validation." alt="" coords="126,284,254,311"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="52,229,147,274,144,279,50,234"/>
+<area shape="rect" id="Node000014" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#acb85db9fe72860a2c25a9256dc7c0291" title="Report Core 0 operational status and performance metrics." alt="" coords="126,208,254,235"/>
+<area shape="poly" id="edge17_Node000001_Node000014" title=" " alt="" coords="51,219,110,219,110,224,51,224"/>
+<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a08e3a40d2bbfade972d374e55dfea047" title="Thread&#45;safe debug enable flag checker." alt="" coords="372,208,489,235"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="257,182,358,203,357,209,256,187"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="204,155,328,42,345,34,347,39,330,46,208,159"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="266,182,283,194,298,213,305,233,307,272,310,310,317,328,331,346,356,361,353,366,327,350,312,331,304,311,302,272,300,234,293,216,279,198,263,187"/>
+<area shape="rect" id="Node000006" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a6ad4b694f90641aa05829c1b90f172e2" title="Thread&#45;safe serial output without newline." alt="" coords="378,56,484,83"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="211,154,263,123,328,92,362,81,363,86,330,97,265,128,214,159"/>
+<area shape="rect" id="Node000007" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af6020ad975c3a06156bc4e985701be92" title="Thread&#45;safe serial output with newline." alt="" coords="372,259,489,285"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="258,182,282,194,298,207,307,220,316,233,330,244,359,257,356,262,328,249,312,236,303,223,294,210,280,198,256,187"/>
+<area shape="rect" id="Node000008" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a4105597e678aceaa0dbcc2c96b5fa414" title="Thread&#45;safe error flag manipulation." alt="" coords="371,157,490,184"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="282,168,355,168,355,173,282,173"/>
+<area shape="rect" id="Node000009" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a2498aba688f0418a9574634a94ca23f6" title="Thread&#45;safe LiDAR initialized flag setter." alt="" coords="356,107,505,133"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="256,154,348,134,350,140,257,159"/>
+<area shape="poly" id="edge10_Node000010_Node000003" title=" " alt="" coords="225,281,328,244,357,236,358,241,330,249,227,286"/>
+<area shape="poly" id="edge14_Node000010_Node000005" title=" " alt="" coords="227,309,330,345,356,353,354,358,328,351,225,314"/>
+<area shape="poly" id="edge15_Node000010_Node000007" title=" " alt="" coords="254,288,357,277,357,282,255,293"/>
+<area shape="poly" id="edge16_Node000010_Node000008" title=" " alt="" coords="220,281,249,265,279,245,293,231,302,218,312,206,328,194,355,182,357,187,330,198,316,210,306,222,297,235,283,249,252,269,222,286"/>
+<area shape="rect" id="Node000011" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#aab55a5bb4be00eeb1b3cdc55a3f1363a" title="Thread&#45;safe increment of dropped frames counter." alt="" coords="332,411,529,437"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="207,309,259,352,294,376,330,396,346,403,344,408,328,401,291,380,256,356,204,313"/>
+<area shape="rect" id="Node000012" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a32bb98486d7f2edadc32304a50db54c7" title="Thread&#45;safe increment of frames received counter." alt="" coords="329,461,532,488"/>
+<area shape="poly" id="edge12_Node000010_Node000012" title=" " alt="" coords="202,310,251,376,288,415,330,447,341,453,339,457,328,452,284,419,247,380,197,313"/>
+<area shape="rect" id="Node000013" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#aa8c08bfac314262911ef11eec599bcf1" title="Calculate elapsed microseconds with overflow protection." alt="" coords="364,309,497,336"/>
+<area shape="poly" id="edge13_Node000010_Node000013" title=" " alt="" coords="255,301,349,311,349,317,254,307"/>
+<area shape="poly" id="edge18_Node000014_Node000003" title=" " alt="" coords="254,219,357,219,357,224,254,224"/>
+</map>

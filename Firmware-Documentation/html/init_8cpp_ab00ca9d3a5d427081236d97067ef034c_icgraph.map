@@ -1,0 +1,5 @@
+<map id="setup1_handler" name="setup1_handler">
+<area shape="rect" id="Node000001" title=" " alt="" coords="114,5,223,32"/>
+<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-3_8ino.html#ac764ee28e2916a7de10b22927e02d1a4" title="Core 1 setup. Initializes pins, storage, and the Core 1 state machine." alt="" coords="5,5,66,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,21,66,21,66,16,98,16"/>
+</map>

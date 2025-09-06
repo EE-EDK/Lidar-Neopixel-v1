@@ -1,0 +1,17 @@
+<map id="safeMicrosElapsed" name="safeMicrosElapsed">
+<area shape="rect" id="Node000001" title=" " alt="" coords="693,43,825,69"/>
+<area shape="rect" id="Node000002" href="$class_adaptive_velocity_calculator.html#ac24f637a5c1e9835579c81612e1a1bc0" title=" " alt="" coords="467,5,645,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="677,47,645,42,646,37,678,42"/>
+<area shape="rect" id="Node000006" href="$core0__handling_8cpp.html#a90beefdebf1afefcfc67f2c1cdffae39" title=" " alt="" coords="492,72,620,99"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="678,70,621,79,620,73,677,65"/>
+<area shape="rect" id="Node000003" href="$core1__handling_8cpp.html#aea50629c4ab73f068ab5c462775728dc" title=" " alt="" coords="255,13,419,40"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="452,29,420,29,420,24,452,24"/>
+<area shape="rect" id="Node000004" href="$core1__handling_8cpp.html#a794d46ec16b5601a2141d04177e5aab5" title=" " alt="" coords="106,13,207,40"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="239,29,207,29,207,24,239,24"/>
+<area shape="rect" id="Node000005" href="$_lidar-_r_p2040-_r_e_v-0-3_8ino.html#a39ceba300a80e348e278539f57e0ca79" title="Core 1 main loop. Handles data processing, logic, and GUI communication." alt="" coords="5,13,58,40"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="90,29,58,29,58,24,90,24"/>
+<area shape="rect" id="Node000007" href="$core0__handling_8cpp.html#a19c1ecc53cb49b25be427970f0ad4767" title=" " alt="" coords="286,72,388,99"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="477,88,388,88,388,83,477,83"/>
+<area shape="rect" id="Node000008" href="$_lidar-_r_p2040-_r_e_v-0-3_8ino.html#afe461d27b9c48d5921c00d521181f12f" title="Core 0 main loop. Handles LiDAR data acquisition." alt="" coords="134,72,179,99"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="271,88,180,88,180,83,271,83"/>
+</map>

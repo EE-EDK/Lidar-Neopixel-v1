@@ -1,0 +1,85 @@
+\doxysection{Lidar-\/\+GUI-\/v2-\/5.Serial\+Manager Class Reference}
+\hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager}{}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager}\index{Lidar-\/GUI-\/v2-\/5.SerialManager@{Lidar-\/GUI-\/v2-\/5.SerialManager}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_ab4796c2e0b19f01b1c433e9427995492}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_ab4796c2e0b19f01b1c433e9427995492} 
+{\bfseries \+\_\+\+\_\+init\+\_\+\+\_\+} (self, incoming\+\_\+queue, outgoing\+\_\+queue)
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_accd5378eef0be0922692bd3cce03deb0}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_accd5378eef0be0922692bd3cce03deb0} 
+{\bfseries start} (self)
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aacbbeda01989ca0b956f226b1ed03d20}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aacbbeda01989ca0b956f226b1ed03d20} 
+{\bfseries stop} (self)
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aabecb36e6d3af914aa56f5b08f68b1c7}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aabecb36e6d3af914aa56f5b08f68b1c7} 
+{\bfseries connect} (self, port, baudrate)
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_af5060beda123fad5cf88021b7242b57e}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_af5060beda123fad5cf88021b7242b57e} 
+{\bfseries disconnect} (self)
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a493a2a214e44edfebd69b5d8d52a7ea6}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a493a2a214e44edfebd69b5d8d52a7ea6} 
+{\bfseries is\+\_\+connected} (self)
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a1159c837840e112805ef94159719985f}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a1159c837840e112805ef94159719985f} 
+{\bfseries log\+\_\+message} (self, msg, level="{}info"{})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a804cd211c6de8bb075cbc967b09c444f}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a804cd211c6de8bb075cbc967b09c444f} 
+{\bfseries ser} = None
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a14aef5b1f7f4cb2ec4d3ee879ac9cd28}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a14aef5b1f7f4cb2ec4d3ee879ac9cd28} 
+{\bfseries incoming\+\_\+queue} = incoming\+\_\+queue
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a5a24dc56af113546854ab847a20d8601}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a5a24dc56af113546854ab847a20d8601} 
+{\bfseries outgoing\+\_\+queue} = outgoing\+\_\+queue
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_adf0f868e23a984577d4de0ced8cf40c7}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_adf0f868e23a984577d4de0ced8cf40c7} 
+{\bfseries stop\+\_\+event} = threading.\+Event()
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a3d4af8dffdeaf676e1132d7fcea69e67}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a3d4af8dffdeaf676e1132d7fcea69e67} 
+{\bfseries thread} = threading.\+Thread(target=self.\+\_\+run, daemon=True)
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aae850903ba91542c499f752151cfd96b}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aae850903ba91542c499f752151cfd96b} 
+{\bfseries connection\+\_\+state} = Connection\+State.\+DISCONNECTED
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a74ff3e95f9d673bbeeeb145e4c7c70f9}\label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a74ff3e95f9d673bbeeeb145e4c7c70f9} 
+{\bfseries \+\_\+send\+\_\+packet} (self, command, payload=b\textquotesingle{}\textquotesingle{})
+\item 
+\mbox{\hyperlink{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a16947f38684bfd6c95f455e1d3a7578a}{\+\_\+run}} (self)
+\item 
+\mbox{\hyperlink{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aad7acf1ecdd34e0283dae8fde300a772}{\+\_\+try\+\_\+parse\+\_\+packet}} (self, buffer)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}Handles all low-level serial communication in a dedicated thread with Arduino compatibility.\end{DoxyVerb}
+ 
+
+\label{doc-func-members}
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a16947f38684bfd6c95f455e1d3a7578a}\index{Lidar-\/GUI-\/v2-\/5.SerialManager@{Lidar-\/GUI-\/v2-\/5.SerialManager}!\_run@{\_run}}
+\index{\_run@{\_run}!Lidar-\/GUI-\/v2-\/5.SerialManager@{Lidar-\/GUI-\/v2-\/5.SerialManager}}
+\doxysubsubsection{\texorpdfstring{\_run()}{\_run()}}
+{\footnotesize\ttfamily \label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_a16947f38684bfd6c95f455e1d3a7578a} 
+Lidar-\/GUI-\/v2-\/5.Serial\+Manager.\+\_\+run (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}Main loop for the serial thread with Arduino packet parsing.\end{DoxyVerb}
+ \Hypertarget{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aad7acf1ecdd34e0283dae8fde300a772}\index{Lidar-\/GUI-\/v2-\/5.SerialManager@{Lidar-\/GUI-\/v2-\/5.SerialManager}!\_try\_parse\_packet@{\_try\_parse\_packet}}
+\index{\_try\_parse\_packet@{\_try\_parse\_packet}!Lidar-\/GUI-\/v2-\/5.SerialManager@{Lidar-\/GUI-\/v2-\/5.SerialManager}}
+\doxysubsubsection{\texorpdfstring{\_try\_parse\_packet()}{\_try\_parse\_packet()}}
+{\footnotesize\ttfamily \label{class_lidar-_g_u_i-v2-5_1_1_serial_manager_aad7acf1ecdd34e0283dae8fde300a772} 
+Lidar-\/GUI-\/v2-\/5.Serial\+Manager.\+\_\+try\+\_\+parse\+\_\+packet (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{buffer}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}Try to parse a complete Arduino packet from buffer\end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Lidar-\/\+GUI-\/v2-\/5.\+py\end{DoxyCompactItemize}

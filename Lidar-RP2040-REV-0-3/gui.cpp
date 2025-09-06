@@ -1,0 +1,243 @@
+#include "gui.h"
+#include "globals.h"
+#include "storage.h"
+
+#define GUI_PACKET_START_BYTE 0x7E
+#define GUI_MAX_PAYLOAD_SIZE 64
+#define GUI_PACKET_TIMEOUT_MS 100
+#define RSP_ACK 0x06
+#define RSP_NAK 0x15
+#define NAK_ERR_NONE 0x00
+#define NAK_ERR_BAD_CHECKSUM 0x01
+#define NAK_ERR_UNKNOWN_CMD 0x02
+#define NAK_ERR_INVALID_PAYLOAD 0x03
+#define NAK_ERR_EXECUTION_FAIL 0x04
+#define NAK_ERR_TIMEOUT 0x05
+
+enum GuiParserState {
+  STATE_WAIT_FOR_START, STATE_READ_CMD, STATE_READ_LEN,
+  STATE_READ_PAYLOAD, STATE_READ_CHECKSUM
+};
+
+struct GuiPacket {
+  uint8_t cmd;
+  uint8_t len;
+  uint8_t payload[GUI_MAX_PAYLOAD_SIZE];
+  uint8_t checksum;
+};
+
+uint8_t calculateGuiChecksum(const uint8_t* data, uint8_t length) {
+  uint8_t chk = 0;
+  for (uint8_t i = 0; i < length; i++) {
+    chk += data[i];
+  }
+  return chk;
+}
+
+void sendResponsePacket(uint8_t cmd, const uint8_t* payload, uint8_t len) {
+  uint8_t buffer[GUI_MAX_PAYLOAD_SIZE + 4];
+  buffer[0] = GUI_PACKET_START_BYTE;
+  buffer[1] = cmd;
+  buffer[2] = len;
+  if (payload && len > 0) {
+    memcpy(&buffer[3], payload, len);
+  }
+  uint8_t checksum = calculateGuiChecksum(&buffer[1], len + 2);
+  buffer[len + 3] = checksum;
+  Serial.write(buffer, len + 4);
+}
+
+void sendAck(uint8_t original_cmd) {
+  sendResponsePacket(RSP_ACK, &original_cmd, 1);
+}
+
+void sendNak(uint8_t error_code) {
+  sendResponsePacket(RSP_NAK, &error_code, 1);
+}
+
+void executeGuiCommand(const GuiPacket& packet) {
+  safeSerialPrintfln("Core 1: Executing GUI command: 0x%02X", packet.cmd);
+  switch (packet.cmd) {
+    case 'S': {
+        uint8_t payload[9];
+        uint32_t frames_received_local, error_flags_local;
+        mutex_enter_blocking(&comm_mutex);
+        payload[0] = core_comm.switch_code;
+        frames_received_local = core_comm.frames_received;
+        error_flags_local = core_comm.error_flags;
+        mutex_exit(&comm_mutex);
+        memcpy(&payload[1], &frames_received_local, 4);
+        memcpy(&payload[5], &error_flags_local, 4);
+        sendResponsePacket('S', payload, sizeof(payload));
+        break;
+    }
+    case 'D': {
+        sendResponsePacket('D', (uint8_t*)currentConfig.distance_thresholds, sizeof(currentConfig.distance_thresholds));
+        break;
+    }
+    case 'd': {
+        if (packet.len == 3) {
+          uint8_t pos = packet.payload[0];
+          uint16_t val = packet.payload[1] | (packet.payload[2] << 8);
+          if (pos < 8 && val >= MIN_DISTANCE_CM && val <= MAX_DISTANCE_CM) {
+            currentConfig.distance_thresholds[pos] = val;
+            sendAck('d');
+          } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        break;
+    }
+    case 'V': {
+        sendResponsePacket('V', (uint8_t*)currentConfig.velocity_min_thresholds, sizeof(currentConfig.velocity_min_thresholds));
+        break;
+    }
+    case 'v': {
+        sendResponsePacket('v', (uint8_t*)currentConfig.velocity_max_thresholds, sizeof(currentConfig.velocity_max_thresholds));
+        break;
+    }
+    case 'W': {
+        if (saveConfiguration()) sendAck('W');
+        else sendNak(NAK_ERR_EXECUTION_FAIL);
+        break;
+    }
+    case 'w': {
+        if (packet.len == 4) {
+          char type = packet.payload[0];
+          uint8_t pos = packet.payload[1];
+          int16_t val = packet.payload[2] | (packet.payload[3] << 8);
+          if (pos < 8 && (type == 'm' || type == 'x')) {
+            if (type == 'm') currentConfig.velocity_min_thresholds[pos] = val;
+            else currentConfig.velocity_max_thresholds[pos] = val;
+            sendAck('w');
+          } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        break;
+    }
+    case 'T': {
+        sendResponsePacket('T', (uint8_t*)currentConfig.trigger_rules, sizeof(currentConfig.trigger_rules));
+        break;
+    }
+    case 't': {
+        if (packet.len == 5) {
+          uint8_t pos = packet.payload[0];
+          if (pos < 8) {
+            memcpy(currentConfig.trigger_rules[pos], &packet.payload[1], 4);
+            sendAck('t');
+          } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        break;
+    }
+    case 'M': {
+        uint8_t mode = currentConfig.use_velocity_trigger ? 2 : 1;
+        sendResponsePacket('M', &mode, 1);
+        break;
+    }
+    case 'm': {
+        if (packet.len == 1) {
+          uint8_t mode = packet.payload[0];
+          if (mode == 1 || mode == 2) {
+            currentConfig.use_velocity_trigger = (mode == 2);
+            sendAck('m');
+          } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        break;
+    }
+    case 'G': {
+        uint8_t debug_flag = currentConfig.enable_debug ? 1 : 0;
+        sendResponsePacket('G', &debug_flag, 1);
+        break;
+    }
+    case 'g': {
+        if (packet.len == 1) {
+          uint8_t debug_val = packet.payload[0];
+          if (debug_val == 0 || debug_val == 1) {
+            currentConfig.enable_debug = (debug_val == 1);
+            mutex_enter_blocking(&comm_mutex);
+            core_comm.enable_debug = currentConfig.enable_debug;
+            mutex_exit(&comm_mutex);
+            sendAck('g');
+          } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        break;
+    }
+    case 'R': {
+        safeSerialPrintln("Core 1: System reset requested via GUI");
+        sendAck('R');
+        delay(100);
+        rp2040.restart();
+        break;
+    }
+    case 'F': {
+        safeSerialPrintln("Core 1: Factory reset requested via GUI");
+        sendAck('F');
+        factoryReset();
+        break;
+    }
+    default:
+      safeSerialPrintfln("Core 1: Unknown GUI command: 0x%02X", packet.cmd);
+      sendNak(NAK_ERR_UNKNOWN_CMD);
+      break;
+  }
+}
+
+void processGuiCommands() {
+  static GuiParserState state = STATE_WAIT_FOR_START;
+  static GuiPacket current_packet;
+  static uint8_t payload_index = 0;
+  static uint32_t packet_start_time = 0;
+
+  if (state != STATE_WAIT_FOR_START && safeMillisElapsed(packet_start_time, millis()) > GUI_PACKET_TIMEOUT_MS) {
+    safeSerialPrintln("Core 1: GUI packet timeout");
+    state = STATE_WAIT_FOR_START;
+    sendNak(NAK_ERR_TIMEOUT);
+  }
+
+  while (Serial.available() > 0) {
+    uint8_t byte = Serial.read();
+    switch (state) {
+      case STATE_WAIT_FOR_START:
+        if (byte == GUI_PACKET_START_BYTE) {
+          state = STATE_READ_CMD;
+          packet_start_time = millis();
+        }
+        break;
+      case STATE_READ_CMD:
+        current_packet.cmd = byte;
+        state = STATE_READ_LEN;
+        break;
+      case STATE_READ_LEN:
+        if (byte <= GUI_MAX_PAYLOAD_SIZE) {
+          current_packet.len = byte;
+          payload_index = 0;
+          if (current_packet.len == 0) state = STATE_READ_CHECKSUM;
+          else state = STATE_READ_PAYLOAD;
+        } else {
+          safeSerialPrintln("Core 1: GUI packet invalid length");
+          sendNak(NAK_ERR_INVALID_PAYLOAD);
+          state = STATE_WAIT_FOR_START;
+        }
+        break;
+      case STATE_READ_PAYLOAD:
+        current_packet.payload[payload_index++] = byte;
+        if (payload_index >= current_packet.len) {
+          state = STATE_READ_CHECKSUM;
+        }
+        break;
+      case STATE_READ_CHECKSUM:
+        current_packet.checksum = byte;
+        uint8_t buffer_to_check[GUI_MAX_PAYLOAD_SIZE + 2];
+        buffer_to_check[0] = current_packet.cmd;
+        buffer_to_check[1] = current_packet.len;
+        memcpy(&buffer_to_check[2], current_packet.payload, current_packet.len);
+        uint8_t calculated_checksum = calculateGuiChecksum(buffer_to_check, current_packet.len + 2);
+        if (calculated_checksum == current_packet.checksum) {
+          executeGuiCommand(current_packet);
+        } else {
+          safeSerialPrintfln("Core 1: GUI packet checksum failed. Got: %d, Expected: %d",
+            current_packet.checksum, calculated_checksum);
+          sendNak(NAK_ERR_BAD_CHECKSUM);
+        }
+        state = STATE_WAIT_FOR_START;
+        break;
+    }
+  }
+}

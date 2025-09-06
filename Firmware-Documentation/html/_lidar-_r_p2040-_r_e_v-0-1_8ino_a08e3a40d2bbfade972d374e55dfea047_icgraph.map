@@ -1,0 +1,51 @@
+<map id="isDebugEnabled" name="isDebugEnabled">
+<area shape="rect" id="Node000001" title="Thread&#45;safe debug enable flag checker." alt="" coords="956,354,1072,380"/>
+<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#aaad6f5d477ff96137b7e88dbec15ff30" title="Perform complete factory reset operation." alt="" coords="565,298,661,324"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="941,356,908,351,661,319,662,314,908,346,941,351"/>
+<area shape="rect" id="Node000005" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a39ceba300a80e348e278539f57e0ca79" title="Core 1 main loop &#45; handles processing, control, and GUI." alt="" coords="5,184,58,211"/>
+<area shape="poly" id="edge15_Node000001_Node000005" title=" " alt="" coords="1009,339,1003,281,987,207,974,168,957,131,934,97,906,68,870,41,837,23,805,13,773,9,702,11,614,15,408,15,318,14,248,17,215,24,182,35,146,53,107,78,82,103,62,132,39,185,35,183,58,129,78,99,104,74,144,48,180,30,213,18,247,12,318,8,408,10,614,10,702,6,773,4,806,8,839,18,873,36,910,64,938,94,961,129,979,166,992,205,1009,280,1015,338"/>
+<area shape="rect" id="Node000006" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a205a294e0289fe3024132114a1f13a26" title="Handle debug output during operational mode." alt="" coords="120,88,256,115"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="1008,338,1001,286,984,222,971,189,954,158,932,130,906,106,884,94,856,84,785,71,699,65,603,65,411,78,257,95,256,90,410,72,603,60,699,60,786,65,858,79,887,89,910,102,936,126,958,155,975,187,989,220,1006,285,1014,338"/>
+<area shape="rect" id="Node000007" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af9326ee3cb6c978c0d99ee78852ff6e6" title="Initialize all GPIO pins for Core 1 operations." alt="" coords="548,100,678,127"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="1006,339,995,295,977,242,948,190,929,167,906,148,880,132,852,121,791,107,731,104,678,106,678,101,731,98,792,102,853,115,883,127,910,143,933,163,952,187,982,240,1000,293,1011,337"/>
+<area shape="rect" id="Node000008" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af9535c962a7723d8738345239a800e76" title="Core 1 state machine processor for initialization sequence." alt="" coords="318,160,500,187"/>
+<area shape="poly" id="edge18_Node000001_Node000008" title=" " alt="" coords="1001,340,988,307,968,270,941,235,907,207,854,181,797,164,739,153,680,148,569,151,479,162,478,157,569,146,681,143,740,148,799,159,856,176,909,202,945,231,972,267,993,305,1006,338"/>
+<area shape="rect" id="Node000009" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a9aa1b236d77d8372bc8415f017204fe8" title="Load configuration from LittleFS persistent storage." alt="" coords="552,202,674,228"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="997,342,961,289,936,263,907,243,849,221,787,210,727,207,674,210,674,204,727,202,787,205,850,216,909,238,939,259,965,285,1001,339"/>
+<area shape="rect" id="Node000010" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#aa9cd4ec7874ed2e350be0be38fbae2f1" title="Load factory default configuration parameters." alt="" coords="754,252,880,279"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="981,346,946,323,907,300,863,282,865,277,909,295,949,318,984,342"/>
+<area shape="rect" id="Node000011" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a22c14a080dd8fe28a63afc62bc4fe962" title="Core 0 state machine processor for initialization sequence." alt="" coords="726,506,908,532"/>
+<area shape="poly" id="edge16_Node000001_Node000011" title=" " alt="" coords="1000,395,963,447,938,473,909,496,886,507,884,503,907,491,934,469,959,443,995,392"/>
+<area shape="rect" id="Node000013" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#aea50629c4ab73f068ab5c462775728dc" title="Process incoming LiDAR frames with velocity calculation and trigger logic." alt="" coords="106,556,270,583"/>
+<area shape="poly" id="edge19_Node000001_Node000013" title=" " alt="" coords="1008,396,995,432,975,474,947,515,929,532,909,547,858,567,787,580,704,588,612,591,425,588,270,579,271,574,425,583,612,586,703,582,787,575,856,562,907,542,926,528,943,511,971,471,990,430,1003,394"/>
+<area shape="rect" id="Node000014" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a90beefdebf1afefcfc67f2c1cdffae39" title="Process incoming LiDAR serial data with frame parsing and validation." alt="" coords="753,404,881,431"/>
+<area shape="poly" id="edge21_Node000001_Node000014" title=" " alt="" coords="945,387,872,406,871,401,944,382"/>
+<area shape="rect" id="Node000015" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#acb85db9fe72860a2c25a9256dc7c0291" title="Report Core 0 operational status and performance metrics." alt="" coords="753,455,880,482"/>
+<area shape="poly" id="edge23_Node000001_Node000015" title=" " alt="" coords="988,392,952,420,909,445,880,457,878,452,907,441,949,415,985,388"/>
+<area shape="rect" id="Node000016" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a7dbaa93a863de674a831ee4e344f8c11" title="Report Core 1 operational status and configuration." alt="" coords="346,607,473,634"/>
+<area shape="poly" id="edge25_Node000001_Node000016" title=" " alt="" coords="1011,396,1001,441,982,494,953,548,933,571,909,591,875,606,828,617,709,628,581,630,473,627,473,621,581,625,709,623,827,612,873,601,907,586,929,567,948,544,978,492,996,439,1006,395"/>
+<area shape="rect" id="Node000017" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#abbd1ddf437f3edf0122a986a09a04359" title="Save current configuration to LittleFS persistent storage." alt="" coords="550,354,676,380"/>
+<area shape="poly" id="edge27_Node000001_Node000017" title=" " alt="" coords="941,370,677,370,677,364,941,364"/>
+<area shape="rect" id="Node000018" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a4fc01d736fe50cf5b977f755b675f11d" title="Core 0 setup function &#45; initializes LiDAR communication." alt="" coords="790,658,844,684"/>
+<area shape="poly" id="edge29_Node000001_Node000018" title=" " alt="" coords="1012,396,1003,448,985,513,955,581,934,613,910,641,878,661,845,670,843,665,876,656,906,637,930,610,950,578,980,511,998,446,1007,395"/>
+<area shape="rect" id="Node000019" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#ac764ee28e2916a7de10b22927e02d1a4" title="Core 1 setup function &#45; initializes processing and control systems." alt="" coords="787,708,847,735"/>
+<area shape="poly" id="edge30_Node000001_Node000019" title=" " alt="" coords="1015,396,1010,459,994,540,981,583,963,625,939,664,910,698,880,716,848,723,847,718,878,711,906,694,935,661,958,622,976,581,989,538,1004,458,1010,396"/>
+<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a9955f7842e7ef7e68f5ff4e4785f4861" title="Execute validated GUI command packet." alt="" coords="336,298,483,324"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="550,314,483,314,483,308,550,308"/>
+<area shape="rect" id="Node000004" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#ab045d07e05c15822335c17c065cecf19" title="Non&#45;blocking GUI packet parser and command processor." alt="" coords="111,260,265,287"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="320,299,265,289,266,284,321,293"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="143,255,57,213,59,208,146,251"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="153,126,56,186,53,182,150,121"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="551,134,458,162,456,157,550,129"/>
+<area shape="poly" id="edge9_Node000008_Node000005" title=" " alt="" coords="303,183,58,199,58,193,303,178"/>
+<area shape="poly" id="edge11_Node000009_Node000008" title=" " alt="" coords="536,202,478,190,479,185,537,197"/>
+<area shape="poly" id="edge13_Node000010_Node000002" title=" " alt="" coords="739,286,662,303,661,298,738,280"/>
+<area shape="poly" id="edge14_Node000010_Node000009" title=" " alt="" coords="745,251,669,231,670,226,746,245"/>
+<area shape="rect" id="Node000012" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#afe461d27b9c48d5921c00d521181f12f" title="Core 0 main loop &#45; handles LiDAR data collection." alt="" coords="590,455,636,482"/>
+<area shape="poly" id="edge17_Node000011_Node000012" title=" " alt="" coords="744,504,635,476,637,471,746,499"/>
+<area shape="poly" id="edge20_Node000013_Node000005" title=" " alt="" coords="173,543,36,212,41,210,178,541"/>
+<area shape="poly" id="edge22_Node000014_Node000012" title=" " alt="" coords="746,438,637,465,635,460,744,433"/>
+<area shape="poly" id="edge24_Node000015_Node000012" title=" " alt="" coords="738,471,636,471,636,466,738,466"/>
+<area shape="poly" id="edge26_Node000016_Node000005" title=" " alt="" coords="335,639,279,645,217,643,187,638,157,629,129,615,104,597,83,567,67,522,55,468,46,408,35,291,31,211,36,211,40,291,51,407,60,467,73,521,88,565,108,593,132,611,159,624,188,633,218,638,279,640,335,634"/>
+<area shape="poly" id="edge28_Node000017_Node000003" title=" " alt="" coords="546,351,460,327,461,322,548,346"/>
+</map>

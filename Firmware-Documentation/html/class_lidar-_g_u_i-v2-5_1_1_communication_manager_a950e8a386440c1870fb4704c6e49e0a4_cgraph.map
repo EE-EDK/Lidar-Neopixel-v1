@@ -1,0 +1,11 @@
+<map id="Lidar&#45;GUI&#45;v2&#45;5.CommunicationManager._worker_loop" name="Lidar&#45;GUI&#45;v2&#45;5.CommunicationManager._worker_loop">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,76,207,119"/>
+<area shape="rect" id="Node000002" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#aa1ccfba054eb0587c4f44d52ffda94bc" title=" " alt="" coords="255,39,474,81"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="207,80,239,75,240,81,208,85"/>
+<area shape="rect" id="Node000005" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#ac11600deaca49f278a3afee4589cb33e" title=" " alt="" coords="264,105,465,164"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="208,109,249,115,248,121,207,115"/>
+<area shape="rect" id="Node000003" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#ae0cd80e9993507bb4962e8fd166550e6" title=" " alt="" coords="522,5,723,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="474,43,506,39,507,44,475,48"/>
+<area shape="rect" id="Node000004" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#a160c5c833ef0579edc9c3c39f639d4a5" title=" " alt="" coords="522,72,723,115"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="475,72,507,76,506,81,474,77"/>
+</map>

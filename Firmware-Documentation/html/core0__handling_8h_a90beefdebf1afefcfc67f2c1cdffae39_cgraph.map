@@ -1,0 +1,25 @@
+<map id="processLidarSerial" name="processLidarSerial">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,284,134,311"/>
+<area shape="rect" id="Node000002" href="$globals_8cpp.html#a08de067ee631d8a800f693e28e553f15" title=" " alt="" coords="199,81,323,108"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="77,282,118,222,148,185,180,150,223,115,227,119,183,154,152,189,123,225,82,285"/>
+<area shape="rect" id="Node000004" href="$globals_8cpp.html#a4105597e678aceaa0dbcc2c96b5fa414" title=" " alt="" coords="639,56,759,83"/>
+<area shape="poly" id="edge11_Node000001_Node000004" title=" " alt="" coords="79,282,119,237,148,213,181,194,239,172,292,162,339,161,385,164,431,168,478,168,531,161,590,143,634,119,670,91,674,96,637,124,592,148,532,166,479,173,430,173,385,170,339,166,292,168,241,177,183,198,151,217,123,241,83,285"/>
+<area shape="rect" id="Node000006" href="$globals_8cpp.html#a138ceebcbdcd1e89fe167ac3a6b739c2" title=" " alt="" coords="195,208,326,235"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="98,281,181,244,199,238,201,243,183,249,100,286"/>
+<area shape="rect" id="Node000007" href="$globals_8cpp.html#a08e3a40d2bbfade972d374e55dfea047" title=" " alt="" coords="203,259,319,285"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="134,286,187,279,188,284,135,291"/>
+<area shape="rect" id="Node000008" href="$globals_8cpp.html#aa8c08bfac314262911ef11eec599bcf1" title=" " alt="" coords="195,309,327,336"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="135,303,180,309,179,315,134,308"/>
+<area shape="rect" id="Node000009" href="$globals_8cpp.html#a57190bd6f3a9bed26f0a8fafb362b0d9" title=" " alt="" coords="199,360,322,387"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="100,309,183,346,201,352,199,357,181,350,98,314"/>
+<area shape="rect" id="Node000010" href="$globals_8cpp.html#a205a8897e51a398ea1b7fd38b79310cd" title=" " alt="" coords="201,411,321,437"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="84,309,125,352,153,376,183,396,194,402,191,407,180,401,150,380,122,356,80,313"/>
+<area shape="rect" id="Node000011" href="$globals_8cpp.html#adbb1174825ecf5e6f472ea3587578d81" title=" " alt="" coords="182,461,340,488"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="79,310,117,375,147,414,183,447,191,452,188,456,180,451,143,418,113,378,75,312"/>
+<area shape="rect" id="Node000003" href="$globals_8cpp.html#aab55a5bb4be00eeb1b3cdc55a3f1363a" title=" " alt="" coords="391,5,588,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="300,78,387,48,429,35,430,40,389,53,302,83"/>
+<area shape="poly" id="edge5_Node000002_Node000004" title=" " alt="" coords="323,88,624,71,624,76,324,94"/>
+<area shape="rect" id="Node000005" href="$globals_8cpp.html#a32bb98486d7f2edadc32304a50db54c7" title=" " alt="" coords="388,107,591,133"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="324,99,373,104,372,110,323,104"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="549,30,627,49,626,54,547,35"/>
+</map>

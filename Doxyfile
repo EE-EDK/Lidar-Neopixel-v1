@@ -1,0 +1,55 @@
+# Doxyfile generated for Dual-Core-Lidar-RP2040-Arduino-Pico
+
+#---------------------------------------------------------------------------
+# Project related configuration options
+#---------------------------------------------------------------------------
+PROJECT_NAME           = "Dual-Core-Lidar-RP2040-Arduino-Pico"
+PROJECT_NUMBER         = 6.2
+PROJECT_BRIEF          = "RP2040 Raspberry Pi Pico LiDAR Controller - Arduino-Pico Core Version"
+OUTPUT_DIRECTORY       = doxygen_docs
+
+# This is the full path to the directory you want Doxygen to scan.
+INPUT                  = C:\Arduino\LIDAR\Lidar-RP2040-REV-0-3\Lidar\Lidar-RP2040-REV-0-3
+
+# Setting RECURSIVE to NO tells Doxygen not to look into any subdirectories.
+RECURSIVE              = NO
+
+#---------------------------------------------------------------------------
+# Build related configuration options
+#---------------------------------------------------------------------------
+EXTRACT_ALL            = YES
+EXTRACT_STATIC         = YES
+WARN_IF_UNDOCUMENTED   = NO
+EXTRACT_PRIVATE        = YES
+EXTRACT_ANON_NSPACES   = YES
+
+#---------------------------------------------------------------------------
+# Input files configuration
+#---------------------------------------------------------------------------
+# These are the file types Doxygen will look for inside the INPUT directory.
+FILE_PATTERNS          = *.h *.hpp *.cpp *.ino
+EXTENSION_MAPPING      = ino=C++
+
+#---------------------------------------------------------------------------
+# HTML output configuration
+#---------------------------------------------------------------------------
+GENERATE_HTML          = YES
+GENERATE_TREEVIEW      = YES
+SEARCHENGINE           = YES
+USE_MATHJAX            = YES
+MATHJAX_RELPATH        = "https://cdn.jsdelivr.net/npm/mathjax@3/MathJax.js"
+
+#---------------------------------------------------------------------------
+# Diagram generator tools (Graphviz)
+#---------------------------------------------------------------------------
+HAVE_DOT               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+INCLUDE_GRAPH          = YES
+INCLUDED_BY_GRAPH      = YES
+DIRECTORY_GRAPH        = YES
+UML_LOOK               = YES
+GENERATE_LEGEND        = YES
+GENERATE_LATEX         = NO

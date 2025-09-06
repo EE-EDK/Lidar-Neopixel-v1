@@ -1,0 +1,9 @@
+<map id="setup1" name="setup1">
+<area shape="rect" id="Node000001" title="Core 1 setup function &#45; initializes processing and control systems." alt="" coords="5,56,66,83"/>
+<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a08e3a40d2bbfade972d374e55dfea047" title="Thread&#45;safe debug enable flag checker." alt="" coords="114,5,230,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="65,56,119,35,121,40,67,61"/>
+<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a6ad4b694f90641aa05829c1b90f172e2" title="Thread&#45;safe serial output without newline." alt="" coords="119,56,225,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="66,67,103,67,103,72,66,72"/>
+<area shape="rect" id="Node000004" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af6020ad975c3a06156bc4e985701be92" title="Thread&#45;safe serial output with newline." alt="" coords="114,107,230,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="67,78,121,98,119,103,65,83"/>
+</map>

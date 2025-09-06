@@ -1,0 +1,8 @@
+<map id="Lidar&#45;GUI&#45;v2&#45;5.CommunicationManager.connect" name="Lidar&#45;GUI&#45;v2&#45;5.CommunicationManager.connect">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,207,72"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="59,29,57,19,65,10,81,5,106,3,133,5,149,11,147,16,131,10,106,8,82,10,68,15,62,21,64,28"/>
+<area shape="rect" id="Node000002" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#aae3367d28c47887c087fe154e73e90bd" title=" " alt="" coords="255,29,456,72"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="207,48,239,48,239,53,207,53"/>
+<area shape="rect" id="Node000003" href="$class_lidar-_g_u_i-v2-5_1_1_communication_manager.html#acc996ca1499d24f38eeb22a439e67201" title=" " alt="" coords="504,29,705,72"/>
+<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="457,48,489,48,489,53,457,53"/>
+</map>

@@ -1,0 +1,8 @@
+<map id="Lidar&#45;GUI&#45;v2&#45;6&#45;mobile.SerialManager.is_connected" name="Lidar&#45;GUI&#45;v2&#45;6&#45;mobile.SerialManager.is_connected">
+<area shape="rect" id="Node000001" title=" " alt="" coords="472,5,657,48"/>
+<area shape="rect" id="Node000002" href="$class_lidar-_g_u_i-v2-6-mobile_1_1_serial_manager.html#a5f6b225bfef628a9b5b733023cc005f8" title=" " alt="" coords="5,5,191,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="456,26,424,25,239,25,191,26,191,21,239,20,424,20,456,21"/>
+<area shape="rect" id="Node000003" href="$class_lidar-_g_u_i-v2-6-mobile_1_1_serial_manager.html#a8ea16fbd0f14ab891d39a0282dcd033e" title=" " alt="" coords="239,35,424,77"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="457,43,425,47,424,42,456,38"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="223,45,191,41,192,36,224,40"/>
+</map>

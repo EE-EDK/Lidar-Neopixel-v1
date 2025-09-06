@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['checksum_0',['checksum',['../struct_lidar_configuration.html#a059bc8d9ceae38f1bac4da98c84054e2',1,'LidarConfiguration::checksum'],['../struct_gui_packet.html#abece3c6320605d88d9f441251366db9a',1,'GuiPacket::checksum']]],
+  ['cmd_1',['cmd',['../struct_gui_packet.html#abd212e34a1d3a1a8e0412c8ee1e64db9',1,'GuiPacket']]],
+  ['comm_5fmutex_2',['comm_mutex',['../globals_8cpp.html#a0718d819b79eec8a6c0395698f12d777',1,'comm_mutex:&#160;globals.cpp'],['../globals_8h.html#a0718d819b79eec8a6c0395698f12d777',1,'comm_mutex:&#160;globals.cpp']]],
+  ['core0_5finit_5fcomplete_3',['core0_init_complete',['../struct_timing_info.html#a1f32f364620659c9102f3028500f3baa',1,'TimingInfo']]],
+  ['core0_5finit_5fstart_4',['core0_init_start',['../struct_timing_info.html#a66e62185cc38ba5cc0b6d859a94bd411',1,'TimingInfo']]],
+  ['core0_5fstate_5',['core0_state',['../globals_8cpp.html#af183c450851310ce8d3a650508766d1f',1,'core0_state:&#160;globals.cpp'],['../globals_8h.html#af183c450851310ce8d3a650508766d1f',1,'core0_state:&#160;globals.cpp']]],
+  ['core0_5fstate_5ftimer_6',['core0_state_timer',['../globals_8cpp.html#ad776212704ceec8603839eef409c58b8',1,'core0_state_timer:&#160;globals.cpp'],['../globals_8h.html#ad776212704ceec8603839eef409c58b8',1,'core0_state_timer:&#160;globals.cpp']]],
+  ['core1_5finit_5fcomplete_7',['core1_init_complete',['../struct_timing_info.html#a2487bfdb70ce2948740ddfb6d33e9419',1,'TimingInfo']]],
+  ['core1_5finit_5fstart_8',['core1_init_start',['../struct_timing_info.html#aebfe884488a6a75f960af1b87936ad37',1,'TimingInfo']]],
+  ['core1_5fready_9',['core1_ready',['../struct_core_comm.html#a108426bb4d7354836d8f19aaf29acab2',1,'CoreComm']]],
+  ['core1_5fstate_10',['core1_state',['../globals_8cpp.html#ae309910d5cfecb85fc56285cdcfadda4',1,'core1_state:&#160;globals.cpp'],['../globals_8h.html#ae309910d5cfecb85fc56285cdcfadda4',1,'core1_state:&#160;globals.cpp']]],
+  ['core1_5fstate_5ftimer_11',['core1_state_timer',['../globals_8cpp.html#aa6340a5fa814eefd842f925c7890147b',1,'core1_state_timer:&#160;globals.cpp'],['../globals_8h.html#aa6340a5fa814eefd842f925c7890147b',1,'core1_state_timer:&#160;globals.cpp']]],
+  ['core_5fcomm_12',['core_comm',['../globals_8cpp.html#a9abe0a2566e18f13213fe715843316a1',1,'core_comm:&#160;globals.cpp'],['../globals_8h.html#a9abe0a2566e18f13213fe715843316a1',1,'core_comm:&#160;globals.cpp']]],
+  ['count_13',['count',['../class_adaptive_velocity_calculator.html#a8a3907adb165c14cf951a95a4c6a61cd',1,'AdaptiveVelocityCalculator']]],
+  ['current_5fstate_14',['current_state',['../class_trigger_debouncer.html#a63df3f5786ffb4388c1506a6f597c50f',1,'TriggerDebouncer::current_state'],['../globals_8cpp.html#af371d95d37a96ce27e707e1b09e1ca91',1,'current_state:&#160;globals.cpp'],['../globals_8h.html#af371d95d37a96ce27e707e1b09e1ca91',1,'current_state:&#160;globals.cpp']]],
+  ['currentconfig_15',['currentConfig',['../globals_8cpp.html#a5b9a8e9261510bd3e68753b91b878623',1,'currentConfig:&#160;globals.cpp'],['../globals_8h.html#a5b9a8e9261510bd3e68753b91b878623',1,'currentConfig:&#160;globals.cpp']]]
+];

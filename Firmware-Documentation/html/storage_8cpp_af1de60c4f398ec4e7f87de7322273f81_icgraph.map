@@ -1,0 +1,11 @@
+<map id="saveConfiguration" name="saveConfiguration">
+<area shape="rect" id="Node000001" title=" " alt="" coords="653,5,779,32"/>
+<area shape="rect" id="Node000002" href="$gui_8cpp.html#a9955f7842e7ef7e68f5ff4e4785f4861" title=" " alt="" coords="457,5,605,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="637,21,605,21,605,16,637,16"/>
+<area shape="rect" id="Node000003" href="$gui_8cpp.html#ab045d07e05c15822335c17c065cecf19" title=" " alt="" coords="255,5,409,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="442,21,410,21,410,16,442,16"/>
+<area shape="rect" id="Node000004" href="$core1__handling_8cpp.html#a794d46ec16b5601a2141d04177e5aab5" title=" " alt="" coords="106,5,207,32"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="239,21,207,21,207,16,239,16"/>
+<area shape="rect" id="Node000005" href="$_lidar-_r_p2040-_r_e_v-0-3_8ino.html#a39ceba300a80e348e278539f57e0ca79" title="Core 1 main loop. Handles data processing, logic, and GUI communication." alt="" coords="5,5,58,32"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="90,21,58,21,58,16,90,16"/>
+</map>
