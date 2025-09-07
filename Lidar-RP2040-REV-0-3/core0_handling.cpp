@@ -1,3 +1,15 @@
+/**
+ * @file core0_handling.cpp
+ * @brief Core 0 LiDAR data acquisition and serial communication handling
+ * @version 6.3.2
+ * @date September 06, 2025 
+ * @revision Rev 2 - Config mode health monitoring skip
+ * @changes:
+ *   - Skip health monitoring when config_mode_active is true
+ *   - Suppress buffer overflow messages during config mode
+ *   - Maintain LiDAR data flow isolation during configuration
+ */
+
 #include "core0_handling.h"
 #include "globals.h"
 #include "status.h"
@@ -154,7 +166,7 @@ void processCore0StateMachine() {
 
     case CORE0_READY:
       {
-        // ===== FIX START: Add logic to handle the first time both cores are ready =====
+        // System ready - handle health monitoring
         static bool system_fully_ready = false; 
         if (safeGetCore1Ready()) {
           
@@ -169,39 +181,55 @@ void processCore0StateMachine() {
                 safeSerialPrintln("Core 0: System fully operational. Starting communication health monitor.");
             }
           }
-          // ===== FIX END =====
 
-          static uint32_t last_health_check = 0;
-          if (safeMillisElapsed(last_health_check, current_time) > 5000) {
-            uint32_t last_frame_ms;
-            uint32_t recovery_attempts;
-            
-            mutex_enter_blocking(&comm_mutex);
-            last_frame_ms = core_comm.last_frame_time;
-            recovery_attempts = core_comm.recovery_attempts;
-            mutex_exit(&comm_mutex);
+          // REV 2: Skip health monitoring if config mode is active
+          bool config_active = false;
+          mutex_enter_blocking(&comm_mutex);
+          config_active = core_comm.config_mode_active;
+          mutex_exit(&comm_mutex);
 
-            uint32_t comm_timeout = safeMillisElapsed(last_frame_ms, current_time);
-            if (comm_timeout > 2000) {
-              if (recovery_attempts == 0) {
-                safeSerialPrintfln("Core 0: Communication timeout %lu ms, attempting buffer flush", comm_timeout);
-                attemptRecovery(RECOVERY_LEVEL_BUFFER_FLUSH);
-                safeSetErrorFlag(ERROR_FLAG_COMM_TIMEOUT, true);
-              } else if (recovery_attempts == 1) {
-                safeSerialPrintfln("Core 0: Communication timeout %lu ms, attempting soft reset", comm_timeout);
-                attemptRecovery(RECOVERY_LEVEL_SOFT_RESET);
-                safeSetErrorFlag(ERROR_FLAG_COMM_TIMEOUT, true);
-              } else if (recovery_attempts >= 2) {
-                safeSerialPrintfln("Core 0: CRITICAL - Communication lost for %lu ms, full reinitialization", comm_timeout);
-                if (attemptRecovery(RECOVERY_LEVEL_FULL_REINIT)) {
-                  core0_state = CORE0_STARTUP;
-                  core0_state_timer = current_time;
+          if (!config_active) {
+            static uint32_t last_health_check = 0;
+            if (safeMillisElapsed(last_health_check, current_time) > 5000) {
+              uint32_t last_frame_ms;
+              uint32_t recovery_attempts;
+              
+              mutex_enter_blocking(&comm_mutex);
+              last_frame_ms = core_comm.last_frame_time;
+              recovery_attempts = core_comm.recovery_attempts;
+              mutex_exit(&comm_mutex);
+
+              uint32_t comm_timeout = safeMillisElapsed(last_frame_ms, current_time);
+              if (comm_timeout > 2000) {
+                if (recovery_attempts == 0) {
+                  safeSerialPrintfln("Core 0: Communication timeout %lu ms, attempting buffer flush", comm_timeout);
+                  attemptRecovery(RECOVERY_LEVEL_BUFFER_FLUSH);
                   safeSetErrorFlag(ERROR_FLAG_COMM_TIMEOUT, true);
-                  system_fully_ready = false; // Reset for re-initialization
+                } else if (recovery_attempts == 1) {
+                  safeSerialPrintfln("Core 0: Communication timeout %lu ms, attempting soft reset", comm_timeout);
+                  attemptRecovery(RECOVERY_LEVEL_SOFT_RESET);
+                  safeSetErrorFlag(ERROR_FLAG_COMM_TIMEOUT, true);
+                } else if (recovery_attempts >= 2) {
+                  safeSerialPrintfln("Core 0: CRITICAL - Communication lost for %lu ms, full reinitialization", comm_timeout);
+                  if (attemptRecovery(RECOVERY_LEVEL_FULL_REINIT)) {
+                    core0_state = CORE0_STARTUP;
+                    core0_state_timer = current_time;
+                    safeSetErrorFlag(ERROR_FLAG_COMM_TIMEOUT, true);
+                    system_fully_ready = false; // Reset for re-initialization
+                  }
                 }
               }
+              last_health_check = current_time;
             }
-            last_health_check = current_time;
+          } else {
+            // Config mode active - skip health monitoring
+            if (isDebugEnabled()) {
+              static uint32_t last_config_notice = 0;
+              if (safeMillisElapsed(last_config_notice, current_time) > 30000) { // Every 30 seconds
+                safeSerialPrintln("Core 0: Config mode active - health monitoring suspended");
+                last_config_notice = current_time;
+              }
+            }
           }
         }
         break;
@@ -330,11 +358,19 @@ void processLidarSerial() {
 
           // Try to add frame to buffer
           if (!atomicBufferPush(new_frame)) {
-            static uint32_t last_overflow_report = 0;
-            if (safeMillisElapsed(last_overflow_report, current_time) > CRITICAL_ERROR_REPORT_INTERVAL_MS) {
-              safeSerialPrintfln("Core 0: CRITICAL - Buffer overflow! Dropping frames (util: %d/%d)", 
-                getBufferUtilization(), FRAME_BUFFER_SIZE);
-              last_overflow_report = current_time;
+            // REV 2: Suppress buffer overflow messages during config mode
+            bool config_active = false;
+            mutex_enter_blocking(&comm_mutex);
+            config_active = core_comm.config_mode_active;
+            mutex_exit(&comm_mutex);
+
+            if (!config_active) {
+              static uint32_t last_overflow_report = 0;
+              if (safeMillisElapsed(last_overflow_report, current_time) > CRITICAL_ERROR_REPORT_INTERVAL_MS) {
+                safeSerialPrintfln("Core 0: CRITICAL - Buffer overflow! Dropping frames (util: %d/%d)", 
+                  getBufferUtilization(), FRAME_BUFFER_SIZE);
+                last_overflow_report = current_time;
+              }
             }
           } else {
             // Update communication timestamp on successful frame processing

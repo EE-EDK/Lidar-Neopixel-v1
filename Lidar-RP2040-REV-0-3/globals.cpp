@@ -1,3 +1,14 @@
+/**
+ * @file globals.cpp
+ * @brief Global variable definitions and thread-safe helper functions
+ * @version 6.3.2
+ * @date September 06, 2025 
+ * @revision Rev 2 - Added config_mode_active flag initialization
+ * @changes:
+ *   - Added config_mode_active = false to CoreComm initialization
+ *   - Ensures proper startup state for health monitoring coordination
+ */
+
 #include "globals.h"
 
 // ===== GLOBAL VARIABLE DEFINITIONS =====
@@ -5,7 +16,27 @@ LidarFrame frame_buffer[FRAME_BUFFER_SIZE];
 volatile uint8_t buffer_head = 0;
 volatile uint8_t buffer_tail = 0;
 volatile uint8_t buffer_count = 0;
-CoreComm core_comm = { false, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0.0f, 0, 0, 0 };
+
+// REV 2: Added config_mode_active = false to initialization
+CoreComm core_comm = { 
+  false,  // lidar_initialized
+  false,  // core1_ready
+  false,  // enable_debug
+  false,  // trigger_output
+  false,  // config_mode_active (REV 2: Added)
+  0,      // switch_code
+  0,      // error_flags
+  0,      // frames_received
+  0,      // frames_processed
+  0,      // dropped_frames
+  0,      // last_frame_time
+  0,      // performance_counter
+  0.0f,   // velocity
+  0,      // distance
+  0,      // strength
+  0       // recovery_attempts
+};
+
 TimingInfo timing_info = { 0 };
 PerformanceMetrics perf_metrics = { 0 };
 mutex_t buffer_mutex;

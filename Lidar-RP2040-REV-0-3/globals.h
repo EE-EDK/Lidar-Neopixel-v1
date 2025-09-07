@@ -1,3 +1,14 @@
+/**
+ * @file globals.h
+ * @brief Global constants, structures, and function prototypes
+ * @version 6.3.2
+ * @date September 06, 2025 
+ * @revision Rev 2 - Added config_mode_active flag for health monitoring control
+ * @changes:
+ *   - Added config_mode_active to CoreComm struct
+ *   - Enables CONFIG mode isolation from health monitoring
+ */
+
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
@@ -121,6 +132,7 @@ struct CoreComm {
   volatile bool core1_ready;
   volatile bool enable_debug;
   volatile bool trigger_output;
+  volatile bool config_mode_active;  // REV 2: Added for health monitoring control
   volatile uint8_t switch_code;
   volatile uint32_t error_flags;
   volatile uint32_t frames_received;
