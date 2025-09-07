@@ -1,9 +1,27 @@
+/**
+ * @file init.cpp
+ * @brief This file contains the implementation of the initialization functions.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details The functions in this file are responsible for initializing the system,
+ * including setting up the hardware, initializing mutexes, and preparing the
+ * software for operation.
+ */
+
 #include "init.h"
 #include "globals.h"
 #include "status.h"
-#include "neopixel_integration.h"  
+#include "neopixel_integration.h"
 
-
+/**
+ * @brief Initializes the GPIO pins for Core 1.
+ *
+ * @details This function sets up the direction and initial state of the GPIO pins that are
+ * controlled by Core 1. This includes the pins for the switches, trigger,
+ * status LED, and NeoPixel.
+ */
 void initializePinsCore1() {
   if (isDebugEnabled()) safeSerialPrintln("Core 1: Configuring GPIO pins...");
   pinMode(S1_PIN, INPUT_PULLUP);
@@ -18,7 +36,7 @@ void initializePinsCore1() {
   digitalWrite(TRIG_PULSE_LOW_PIN, HIGH);
   digitalWrite(STATUS_LED_PIN, LOW);
 
-// Initialize NeoPixel system
+  // Initialize NeoPixel system
   if (initNeoPixel(NEOPIXEL_PIN)) {
     if (isDebugEnabled()) {
       safeSerialPrintfln("Core 1: NeoPixel initialized successfully on pin %d", NEOPIXEL_PIN);
@@ -38,6 +56,13 @@ void initializePinsCore1() {
   }
 }
 
+/**
+ * @brief Main setup function, called from Core 0's setup().
+ *
+ * @details This function performs the initial setup for the system on Core 0. It
+ * initializes the mutexes for inter-core communication and sets up the serial
+ * port for debugging. It then kicks off the Core 0 state machine.
+ */
 void main_setup() {
   timing_info.core0_init_start = millis();
   mutex_init(&buffer_mutex);
@@ -69,6 +94,14 @@ void main_setup() {
   }
 }
 
+/**
+ * @brief Setup handler for Core 1.
+ *
+ * @details This function is called from Core 1's setup1() function. It is responsible for
+ * initializing the functionalities that will be handled by Core 1. It records
+ * the start time for Core 1 initialization and kicks off the Core 1 state
+ * machine.
+ */
 void setup1_handler() {
   timing_info.core1_init_start = millis();
   if (isDebugEnabled()) {

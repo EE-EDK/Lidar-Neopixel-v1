@@ -1,6 +1,24 @@
+/**
+ * @file status.cpp
+ * @brief This file contains the implementation of the status handling functions.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details The functions in this file are responsible for handling status indicators,
+ * such as the status LED and debug output.
+ */
+
 #include "status.h"
 #include "globals.h"
 
+/**
+ * @brief Handles the debug output.
+ *
+ * @details This function prints debug information to the serial port periodically
+ * when debug output is enabled. The information includes velocity, signal
+ * strength, distance, error flags, and trigger status.
+ */
 void handleDebugOutput() {
   if (safeMillisElapsed(timing_info.last_debug_output, millis()) >= DEBUG_OUTPUT_INTERVAL_MS) {
     if (current_state == STATE_RUNNING && isDebugEnabled()) {
@@ -29,6 +47,14 @@ void handleDebugOutput() {
   }
 }
 
+/**
+ * @brief Handles the status LED.
+ *
+ * @details This function controls the status LED to provide visual feedback on the
+ * system's state. The LED blinks at different rates to indicate different
+ * conditions, such as configuration mode, buffer warnings, and communication
+ * timeouts.
+ */
 void handleStatusLED() {
   static uint32_t last_blink = 0;
   static bool led_state = false;
@@ -52,12 +78,24 @@ void handleStatusLED() {
   }
 }
 
+/**
+ * @brief Reports the status of Core 0.
+ *
+ * @details This function is a placeholder for reporting the status of Core 0.
+ * The implementation has been optimized out in the current version.
+ */
 void reportCore0Status() {
   if (core0_state == CORE0_READY && isDebugEnabled()) {
     // Status reporting preserved but optimized
   }
 }
 
+/**
+ * @brief Reports the status of Core 1.
+ *
+ * @details This function is a placeholder for reporting the status of Core 1.
+ * The implementation has been optimized out in the current version.
+ */
 void reportCore1Status() {
   if ((current_state == STATE_RUNNING || current_state == STATE_CONFIG) && isDebugEnabled()) {
     // Status reporting preserved but optimized

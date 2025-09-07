@@ -1,14 +1,14 @@
 /**
  * @file core1_handling.cpp
- * @brief Core 1 data processing, GUI communication, and system control
- * @version 6.3.2
- * @date September 06, 2025 
- * @revision Rev 2 - Simplified config mode with health monitoring isolation
- * @changes:
- *   - Set config_mode_active flag for Core 0 coordination
- *   - Simplified CONFIG mode - buffer drain only, no processing
- *   - CONFIG mode requires reset to exit (safety design)
- *   - Frame processing only in RUNNING mode
+ * @brief This file contains the implementation for functions that handle Core 1 operations.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details The functions in this file are responsible for managing the main loop of Core 1.
+ * This includes processing the Core 1 state machine, handling GUI commands,
+ * processing incoming LiDAR frames from Core 0, and managing the overall
+ * system state.
  */
 
 #include "core1_handling.h"
@@ -22,6 +22,15 @@
 #include "calculations.h"
 #include "neopixel_integration.h"
 
+/**
+ * @brief Main handler for the Core 1 loop.
+ *
+ * @details This function is the main entry point for Core 1's continuous operations. It
+ * orchestrates the various tasks handled by Core 1, including processing the
+ * state machine, managing status LEDs, and handling the main application logic
+ * for both configuration and running states. It also periodically reports the
+ * status of Core 1.
+ */
 void loop1_handler() {
   processCore1StateMachine();
   handleStatusLED();
@@ -84,6 +93,15 @@ void loop1_handler() {
   yield();
 }
 
+/**
+ * @brief Processes the state machine for Core 1.
+ *
+ * @details This function manages the initialization sequence and state transitions for Core 1.
+ * It ensures that pins are initialized, configuration is loaded, and the system
+ * correctly enters either configuration mode or normal running mode. The state
+ * machine progresses through a series of states to bring Core 1 to a ready
+ * state, after which it signals its readiness to Core 0.
+ */
 void processCore1StateMachine() {
   uint32_t current_time = millis();
   switch (core1_state) {
@@ -176,6 +194,16 @@ void processCore1StateMachine() {
   }
 }
 
+/**
+ * @brief Processes incoming LiDAR frames from Core 0.
+ *
+ * @details This function is the core of the data processing pipeline on Core 1. It pops
+ * LiDAR frames from the shared atomic buffer, where they are placed by Core 0.
+ * For each frame, it calculates the velocity, checks against the configured
+ * trigger conditions (distance and velocity), and manages the trigger output.
+ * It also updates the NeoPixel status based on the current distance and
+ * velocity, and handles debug output if enabled.
+ */
 void processIncomingFrames() {
   static uint32_t frames_processed_count = 0;
   static AdaptiveVelocityCalculator velocity_calc;

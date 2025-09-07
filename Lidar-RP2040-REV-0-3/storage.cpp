@@ -1,5 +1,23 @@
+/**
+ * @file storage.cpp
+ * @brief This file contains the implementation for the storage handling functions.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details This file provides the implementation for managing the device's
+ * configuration, including loading, saving, and validating the configuration
+ * data stored in non-volatile memory.
+ */
+
 #include "storage.h"
 
+/**
+ * @brief Loads the default configuration.
+ *
+ * @details This function loads a set of default values into the current configuration.
+ * This is typically used when no valid configuration is found in storage.
+ */
 void loadDefaultConfig() {
   if (isDebugEnabled()) safeSerialPrintln("Core 1: Loading factory default configuration...");
   uint16_t default_distances[8] = { 50, 100, 200, 300, 400, 500, 600, 700 };
@@ -18,6 +36,12 @@ void loadDefaultConfig() {
   if (isDebugEnabled()) safeSerialPrintln("Core 1: Factory defaults loaded");
 }
 
+/**
+ * @brief Validates the given configuration.
+ *
+ * @param config The configuration to validate.
+ * @return True if the configuration is valid, false otherwise.
+ */
 bool validateConfiguration(const LidarConfiguration& config) {
   for (int i = 0; i < 8; i++) {
     if (config.distance_thresholds[i] < MIN_DISTANCE_CM || 
@@ -36,6 +60,12 @@ bool validateConfiguration(const LidarConfiguration& config) {
   return true;
 }
 
+/**
+ * @brief Calculates the checksum for the given configuration.
+ *
+ * @param config The configuration to calculate the checksum for.
+ * @return The calculated checksum.
+ */
 uint16_t calculateChecksum(const LidarConfiguration& config) {
   uint16_t sum = 0;
   const uint8_t* p = (const uint8_t*)&config;
@@ -45,6 +75,13 @@ uint16_t calculateChecksum(const LidarConfiguration& config) {
   return sum;
 }
 
+/**
+ * @brief Loads the configuration from storage.
+ *
+ * @details This function reads the configuration data from non-volatile storage and
+ * loads it into the current configuration. If no valid configuration is found,
+ * it loads the default configuration.
+ */
 void loadConfiguration() {
   if (isDebugEnabled()) safeSerialPrintln("Core 1: Attempting to load configuration from LittleFS...");
   if (!LittleFS.begin()) {
@@ -91,6 +128,11 @@ void loadConfiguration() {
   }
 }
 
+/**
+ * @brief Saves the current configuration to storage.
+ *
+ * @return True if the configuration was saved successfully, false otherwise.
+ */
 bool saveConfiguration() {
   if (isDebugEnabled()) safeSerialPrintln("Core 1: Saving configuration to LittleFS...");
   if (!validateConfiguration(currentConfig)) {
@@ -118,6 +160,12 @@ bool saveConfiguration() {
   }
 }
 
+/**
+ * @brief Performs a factory reset.
+ *
+ * @details This function resets the configuration to its default values and saves it
+ * to storage. It then reboots the device.
+ */
 void factoryReset() {
   if (isDebugEnabled()) safeSerialPrintln("Core 1: Performing factory reset...");
   if (LittleFS.remove(CONFIG_FILE_PATH)) {

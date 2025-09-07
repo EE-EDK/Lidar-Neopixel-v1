@@ -1,32 +1,71 @@
+/**
+ * @file gui.cpp
+ * @brief This file contains the implementation for the GUI command processing.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details This file implements a serial communication protocol for interacting with a
+ * graphical user interface (GUI). It uses a state machine to parse incoming
+ * packets and executes commands to configure the device, retrieve data, and
+ * control its operation.
+ */
+
 #include "gui.h"
 #include "globals.h"
 #include "storage.h"
 #include "neopixel_integration.h"
 
+/** @brief The start byte for a GUI packet. */
 #define GUI_PACKET_START_BYTE 0x7E
+/** @brief The maximum size of the payload in a GUI packet. */
 #define GUI_MAX_PAYLOAD_SIZE 64
+/** @brief The timeout in milliseconds for receiving a complete GUI packet. */
 #define GUI_PACKET_TIMEOUT_MS 100
+/** @brief The response code for a successful acknowledgment (ACK). */
 #define RSP_ACK 0x06
+/** @brief The response code for a negative acknowledgment (NAK). */
 #define RSP_NAK 0x15
+/** @brief No error. */
 #define NAK_ERR_NONE 0x00
+/** @brief Bad checksum error. */
 #define NAK_ERR_BAD_CHECKSUM 0x01
+/** @brief Unknown command error. */
 #define NAK_ERR_UNKNOWN_CMD 0x02
+/** @brief Invalid payload error. */
 #define NAK_ERR_INVALID_PAYLOAD 0x03
+/** @brief Execution failure error. */
 #define NAK_ERR_EXECUTION_FAIL 0x04
+/** @brief Timeout error. */
 #define NAK_ERR_TIMEOUT 0x05
 
+/**
+ * @brief Defines the states for the GUI packet parser state machine.
+ */
 enum GuiParserState {
-  STATE_WAIT_FOR_START, STATE_READ_CMD, STATE_READ_LEN,
-  STATE_READ_PAYLOAD, STATE_READ_CHECKSUM
+  STATE_WAIT_FOR_START,     ///< Waiting for the start byte of a packet.
+  STATE_READ_CMD,           ///< Reading the command byte.
+  STATE_READ_LEN,           ///< Reading the payload length byte.
+  STATE_READ_PAYLOAD,       ///< Reading the payload data.
+  STATE_READ_CHECKSUM       ///< Reading the checksum byte.
 };
 
+/**
+ * @brief Represents a GUI packet.
+ */
 struct GuiPacket {
-  uint8_t cmd;
-  uint8_t len;
-  uint8_t payload[GUI_MAX_PAYLOAD_SIZE];
-  uint8_t checksum;
+  uint8_t cmd;                           ///< The command byte.
+  uint8_t len;                           ///< The length of the payload.
+  uint8_t payload[GUI_MAX_PAYLOAD_SIZE]; ///< The payload data.
+  uint8_t checksum;                      ///< The checksum of the packet.
 };
 
+/**
+ * @brief Calculates the checksum for a GUI packet.
+ * @param data A pointer to the data to be checksummed.
+ * @param length The length of the data.
+ * @return The calculated checksum.
+ */
 uint8_t calculateGuiChecksum(const uint8_t* data, uint8_t length) {
   uint8_t chk = 0;
   for (uint8_t i = 0; i < length; i++) {
@@ -35,6 +74,12 @@ uint8_t calculateGuiChecksum(const uint8_t* data, uint8_t length) {
   return chk;
 }
 
+/**
+ * @brief Sends a response packet to the GUI.
+ * @param cmd The command byte of the response.
+ * @param payload A pointer to the payload data.
+ * @param len The length of the payload.
+ */
 void sendResponsePacket(uint8_t cmd, const uint8_t* payload, uint8_t len) {
   uint8_t buffer[GUI_MAX_PAYLOAD_SIZE + 4];
   buffer[0] = GUI_PACKET_START_BYTE;
@@ -48,14 +93,26 @@ void sendResponsePacket(uint8_t cmd, const uint8_t* payload, uint8_t len) {
   Serial.write(buffer, len + 4);
 }
 
+/**
+ * @brief Sends an ACK (acknowledgment) response to the GUI.
+ * @param original_cmd The original command that is being acknowledged.
+ */
 void sendAck(uint8_t original_cmd) {
   sendResponsePacket(RSP_ACK, &original_cmd, 1);
 }
 
+/**
+ * @brief Sends a NAK (negative acknowledgment) response to the GUI.
+ * @param error_code The error code to send.
+ */
 void sendNak(uint8_t error_code) {
   sendResponsePacket(RSP_NAK, &error_code, 1);
 }
 
+/**
+ * @brief Executes a GUI command.
+ * @param packet The GUI packet containing the command and payload.
+ */
 void executeGuiCommand(const GuiPacket& packet) {
   safeSerialPrintfln("Core 1: Executing GUI command: 0x%02X", packet.cmd);
   switch (packet.cmd) {
@@ -189,6 +246,15 @@ void executeGuiCommand(const GuiPacket& packet) {
   }
 }
 
+/**
+ * @brief Processes incoming serial data from the GUI.
+ *
+ * @details This function implements a state machine to parse GUI packets from the serial
+ * port. It reads the incoming bytes and transitions through different states to
+ * identify the start of a packet, read the command and payload, and verify the
+ * checksum. Once a valid packet is received, it calls `executeGuiCommand` to
+ * process the command.
+ */
 void processGuiCommands() {
   static GuiParserState state = STATE_WAIT_FOR_START;
   static GuiPacket current_packet;

@@ -1,12 +1,13 @@
 /**
  * @file globals.cpp
- * @brief Global variable definitions and thread-safe helper functions
- * @version 6.3.2
- * @date September 06, 2025 
- * @revision Rev 2 - Added config_mode_active flag initialization
- * @changes:
- *   - Added config_mode_active = false to CoreComm initialization
- *   - Ensures proper startup state for health monitoring coordination
+ * @brief This file contains the definitions for global variables and helper functions.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details This file provides the memory allocation for all global variables declared
+ * in `globals.h`. It also contains the implementations for various thread-safe
+ * helper functions that are used throughout the firmware.
  */
 
 #include "globals.h"
@@ -17,13 +18,12 @@ volatile uint8_t buffer_head = 0;
 volatile uint8_t buffer_tail = 0;
 volatile uint8_t buffer_count = 0;
 
-// REV 2: Added config_mode_active = false to initialization
 CoreComm core_comm = { 
   false,  // lidar_initialized
   false,  // core1_ready
   false,  // enable_debug
   false,  // trigger_output
-  false,  // config_mode_active (REV 2: Added)
+  false,  // config_mode_active
   0,      // switch_code
   0,      // error_flags
   0,      // frames_received
@@ -51,16 +51,36 @@ SystemState current_state = STATE_INIT;
 LidarConfiguration currentConfig;
 static char debug_buffer[DEBUG_BUFFER_SIZE];
 
-// ===== ENHANCED THREAD-SAFE HELPER FUNCTIONS =====
+/**
+ * @brief Thread-safe helper functions.
+ * @{
+ */
 
+/**
+ * @brief Calculates the elapsed time in microseconds, handling timer wraparound.
+ * @param start The start time in microseconds.
+ * @param current The current time in microseconds.
+ * @return The elapsed time in microseconds.
+ */
 uint32_t safeMicrosElapsed(uint32_t start, uint32_t current) {
   return (current >= start) ? (current - start) : (UINT32_MAX - start + current + 1);
 }
 
+/**
+ * @brief Calculates the elapsed time in milliseconds, handling timer wraparound.
+ * @param start The start time in milliseconds.
+ * @param current The current time in milliseconds.
+ * @return The elapsed time in milliseconds.
+ */
 uint32_t safeMillisElapsed(uint32_t start, uint32_t current) {
   return (current >= start) ? (current - start) : (UINT32_MAX - start + current + 1);
 }
 
+/**
+ * @brief Sets or clears an error flag in a thread-safe manner.
+ * @param flag The error flag to set or clear.
+ * @param set True to set the flag, false to clear it.
+ */
 void safeSetErrorFlag(uint32_t flag, bool set) {
   mutex_enter_blocking(&comm_mutex);
   bool was_set = (core_comm.error_flags & flag) != 0;
@@ -78,6 +98,11 @@ void safeSetErrorFlag(uint32_t flag, bool set) {
   mutex_exit(&comm_mutex);
 }
 
+/**
+ * @brief Prints a formatted string to the serial port in a thread-safe manner.
+ * @param format The format string.
+ * @param ... The arguments for the format string.
+ */
 void safeSerialPrintf(const char* format, ...) {
   va_list args;
   va_start(args, format);
@@ -89,6 +114,11 @@ void safeSerialPrintf(const char* format, ...) {
   va_end(args);
 }
 
+/**
+ * @brief Prints a formatted string followed by a newline to the serial port in a thread-safe manner.
+ * @param format The format string.
+ * @param ... The arguments for the format string.
+ */
 void safeSerialPrintfln(const char* format, ...) {
   va_list args;
   va_start(args, format);
@@ -100,24 +130,40 @@ void safeSerialPrintfln(const char* format, ...) {
   va_end(args);
 }
 
+/**
+ * @brief Prints a string followed by a newline to the serial port in a thread-safe manner.
+ * @param msg The string to print.
+ */
 void safeSerialPrintln(const String& msg) {
   mutex_enter_blocking(&serial_mutex);
   Serial.println(msg);
   mutex_exit(&serial_mutex);
 }
 
+/**
+ * @brief Prints a string to the serial port in a thread-safe manner.
+ * @param msg The string to print.
+ */
 void safeSerialPrint(const String& msg) {
   mutex_enter_blocking(&serial_mutex);
   Serial.print(msg);
   mutex_exit(&serial_mutex);
 }
 
+/**
+ * @brief Sets the Core 1 ready flag in a thread-safe manner.
+ * @param value The value to set the flag to.
+ */
 void safeSetCore1Ready(bool value) {
   mutex_enter_blocking(&comm_mutex);
   core_comm.core1_ready = value;
   mutex_exit(&comm_mutex);
 }
 
+/**
+ * @brief Gets the Core 1 ready flag in a thread-safe manner.
+ * @return The value of the Core 1 ready flag.
+ */
 bool safeGetCore1Ready() {
   mutex_enter_blocking(&comm_mutex);
   bool val = core_comm.core1_ready;
@@ -125,12 +171,19 @@ bool safeGetCore1Ready() {
   return val;
 }
 
+/**
+ * @brief Sets the LiDAR initialized flag in a thread-safe manner.
+ * @param value The value to set the flag to.
+ */
 void safeSetLidarInitialized(bool value) {
   mutex_enter_blocking(&comm_mutex);
   core_comm.lidar_initialized = value;
   mutex_exit(&comm_mutex);
 }
 
+/**
+ * @brief Increments the frames received counter in a thread-safe manner.
+ */
 void safeIncrementFramesReceived() {
   mutex_enter_blocking(&comm_mutex);
   core_comm.frames_received++;
@@ -138,12 +191,18 @@ void safeIncrementFramesReceived() {
   mutex_exit(&comm_mutex);
 }
 
+/**
+ * @brief Increments the frames processed counter in a thread-safe manner.
+ */
 void safeIncrementFramesProcessed() {
   mutex_enter_blocking(&comm_mutex);
   core_comm.frames_processed++;
   mutex_exit(&comm_mutex);
 }
 
+/**
+ * @brief Increments the dropped frames counter in a thread-safe manner.
+ */
 void safeIncrementDroppedFrames() {
   mutex_enter_blocking(&comm_mutex);
   core_comm.dropped_frames++;
@@ -151,6 +210,10 @@ void safeIncrementDroppedFrames() {
   safeSetErrorFlag(ERROR_FLAG_BUFFER_OVERFLOW, true);
 }
 
+/**
+ * @brief Checks if debug output is enabled in a thread-safe manner.
+ * @return True if debug output is enabled, false otherwise.
+ */
 bool isDebugEnabled() {
   mutex_enter_blocking(&comm_mutex);
   bool debug_enabled = core_comm.enable_debug;
@@ -158,6 +221,10 @@ bool isDebugEnabled() {
   return debug_enabled;
 }
 
+/**
+ * @brief Updates the adaptive timeout based on the observed frame rate.
+ * @param observed_frame_rate The observed frame rate.
+ */
 void updateAdaptiveTimeout(uint32_t observed_frame_rate) {
   if (observed_frame_rate > 0) {
     timing_info.adaptive_timeout_us = (3000000 / observed_frame_rate);
@@ -167,8 +234,18 @@ void updateAdaptiveTimeout(uint32_t observed_frame_rate) {
     timing_info.adaptive_timeout_us = FRAME_TIMEOUT_US;
   }
 }
+/** @} */
 
-// ===== ENHANCED BUFFER MANAGEMENT =====
+/**
+ * @brief Enhanced buffer management functions.
+ * @{
+ */
+
+/**
+ * @brief Pushes a LiDAR frame to the circular buffer in a thread-safe manner.
+ * @param frame The LiDAR frame to push.
+ * @return True if the frame was pushed successfully, false if the buffer was full.
+ */
 bool atomicBufferPush(const LidarFrame& frame) {
   bool success = false;
   bool should_set_warning = false;
@@ -216,6 +293,11 @@ bool atomicBufferPush(const LidarFrame& frame) {
   return success;
 }
 
+/**
+ * @brief Pops a LiDAR frame from the circular buffer in a thread-safe manner.
+ * @param frame A reference to a LidarFrame object to store the popped frame.
+ * @return True if a frame was popped successfully, false if the buffer was empty.
+ */
 bool atomicBufferPop(LidarFrame& frame) {
   bool success = false;
   mutex_enter_blocking(&buffer_mutex);
@@ -236,9 +318,14 @@ bool atomicBufferPop(LidarFrame& frame) {
   return success;
 }
 
+/**
+ * @brief Gets the number of frames currently in the buffer in a thread-safe manner.
+ * @return The number of frames in the buffer.
+ */
 uint8_t getBufferUtilization() {
   mutex_enter_blocking(&buffer_mutex);
   uint8_t count = buffer_count;
   mutex_exit(&buffer_mutex);
   return count;
 }
+/** @} */
