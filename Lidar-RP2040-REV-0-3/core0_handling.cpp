@@ -1,19 +1,27 @@
 /**
  * @file core0_handling.cpp
- * @brief Core 0 LiDAR data acquisition and serial communication handling
- * @version 6.3.2
- * @date September 06, 2025 
- * @revision Rev 2 - Config mode health monitoring skip
- * @changes:
- *   - Skip health monitoring when config_mode_active is true
- *   - Suppress buffer overflow messages during config mode
- *   - Maintain LiDAR data flow isolation during configuration
+ * @brief This file contains the implementation for functions that handle Core 0 operations.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details The functions in this file are responsible for managing the main loop of Core 0,
+ * which includes processing the Core 0 state machine, handling LiDAR serial data,
+ * and performing health checks and recovery operations for the LiDAR sensor.
  */
 
 #include "core0_handling.h"
 #include "globals.h"
 #include "status.h"
 
+/**
+ * @brief Main handler for the Core 0 loop.
+ *
+ * @details This function is called repeatedly in the main loop of Core 0. It is responsible for
+ * orchestrating the tasks performed by Core 0. It processes the Core 0 state machine,
+ * and if Core 1 is ready and Core 0 is in the ready state, it processes incoming
+ * LiDAR serial data. It also periodically reports the status of Core 0.
+ */
 void loop0_handler() {
   processCore0StateMachine();
   if (safeGetCore1Ready() && core0_state == CORE0_READY) {
@@ -29,6 +37,16 @@ void loop0_handler() {
   yield();
 }
 
+/**
+ * @brief Processes the state machine for Core 0.
+ *
+ * @details This function manages the different states of Core 0. It handles the lifecycle
+ * of the LiDAR sensor, from startup and initialization to ready state and health
+ * monitoring. The state machine transitions through various stages to configure
+ * the LiDAR sensor, including setting the baud rate and enabling the data stream.
+ * Once the sensor is operational, it monitors for communication timeouts and
+ * triggers recovery mechanisms if necessary.
+ */
 void processCore0StateMachine() {
     uint32_t current_time = millis();
     switch (core0_state) {
@@ -237,7 +255,17 @@ void processCore0StateMachine() {
     }
 }
 
-// Complete processLidarSerial function with fixed performance reporting
+/**
+ * @brief Processes incoming serial data from the LiDAR sensor.
+ *
+ * @details This function is responsible for reading and parsing the data stream from the LiDAR
+ * sensor. It synchronizes with the data frames by looking for a specific byte
+ * pattern. Once a frame is received, it validates the checksum and then extracts
+ * the distance, strength, and temperature information. Valid frames are pushed
+ * into a shared buffer for Core 1 to process. The function also includes
+ * performance monitoring and error handling, such as detecting frame corruption
+ * and timeouts.
+ */
 void processLidarSerial() {
   static uint8_t sync_state = 0, frame_data[9], frame_index = 0;
   static uint32_t frame_start_time = 0, last_frame_debug = 0;
@@ -465,6 +493,21 @@ void processLidarSerial() {
   }
 }
 
+/**
+ * @brief Attempts to recover the LiDAR sensor from an error state.
+ *
+ * @details This function is called when a communication timeout or other critical error is
+ * detected. It implements a multi-level recovery strategy. Depending on the
+ * `recovery_level` parameter, it can perform a buffer flush, a soft reset of
+ * the serial port, or trigger a full re-initialization of the LiDAR sensor.
+ * The function is designed to be non-blocking and will only attempt recovery
+ * periodically to avoid flooding the system with recovery attempts.
+ *
+ * @param recovery_level The level of recovery to attempt. This can be
+ *                       `RECOVERY_LEVEL_BUFFER_FLUSH`, `RECOVERY_LEVEL_SOFT_RESET`,
+ *                       or `RECOVERY_LEVEL_FULL_REINIT`.
+ * @return True if a recovery action was taken or triggered, false otherwise.
+ */
 bool attemptRecovery(uint8_t recovery_level) {
   static uint32_t last_recovery_attempt = 0;
   uint32_t current_time = millis();
@@ -535,6 +578,19 @@ bool attemptRecovery(uint8_t recovery_level) {
   return true;
 }
 
+/**
+ * @brief Checks the health of the LiDAR sensor.
+ *
+ * @details This function performs a basic health check of the LiDAR sensor by checking if
+ * there is any data available in the serial buffer. In a healthy state, the
+ * sensor should be continuously streaming data. If the buffer is empty, it
+ * may indicate a problem with the sensor or the connection. This function
+ * provides a non-intrusive way to monitor the sensor's status without sending
+ * any commands that might interrupt the data flow.
+ *
+ * @return True if the sensor is considered healthy (i.e., data is available),
+ *         false otherwise.
+ */
 bool checkLidarSensorHealth() {
   if (isDebugEnabled()) {
     safeSerialPrintln("Core 0: Checking sensor health by monitoring data stream...");

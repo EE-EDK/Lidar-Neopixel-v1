@@ -1,28 +1,31 @@
 /**
  * @file neopixel_integration.cpp
- * @brief NeoPixel LED control implementation with distance-based color gradient
- * @version 6.3.2
- * @date September 06, 2025 
- * @revision Rev 2 - Complete color scheme and trigger flash rework
- * @changes:
- *   - Fixed breathing animation timing and math
- *   - Changed to distance-based red→yellow→blue heat map gradient
- *   - Added velocity-based saturation modulation (approaching=vivid, receding=muted)
- *   - Changed trigger flash to 5Hz for 3 seconds, tied to TriggerLatch state
- *   - Trigger flash has absolute priority over all other displays
+ * @brief This file contains the implementation for the NeoPixel integration.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details This file provides the implementation for controlling a NeoPixel LED to
+ * provide visual feedback on the system's status.
  */
 
 #include "neopixel_integration.h"
-#include "trigger.h"  // REV 2: Added for TriggerLatch integration
+#include "trigger.h"
 
 // Global instance
 NeoPixelController neopixel;
 
+/**
+ * @brief Construct a new NeoPixelController::NeoPixelController object
+ */
 NeoPixelController::NeoPixelController()
   : strip(nullptr), initialized(false), trigger_flash_requested(false),
     smoothed_distance(0), smoothed_strength(0), smoothing_initialized(false) {
 }
 
+/**
+ * @brief Destroy the NeoPixelController::NeoPixelController object
+ */
 NeoPixelController::~NeoPixelController() {
   if (strip) {
     delete strip;
@@ -30,6 +33,12 @@ NeoPixelController::~NeoPixelController() {
   }
 }
 
+/**
+ * @brief Initializes the NeoPixel.
+ * @param pin The pin the NeoPixel is connected to.
+ * @param num_pixels The number of pixels in the strip.
+ * @return True if initialization was successful, false otherwise.
+ */
 bool NeoPixelController::init(uint8_t pin, uint8_t num_pixels) {
   if (strip) {
     delete strip;
@@ -53,6 +62,12 @@ bool NeoPixelController::init(uint8_t pin, uint8_t num_pixels) {
   return true;
 }
 
+/**
+ * @brief Sets the color of the NeoPixel.
+ * @param r The red component of the color.
+ * @param g The green component of the color.
+ * @param b The blue component of the color.
+ */
 void NeoPixelController::setColor(uint8_t r, uint8_t g, uint8_t b) {
   if (!isReady()) return;
 
@@ -60,6 +75,9 @@ void NeoPixelController::setColor(uint8_t r, uint8_t g, uint8_t b) {
   strip->show();
 }
 
+/**
+ * @brief Clears the NeoPixel.
+ */
 void NeoPixelController::clear() {
   if (!isReady()) return;
 
@@ -67,16 +85,29 @@ void NeoPixelController::clear() {
   strip->show();
 }
 
-// ===== HIGH-LEVEL INTERFACE FUNCTIONS =====
-
+/**
+ * @brief Initializes the NeoPixel system.
+ * @param pin The pin the NeoPixel is connected to.
+ * @return True if initialization was successful, false otherwise.
+ */
 bool initNeoPixel(uint8_t pin) {
   return neopixel.init(pin, 1);  // Single pixel
 }
 
+/**
+ * @brief Triggers a flash of the NeoPixel.
+ */
 void triggerNeoPixelFlash() {
   neopixel.requestTriggerFlash();
 }
 
+/**
+ * @brief Updates the NeoPixel status based on the current mode.
+ * @param mode The NeoPixel mode to set.
+ * @param distance The current distance measurement.
+ * @param velocity The current velocity measurement.
+ * @param strength The current signal strength.
+ */
 void updateNeoPixelStatus(NeoPixelMode mode, uint16_t distance, float velocity, uint8_t strength) {
   if (!neopixel.isReady()) return;
 
@@ -159,8 +190,13 @@ void updateNeoPixelStatus(NeoPixelMode mode, uint16_t distance, float velocity, 
   neopixel.setColor(r, g, b);
 }
 
-// ===== UTILITY FUNCTIONS =====
-
+/**
+ * @brief Calculates the color for the distance display.
+ * @param distance_cm The distance in centimeters.
+ * @param velocity_cm_s The velocity in centimeters per second.
+ * @param signal_strength The signal strength.
+ * @return The calculated color in 32-bit format.
+ */
 uint32_t calculateDistanceColor(uint16_t distance_cm, float velocity_cm_s, uint8_t signal_strength) {
   // Apply smoothing to reduce noise and flickering
   if (!neopixel.smoothing_initialized) {
@@ -229,6 +265,12 @@ uint32_t calculateDistanceColor(uint16_t distance_cm, float velocity_cm_s, uint8
   return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
 }
 
+/**
+ * @brief Gets the color for the trigger flash.
+ * @param time_ms The current time in milliseconds.
+ * @param trigger_active True if the trigger is active, false otherwise.
+ * @return The calculated color in 32-bit format.
+ */
 uint32_t getTriggerFlashColor(uint32_t time_ms, bool trigger_active) {
   if (!trigger_active) {
     return 0x00000000;  // Off when trigger not active
@@ -246,6 +288,12 @@ uint32_t getTriggerFlashColor(uint32_t time_ms, bool trigger_active) {
   }
 }
 
+/**
+ * @brief Gets the color for a given status mode.
+ * @param mode The status mode.
+ * @param time_ms The current time in milliseconds.
+ * @return The calculated color in 32-bit format.
+ */
 uint32_t getStatusColor(NeoPixelMode mode, uint32_t time_ms) {
   switch (mode) {
     case NEO_INITIALIZING:

@@ -1,5 +1,27 @@
+/**
+ * @file calculations.cpp
+ * @brief This file contains the implementation of the AdaptiveVelocityCalculator class.
+ * @author The Lidar-RP2040-REV-0-3 Team
+ * @version 1.0
+ * @date 2025-09-06
+ *
+ * @details The AdaptiveVelocityCalculator class is designed to calculate the velocity of an object
+ * based on a series of LiDAR frames. This implementation file provides the logic for
+ * calculating velocity and managing the history of LiDAR frames.
+ */
+
 #include "calculations.h"
 
+/**
+ * @brief Calculates the velocity based on the stored LiDAR frames.
+ *
+ * @details This function calculates the velocity of an object by analyzing the distance and time
+ * differences between consecutive LiDAR frames stored in the history. It uses a median
+ * filter to reduce noise and provides a more stable velocity reading. It also includes
+ * logic to handle deadbands and error conditions.
+ *
+ * @return The calculated velocity in cm/s.
+ */
 float AdaptiveVelocityCalculator::calculateVelocity() {
     if (count < 5) return 0.0f;
     float velocities[5];
@@ -60,6 +82,15 @@ if (small_movement_count >= (valid_velocities / 2 + 1)) {
     return last_velocity;
 }
 
+/**
+ * @brief Adds a new LiDAR frame to the history.
+ *
+ * @details This function adds a new LidarFrame to the beginning of the history array, shifting
+ * the older frames back. The history is used by the calculateVelocity() function to
+ * determine the object's velocity.
+ *
+ * @param frame The LidarFrame to add to the history.
+ */
 void AdaptiveVelocityCalculator::addFrame(const LidarFrame& frame) {
     for (int i = MAX_HISTORY - 1; i > 0; i--) {
       history[i] = history[i - 1];
