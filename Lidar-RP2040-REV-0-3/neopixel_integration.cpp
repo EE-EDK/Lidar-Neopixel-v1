@@ -249,22 +249,29 @@ uint32_t getTriggerFlashColor(uint32_t time_ms, bool trigger_active) {
 uint32_t getStatusColor(NeoPixelMode mode, uint32_t time_ms) {
   switch (mode) {
     case NEO_INITIALIZING:
-      {
-        // Simplified breathing blue animation (2 second cycle)
-        uint32_t cycle_time = time_ms % 2000;  // 0 to 1999
-        float phase = cycle_time / 2000.0f;    // 0.0 to 1.0
-
-        // Simple triangle wave instead of sine for better compatibility
-        float brightness;
+    {
+        // Slow, deep breathing blue animation (3 second cycle)
+        uint32_t cycle_time = time_ms % 3000;  // 0 to 2999 (slow cycle)
+        float phase = cycle_time / 3000.0f;    // 0.0 to 1.0
+        
+        // Smooth breathing curve using parabolic function
+        float breath_curve;
         if (phase < 0.5f) {
-          brightness = 0.3f + 1.4f * phase;  // 0.3 to 1.0
+            // Inhale: smooth acceleration to peak
+            float t = phase * 2.0f;  // 0.0 to 1.0
+            breath_curve = t * t;    // Parabolic curve (smooth start)
         } else {
-          brightness = 1.7f - 1.4f * phase;  // 1.0 to 0.3
+            // Exhale: smooth deceleration from peak
+            float t = (1.0f - phase) * 2.0f;  // 1.0 to 0.0
+            breath_curve = t * t;             // Parabolic curve (smooth end)
         }
-
-        uint8_t blue = (uint8_t)(200 * brightness);
+        
+        // Very dramatic brightness range for deep breathing effect
+        float brightness = 0.02f + 0.98f * breath_curve;  // 0.02 to 1.0 (very dramatic)
+        
+        uint8_t blue = (uint8_t)(255 * brightness);
         return (uint32_t)blue;  // 0x000000BB
-      }
+    }
 
     case NEO_CONFIG:
       {
