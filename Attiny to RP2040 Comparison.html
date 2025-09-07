@@ -96,6 +96,25 @@
         .control-button:hover {
             background-color: #415A77;
         }
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            cursor: pointer;
+            width: 100%;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            background: #415A77;
+            height: 0.25rem;
+            border-radius: 0.25rem;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            margin-top: -6px;
+            background-color: #F7B801;
+            height: 20px;
+            width: 10px;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -104,7 +123,7 @@
         <section id="simulation" class="mb-20 bg-1B263B rounded-lg shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-415A77">
                 <h2 class="text-2xl font-bold text-center text-white">Interactive System Visualization</h2>
-                <p class="text-sm text-778DA9 text-center">A simulation of the RP2040 controller detecting an approaching object.</p>
+                <p class="text-sm text-778DA9 text-center">A simulation of the RP2040 controller detecting an approaching vehicle.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-4">
                 <div id="simulation-container" class="md:col-span-3 w-full h-full"></div>
@@ -116,8 +135,12 @@
                                 <label class="text-xs font-semibold text-778DA9">DISTANCE (cm)</label>
                                 <p id="dist-readout" class="text-2xl font-mono font-bold text-white">---</p>
                             </div>
+                             <div>
+                                <label class="text-xs font-semibold text-778DA9">STRENGTH</label>
+                                <p id="strength-readout" class="text-2xl font-mono font-bold text-white">---</p>
+                            </div>
                             <div>
-                                <label class="text-xs font-semibold text-778DA9">VELOCITY (cm/s)</label>
+                                <label class="text-xs font-semibold text-778DA9">VELOCITY (MPH)</label>
                                 <p id="velo-readout" class="text-2xl font-mono font-bold text-white">---</p>
                             </div>
                             <div>
@@ -126,11 +149,45 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-bold text-lg mb-2 text-white">Parameters</h3>
+                         <div class="space-y-4">
+                            <div>
+                                <label for="speed-slider" class="text-xs font-semibold text-778DA9 flex justify-between">
+                                    <span>DRONE SPEED (MPH)</span>
+                                    <span id="speed-value" class="font-bold text-white">10 MPH</span>
+                                </label>
+                                <input type="range" id="speed-slider" min="2" max="45" value="10" step="1" class="w-full">
+                            </div>
+                            <div>
+                                <label for="distance-slider" class="text-xs font-semibold text-778DA9 flex justify-between">
+                                    <span>DISTANCE THRESHOLD</span>
+                                    <span id="dist-threshold-value" class="font-bold text-white">50 cm</span>
+                                </label>
+                                <input type="range" id="distance-slider" min="10" max="150" value="50" class="w-full">
+                            </div>
+                            <div>
+                                <label for="velocity-slider" class="text-xs font-semibold text-778DA9 flex justify-between">
+                                    <span>VELOCITY THRESHOLD (MPH)</span>
+                                    <span id="velo-threshold-value" class="font-bold text-white">-5 MPH</span>
+                                </label>
+                                <input type="range" id="velocity-slider" min="-45" max="-2" value="-5" step="1" class="w-full">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-6">
                         <h3 class="font-bold text-lg mb-4 text-white">Controls</h3>
                         <div class="flex space-x-2">
-                            <button id="play-pause-btn" class="control-button p-3 rounded-md flex-grow flex items-center justify-center"><i class="gg-play-button"></i></button>
-                            <button id="reset-btn" class="control-button p-3 rounded-md flex-grow flex items-center justify-center"><i class="gg-redo"></i></button>
+                            <button id="play-pause-btn" class="control-button p-3 rounded-md flex-grow flex items-center justify-center space-x-2">
+                                <i id="play-pause-icon" class="gg-play-button"></i>
+                                <span id="play-pause-label">Play</span>
+                            </button>
+                            <button id="reset-btn" class="control-button p-3 rounded-md flex-grow flex items-center justify-center space-x-2">
+                                <i class="gg-redo"></i>
+                                <span>Reset</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -377,6 +434,8 @@
             darkBlue: '#0D1B2A', gunmetal: '#1B263B', shadowBlue: '#415A77',
             slateGray: '#778DA9', platinum: '#E0E1DD', accentYellow: '#F7B801'
         };
+        const CMPS_TO_MPH = 0.0223694;
+        const MPH_TO_CMPS = 1 / CMPS_TO_MPH;
 
         const chartTooltipConfig = {
             plugins: {
@@ -401,25 +460,40 @@
         
         const simulationContainer = document.getElementById('simulation-container');
         const distReadout = document.getElementById('dist-readout');
+        const strengthReadout = document.getElementById('strength-readout');
         const veloReadout = document.getElementById('velo-readout');
         const statusReadout = document.getElementById('status-readout');
         const playPauseBtn = document.getElementById('play-pause-btn');
+        const playPauseIcon = document.getElementById('play-pause-icon');
+        const playPauseLabel = document.getElementById('play-pause-label');
         const resetBtn = document.getElementById('reset-btn');
+        const distanceSlider = document.getElementById('distance-slider');
+        const velocitySlider = document.getElementById('velocity-slider');
+        const speedSlider = document.getElementById('speed-slider');
+        const distThresholdValue = document.getElementById('dist-threshold-value');
+        const veloThresholdValue = document.getElementById('velo-threshold-value');
+        const speedValue = document.getElementById('speed-value');
 
-        let scene, camera, renderer, drone, target, triggerZone, lidarBeam;
+        let scene, camera, renderer, drone, vehicle, triggerZone, lidarBeam;
+        let particles = [];
         let isPlaying = false;
         let lastTime = 0;
-        let droneVelocity = -150; 
-        const initialDroneZ = 200;
-        const distanceThreshold = 50;
-        const velocityThreshold = -100;
+        let droneSpeed = 10 * MPH_TO_CMPS; 
+        const VISUAL_SPEED_FACTOR = 0.1;
+        const vehiclePosition = new THREE.Vector3(100, 0, -100);
+        const droneStartPosition = new THREE.Vector3(-150, 20, 200);
+        const droneDirection = new THREE.Vector3().subVectors(vehiclePosition, droneStartPosition).normalize();
+
+        let distanceThreshold = 50;
+        let velocityThreshold = -5 * MPH_TO_CMPS;
+        const strengthThreshold = 200;
 
         function initSimulation() {
             scene = new THREE.Scene();
             const aspectRatio = simulationContainer.clientWidth / simulationContainer.clientHeight;
-            const viewSize = 300;
+            const viewSize = 500;
             camera = new THREE.OrthographicCamera(-aspectRatio * viewSize / 2, aspectRatio * viewSize / 2, viewSize / 2, -viewSize / 2, 1, 1000);
-            camera.position.set(0, 100, 0);
+            camera.position.set(50, 150, 50);
             camera.lookAt(0, 0, 0);
 
             renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -427,36 +501,56 @@
             renderer.setClearColor(0x070e17);
             simulationContainer.appendChild(renderer.domElement);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
             directionalLight.position.set(50, 100, 25);
             scene.add(directionalLight);
 
-            const gridHelper = new THREE.GridHelper(400, 20, 0x1B263B, 0x1B263B);
-            gridHelper.rotation.x = Math.PI / 2;
+            const gridHelper = new THREE.GridHelper(500, 25, 0x1B263B, 0x1B263B);
             scene.add(gridHelper);
 
-            const droneBody = new THREE.Mesh(new THREE.BoxGeometry(20, 5, 20), new THREE.MeshLambertMaterial({ color: vibrantPalette.platinum }));
-            const droneArm1 = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 30), new THREE.MeshLambertMaterial({ color: vibrantPalette.slateGray }));
-            droneArm1.position.set(10, 0, 0);
-            const droneArm2 = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 30), new THREE.MeshLambertMaterial({ color: vibrantPalette.slateGray }));
-            droneArm2.position.set(-10, 0, 0);
+            const droneBody = new THREE.Mesh(new THREE.CylinderGeometry(12, 12, 6, 8), new THREE.MeshLambertMaterial({ color: vibrantPalette.platinum }));
+            droneBody.rotation.y = Math.PI / 8;
+            const droneArm = new THREE.BoxGeometry(3, 2, 40);
+            const armMaterial = new THREE.MeshLambertMaterial({ color: vibrantPalette.slateGray });
+            const droneArm1 = new THREE.Mesh(droneArm, armMaterial);
+            droneArm1.rotation.y = Math.PI / 4;
+            const droneArm2 = new THREE.Mesh(droneArm, armMaterial);
+            droneArm2.rotation.y = -Math.PI / 4;
+            const propGeom = new THREE.CylinderGeometry(5, 5, 1, 6);
+            const propMaterial = new THREE.MeshLambertMaterial({ color: vibrantPalette.shadowBlue });
+            const prop1 = new THREE.Mesh(propGeom, propMaterial); prop1.position.set(14, 2, 14);
+            const prop2 = new THREE.Mesh(propGeom, propMaterial); prop2.position.set(-14, 2, 14);
+            const prop3 = new THREE.Mesh(propGeom, propMaterial); prop3.position.set(14, 2, -14);
+            const prop4 = new THREE.Mesh(propGeom, propMaterial); prop4.position.set(-14, 2, -14);
             drone = new THREE.Group();
-            drone.add(droneBody, droneArm1, droneArm2);
-            drone.position.z = initialDroneZ;
+            drone.add(droneBody, droneArm1, droneArm2, prop1, prop2, prop3, prop4);
             scene.add(drone);
             
-            target = new THREE.Mesh(new THREE.BoxGeometry(40, 40, 40), new THREE.MeshLambertMaterial({ color: vibrantPalette.shadowBlue }));
-            scene.add(target);
+            const chassis = new THREE.Mesh(new THREE.BoxGeometry(30, 10, 60), new THREE.MeshLambertMaterial({ color: vibrantPalette.shadowBlue }));
+            chassis.position.y = 10;
+            const cabin = new THREE.Mesh(new THREE.BoxGeometry(28, 10, 30), new THREE.MeshLambertMaterial({ color: vibrantPalette.slateGray }));
+            cabin.position.y = 20; cabin.position.z = -5;
+            const wheelGeom = new THREE.CylinderGeometry(6, 6, 4, 12);
+            const wheelMat = new THREE.MeshLambertMaterial({ color: '#333333' });
+            const wheel1 = new THREE.Mesh(wheelGeom, wheelMat); wheel1.rotation.z = Math.PI / 2; wheel1.position.set(17, 6, 20);
+            const wheel2 = new THREE.Mesh(wheelGeom, wheelMat); wheel2.rotation.z = Math.PI / 2; wheel2.position.set(-17, 6, 20);
+            const wheel3 = new THREE.Mesh(wheelGeom, wheelMat); wheel3.rotation.z = Math.PI / 2; wheel3.position.set(17, 6, -20);
+            const wheel4 = new THREE.Mesh(wheelGeom, wheelMat); wheel4.rotation.z = Math.PI / 2; wheel4.position.set(-17, 6, -20);
+            vehicle = new THREE.Group();
+            vehicle.add(chassis, cabin, wheel1, wheel2, wheel3, wheel4);
+            vehicle.position.copy(vehiclePosition);
+            scene.add(vehicle);
             
-            const triggerGeom = new THREE.BoxGeometry(100, 40, distanceThreshold);
-            triggerZone = new THREE.Mesh(triggerGeom, new THREE.MeshBasicMaterial({ color: vibrantPalette.accentYellow, transparent: true, opacity: 0.1, wireframe: true }));
-            triggerZone.position.z = distanceThreshold / 2;
+            const triggerGeom = new THREE.CircleGeometry(1, 32);
+            triggerZone = new THREE.Mesh(triggerGeom, new THREE.MeshBasicMaterial({ color: vibrantPalette.accentYellow, transparent: true, opacity: 0.1, side: THREE.DoubleSide }));
+            triggerZone.rotation.x = -Math.PI / 2;
+            triggerZone.position.copy(vehicle.position);
+            triggerZone.position.y = 0.1;
             scene.add(triggerZone);
 
-            lidarBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1, 8), new THREE.MeshBasicMaterial({ color: vibrantPalette.accentYellow }));
-            lidarBeam.rotation.x = Math.PI / 2;
+            lidarBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 2, 1, 8), new THREE.MeshBasicMaterial({ color: vibrantPalette.accentYellow, transparent: true }));
             lidarBeam.visible = false;
             scene.add(lidarBeam);
 
@@ -464,31 +558,78 @@
             playPauseBtn.addEventListener('click', togglePlay);
             resetBtn.addEventListener('click', resetSimulation);
 
+            speedSlider.addEventListener('input', (e) => {
+                const mph = parseFloat(e.target.value);
+                speedValue.textContent = `${mph} MPH`;
+                droneSpeed = mph * MPH_TO_CMPS;
+            });
+            distanceSlider.addEventListener('input', (e) => {
+                distanceThreshold = parseFloat(e.target.value);
+                distThresholdValue.textContent = `${distanceThreshold} cm`;
+                triggerZone.scale.set(distanceThreshold, distanceThreshold, 1);
+            });
+            velocitySlider.addEventListener('input', (e) => {
+                const mph = parseFloat(e.target.value);
+                veloThresholdValue.textContent = `${mph} MPH`;
+                velocityThreshold = mph * MPH_TO_CMPS;
+            });
+
             resetSimulation();
             animate();
         }
 
         function togglePlay() {
             isPlaying = !isPlaying;
-            playPauseBtn.innerHTML = isPlaying ? '<i class="gg-pause"></i>' : '<i class="gg-play-button"></i>';
+            updatePlayButton();
+        }
+        
+        function updatePlayButton() {
+            playPauseIcon.className = isPlaying ? 'gg-pause' : 'gg-play-button';
+            playPauseLabel.textContent = isPlaying ? 'Pause' : 'Play';
         }
 
         function resetSimulation() {
             isPlaying = false;
-            playPauseBtn.innerHTML = '<i class="gg-play-button"></i>';
-            drone.position.z = initialDroneZ;
+            updatePlayButton();
+            drone.position.copy(droneStartPosition);
+            drone.visible = true;
             lastTime = 0;
             distReadout.textContent = '---';
+            strengthReadout.textContent = '---';
             veloReadout.textContent = '---';
             statusReadout.textContent = 'INACTIVE';
             statusReadout.style.color = vibrantPalette.slateGray;
             triggerZone.material.color.set(vibrantPalette.accentYellow);
             triggerZone.material.opacity = 0.1;
+            triggerZone.scale.set(distanceThreshold, distanceThreshold, 1);
+
+            particles.forEach(p => scene.remove(p));
+            particles = [];
+        }
+
+        function createExplosion(position) {
+            const particleCount = 100;
+            const particleMaterial = new THREE.MeshBasicMaterial({ color: vibrantPalette.accentYellow, transparent: true });
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = new THREE.Mesh(new THREE.BoxGeometry(2,2,2), particleMaterial.clone());
+                particle.position.copy(position);
+                
+                particle.velocity = new THREE.Vector3(
+                    (Math.random() - 0.5) * 50,
+                    (Math.random() - 0.5) * 50,
+                    (Math.random() - 0.5) * 50
+                );
+                particle.lifespan = 1 + Math.random();
+                
+                particles.push(particle);
+                scene.add(particle);
+            }
         }
 
         function onWindowResize() {
             const aspectRatio = simulationContainer.clientWidth / simulationContainer.clientHeight;
-            const viewSize = 300;
+            const viewSize = 500;
             camera.left = -aspectRatio * viewSize / 2;
             camera.right = aspectRatio * viewSize / 2;
             camera.top = viewSize / 2;
@@ -504,40 +645,66 @@
             lastTime = now;
 
             if (isPlaying) {
-                drone.position.z += droneVelocity * deltaTime;
-                if (drone.position.z < -200) {
-                    drone.position.z = initialDroneZ;
+                drone.position.addScaledVector(droneDirection, droneSpeed * VISUAL_SPEED_FACTOR * deltaTime);
+                if (drone.position.distanceTo(vehicle.position) < 10) {
+                    drone.position.copy(droneStartPosition);
                 }
             }
+            if (drone.visible) {
+                 drone.lookAt(vehicle.position);
+            }
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.set(drone.position, new THREE.Vector3(0, 0, -1));
-            const intersects = raycaster.intersectObject(target);
+            const distance = Math.max(0, drone.position.distanceTo(vehicle.position) - 30);
+            distReadout.textContent = distance.toFixed(1);
             
-            let distance = 999;
-            if (intersects.length > 0) {
-                distance = intersects[0].distance;
+            const currentVelocityCmps = (isPlaying && drone.visible) ? -droneSpeed : 0;
+            veloReadout.textContent = (currentVelocityCmps * CMPS_TO_MPH).toFixed(1);
+
+            let strength = 0;
+            if (distance < 400) {
+                strength = Math.max(0, 600 - distance * 1.5);
+            }
+            strengthReadout.textContent = strength.toFixed(0);
+
+            if (distance < 999 && drone.visible) {
                 lidarBeam.visible = true;
-                lidarBeam.scale.z = distance;
-                lidarBeam.position.z = drone.position.z - distance / 2;
+                const beamStart = drone.position.clone();
+                const beamEnd = vehicle.position.clone();
+                const beamVector = new THREE.Vector3().subVectors(beamEnd, beamStart);
+                lidarBeam.position.copy(beamStart).addScaledVector(beamVector, 0.5);
+                lidarBeam.scale.y = beamVector.length();
+                lidarBeam.lookAt(beamEnd);
+                lidarBeam.material.opacity = Math.min(0.9, strength / 500);
             } else {
                 lidarBeam.visible = false;
             }
 
-            distReadout.textContent = distance.toFixed(1);
-            veloReadout.textContent = droneVelocity.toFixed(1);
-
-            if (distance < distanceThreshold && droneVelocity < velocityThreshold) {
+            if (drone.visible && distance < distanceThreshold && currentVelocityCmps < velocityThreshold && strength > strengthThreshold) {
                 statusReadout.textContent = 'ACTIVE';
                 statusReadout.style.color = vibrantPalette.accentYellow;
                 triggerZone.material.color.set(0xff0000);
-                triggerZone.material.opacity = 0.5;
-            } else {
+                triggerZone.material.opacity = 0.3;
+                createExplosion(drone.position);
+                drone.visible = false;
+                isPlaying = false;
+                updatePlayButton();
+            } else if (drone.visible) {
                 statusReadout.textContent = 'INACTIVE';
                 statusReadout.style.color = vibrantPalette.slateGray;
                 triggerZone.material.color.set(vibrantPalette.accentYellow);
                 triggerZone.material.opacity = 0.1;
             }
+
+            particles.forEach((p, index) => {
+                p.position.addScaledVector(p.velocity, deltaTime);
+                p.velocity.y -= 9.8 * deltaTime * 2; 
+                p.lifespan -= deltaTime;
+                p.material.opacity = p.lifespan;
+                if (p.lifespan <= 0) {
+                    scene.remove(p);
+                    particles.splice(index, 1);
+                }
+            });
 
             renderer.render(scene, camera);
         }
@@ -579,4 +746,5 @@
     </script>
 </body>
 </html>
+
 
