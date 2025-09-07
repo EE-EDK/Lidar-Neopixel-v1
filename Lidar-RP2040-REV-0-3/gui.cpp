@@ -1,6 +1,7 @@
 #include "gui.h"
 #include "globals.h"
 #include "storage.h"
+#include "neopixel_integration.h"
 
 #define GUI_PACKET_START_BYTE 0x7E
 #define GUI_MAX_PAYLOAD_SIZE 64
@@ -82,6 +83,7 @@ void executeGuiCommand(const GuiPacket& packet) {
           if (pos < 8 && val >= MIN_DISTANCE_CM && val <= MAX_DISTANCE_CM) {
             currentConfig.distance_thresholds[pos] = val;
             sendAck('d');
+            triggerGuiSuccessGlow();
           } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         break;
@@ -95,8 +97,10 @@ void executeGuiCommand(const GuiPacket& packet) {
         break;
     }
     case 'W': {
-        if (saveConfiguration()) sendAck('W');
-        else sendNak(NAK_ERR_EXECUTION_FAIL);
+        if (saveConfiguration()) {
+          sendAck('W');
+          triggerGuiSuccessGlow();
+        } else sendNak(NAK_ERR_EXECUTION_FAIL);
         break;
     }
     case 'w': {
@@ -108,6 +112,7 @@ void executeGuiCommand(const GuiPacket& packet) {
             if (type == 'm') currentConfig.velocity_min_thresholds[pos] = val;
             else currentConfig.velocity_max_thresholds[pos] = val;
             sendAck('w');
+            triggerGuiSuccessGlow();
           } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         break;
@@ -122,6 +127,7 @@ void executeGuiCommand(const GuiPacket& packet) {
           if (pos < 8) {
             memcpy(currentConfig.trigger_rules[pos], &packet.payload[1], 4);
             sendAck('t');
+            triggerGuiSuccessGlow();
           } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         break;
@@ -137,6 +143,7 @@ void executeGuiCommand(const GuiPacket& packet) {
           if (mode == 1 || mode == 2) {
             currentConfig.use_velocity_trigger = (mode == 2);
             sendAck('m');
+            triggerGuiSuccessGlow();
           } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         break;
@@ -155,6 +162,7 @@ void executeGuiCommand(const GuiPacket& packet) {
             core_comm.enable_debug = currentConfig.enable_debug;
             mutex_exit(&comm_mutex);
             sendAck('g');
+            triggerGuiSuccessGlow();
           } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         break;
@@ -162,6 +170,7 @@ void executeGuiCommand(const GuiPacket& packet) {
     case 'R': {
         safeSerialPrintln("Core 1: System reset requested via GUI");
         sendAck('R');
+        triggerGuiSuccessGlow();
         delay(100);
         rp2040.restart();
         break;
@@ -169,6 +178,7 @@ void executeGuiCommand(const GuiPacket& packet) {
     case 'F': {
         safeSerialPrintln("Core 1: Factory reset requested via GUI");
         sendAck('F');
+        triggerGuiSuccessGlow();
         factoryReset();
         break;
     }

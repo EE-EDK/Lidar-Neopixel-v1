@@ -67,6 +67,7 @@ extern NeoPixelController neopixel;
 bool initNeoPixel(uint8_t pin);
 void updateNeoPixelStatus(NeoPixelMode mode, uint16_t distance = 0, float velocity = 0, uint8_t strength = 255);
 void triggerNeoPixelFlash();
+void triggerGuiSuccessGlow();
 
 // Utility functions
 uint32_t calculateDistanceColor(uint16_t distance_cm, float velocity_cm_s, uint8_t signal_strength);

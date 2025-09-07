@@ -17,6 +17,50 @@
 
 // Global instance
 NeoPixelController neopixel;
+static uint32_t gui_glow_start = 0;
+static bool gui_glow_active = false;
+
+void triggerGuiSuccessGlow() {
+  gui_glow_start = millis();
+  gui_glow_active = true;
+}
+
+uint32_t getConfigColorWithGlow(uint32_t base_time) {
+  if (!gui_glow_active) {
+    // Normal purple flashing
+    bool on = (base_time % 1000) < 500;
+    return on ? 0x00800080 : 0x00000000;  // Purple or off
+  }
+
+  uint32_t glow_elapsed = millis() - gui_glow_start;
+
+  if (glow_elapsed > 1200) {  // 1.2 second total glow
+    gui_glow_active = false;
+    bool on = (base_time % 1000) < 500;
+    return on ? 0x00800080 : 0x00000000;  // Return to purple
+  }
+
+  // Calculate green glow intensity
+  float green_intensity = 0.0f;
+  if (glow_elapsed < 500) {
+    // Phase 1: Brighten (0 to 500ms)
+    green_intensity = glow_elapsed / 500.0f;  // 0.0 to 1.0
+  } else if (glow_elapsed < 700) {
+    // Phase 2: Peak (500 to 700ms)
+    green_intensity = 1.0f;
+  } else {
+    // Phase 3: Fade (700 to 1200ms)
+    green_intensity = 1.0f - ((glow_elapsed - 700) / 500.0f);  // 1.0 to 0.0
+  }
+
+  // Blend green glow with purple base
+  bool purple_on = (base_time % 1000) < 500;
+  uint8_t base_r = purple_on ? 128 : 0;
+  uint8_t base_b = purple_on ? 128 : 0;
+  uint8_t green = (uint8_t)(255 * green_intensity);
+
+  return ((uint32_t)base_r << 16) | ((uint32_t)green << 8) | base_b;
+}
 
 NeoPixelController::NeoPixelController()
   : strip(nullptr), initialized(false), trigger_flash_requested(false),
@@ -249,35 +293,33 @@ uint32_t getTriggerFlashColor(uint32_t time_ms, bool trigger_active) {
 uint32_t getStatusColor(NeoPixelMode mode, uint32_t time_ms) {
   switch (mode) {
     case NEO_INITIALIZING:
-    {
+      {
         // Slow, deep breathing blue animation (3 second cycle)
         uint32_t cycle_time = time_ms % 3000;  // 0 to 2999 (slow cycle)
         float phase = cycle_time / 3000.0f;    // 0.0 to 1.0
-        
+
         // Smooth breathing curve using parabolic function
         float breath_curve;
         if (phase < 0.5f) {
-            // Inhale: smooth acceleration to peak
-            float t = phase * 2.0f;  // 0.0 to 1.0
-            breath_curve = t * t;    // Parabolic curve (smooth start)
+          // Inhale: smooth acceleration to peak
+          float t = phase * 2.0f;  // 0.0 to 1.0
+          breath_curve = t * t;    // Parabolic curve (smooth start)
         } else {
-            // Exhale: smooth deceleration from peak
-            float t = (1.0f - phase) * 2.0f;  // 1.0 to 0.0
-            breath_curve = t * t;             // Parabolic curve (smooth end)
+          // Exhale: smooth deceleration from peak
+          float t = (1.0f - phase) * 2.0f;  // 1.0 to 0.0
+          breath_curve = t * t;             // Parabolic curve (smooth end)
         }
-        
+
         // Very dramatic brightness range for deep breathing effect
         float brightness = 0.02f + 0.98f * breath_curve;  // 0.02 to 1.0 (very dramatic)
-        
+
         uint8_t blue = (uint8_t)(255 * brightness);
         return (uint32_t)blue;  // 0x000000BB
-    }
+      }
 
     case NEO_CONFIG:
       {
-        // Purple flashing (1Hz = 1000ms cycle)
-        bool on = (time_ms % 1000) < 500;
-        return on ? 0x00800080 : 0x00000000;  // Purple or off
+        return getConfigColorWithGlow(time_ms);
       }
 
     case NEO_ERROR:
