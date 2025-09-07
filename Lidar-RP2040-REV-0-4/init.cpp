@@ -94,19 +94,3 @@ void main_setup() {
   }
 }
 
-/**
- * @brief Setup handler for Core 1.
- *
- * @details This function is called from Core 1's setup1() function. It is responsible for
- * initializing the functionalities that will be handled by Core 1. It records
- * the start time for Core 1 initialization and kicks off the Core 1 state
- * machine.
- */
-void setup1_handler() {
-  timing_info.core1_init_start = millis();
-  if (isDebugEnabled()) {
-    safeSerialPrintfln("Core 1: Initializing at %lu ms", timing_info.core1_init_start);
-  }
-  core1_state_timer = millis();
-  core1_state = CORE1_STARTUP;
-}

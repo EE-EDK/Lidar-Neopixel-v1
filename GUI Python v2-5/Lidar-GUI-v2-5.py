@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-LiDAR Configuration GUI - Modern Bootstrap Styled Version
-Complete GUI for configuring Arduino LiDAR system parameters with proper communication fixes
+LiDAR Configuration GUI - Complete Version with Globals Tab
+Complete GUI for configuring Arduino LiDAR system parameters with runtime globals configuration
 """
 
 import tkinter as tk
@@ -266,13 +266,31 @@ class LidarGui(tb.Window):
         self.incoming_queue = queue.Queue()
         self.outgoing_queue = queue.Queue()
 
-        # GUI Variables
+        # GUI Variables for main configuration
         self.dist_vars = [tk.IntVar(value=0) for _ in range(8)]
         self.vel_min_vars = [tk.IntVar(value=0) for _ in range(8)]
         self.vel_max_vars = [tk.IntVar(value=0) for _ in range(8)]
         self.mode_var = tk.IntVar(value=1)
         self.debug_var = tk.IntVar(value=0)
         self.trigger_rule_vars = [[tk.IntVar(value=0) for _ in range(4)] for _ in range(8)]
+        
+        # Global configuration variables (safe runtime parameters only)
+        self.global_vars = {
+            'config_mode_timeout_ms': tk.IntVar(value=15000),
+            'min_strength_threshold': tk.IntVar(value=200),
+            'max_recovery_attempts': tk.IntVar(value=3),
+            'recovery_attempt_delay_ms': tk.IntVar(value=5000),
+            'startup_delay_ms': tk.IntVar(value=1000),
+            'lidar_init_step_delay_ms': tk.IntVar(value=500),
+            'lidar_final_delay_ms': tk.IntVar(value=100),
+            'command_response_delay_ms': tk.IntVar(value=50),
+            'debug_output_interval_ms': tk.IntVar(value=150),
+            'status_check_interval_ms': tk.IntVar(value=5000),
+            'performance_report_interval_ms': tk.IntVar(value=10000),
+            'critical_error_report_interval_ms': tk.IntVar(value=2000),
+            'velocity_deadband_threshold_cm_s': tk.DoubleVar(value=1.0),
+            'distance_deadband_threshold_cm': tk.IntVar(value=1),
+        }
         
         self.connected_indicator_on = False
         
@@ -377,14 +395,17 @@ class LidarGui(tb.Window):
 
         config_tab = tb.Frame(notebook, padding=10)
         device_tab = tb.Frame(notebook, padding=10)
+        globals_tab = tb.Frame(notebook, padding=10)
         log_tab = tb.Frame(notebook, padding=10)
 
         notebook.add(config_tab, text="Configuration")
         notebook.add(device_tab, text="Device")
+        notebook.add(globals_tab, text="Globals")
         notebook.add(log_tab, text="Log")
 
         self._create_config_tab(config_tab)
         self._create_device_tab(device_tab)
+        self._create_globals_tab(globals_tab)
         self._create_log_tab(log_tab)
 
     def _create_config_tab(self, parent):
@@ -600,7 +621,129 @@ class LidarGui(tb.Window):
                                       command=self.get_status, bootstyle=INFO)
         update_status_btn.pack(pady=5)
         ToolTip(update_status_btn, "Request a real-time status update from the device")
+
+    def _create_globals_tab(self, parent):
+        """Create the globals configuration tab"""
+        parent.rowconfigure(0, weight=1)
+        parent.columnconfigure(0, weight=1)
         
+        # Main container with scrollbar
+        canvas = tk.Canvas(parent)
+        scrollbar = tb.Scrollbar(parent, orient="vertical", command=canvas.yview)
+        scrollable_frame = tb.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+        
+        # Title and description
+        title_frame = tb.Frame(scrollable_frame)
+        title_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        tb.Label(title_frame, text="Global System Parameters", 
+                 font=('Segoe UI', 16, 'bold')).pack()
+        tb.Label(title_frame, text="Configure runtime system parameters (safe parameters only)", 
+                 style='Note.TLabel').pack()
+        
+        # Control buttons
+        btn_frame = tb.Frame(scrollable_frame)
+        btn_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        self.read_globals_btn = tb.Button(btn_frame, text="Read Globals", 
+                                          command=self.read_globals, bootstyle=PRIMARY)
+        self.read_globals_btn.pack(side=tk.LEFT, padx=5)
+        
+        self.write_globals_btn = tb.Button(btn_frame, text="Write Globals", 
+                                           command=self.write_globals, bootstyle=SUCCESS)
+        self.write_globals_btn.pack(side=tk.LEFT, padx=5)
+        
+        # Global parameters sections (safe runtime parameters only)
+        self._create_globals_section(scrollable_frame, "System Settings", [
+            ('config_mode_timeout_ms', 'Config Mode Timeout (ms)', 'Time to wait for GUI connection on startup (1000-60000)', 'int', 1000, 60000),
+            ('min_strength_threshold', 'Min Strength Threshold', 'Minimum LiDAR signal strength to accept (50-1000)', 'int', 50, 1000),
+        ])
+        
+        self._create_globals_section(scrollable_frame, "Signal Processing", [
+            ('velocity_deadband_threshold_cm_s', 'Velocity Deadband (cm/s)', 'Velocity threshold for noise filtering (0.1-5.0)', 'float', 0.1, 5.0),
+            ('distance_deadband_threshold_cm', 'Distance Deadband (cm)', 'Distance threshold for noise filtering (1-10)', 'int', 1, 10),
+        ])
+        
+        self._create_globals_section(scrollable_frame, "Recovery & Error Handling", [
+            ('max_recovery_attempts', 'Max Recovery Attempts', 'Maximum recovery attempts before giving up (1-10)', 'int', 1, 10),
+            ('recovery_attempt_delay_ms', 'Recovery Attempt Delay (ms)', 'Delay between recovery attempts (1000-30000)', 'int', 1000, 30000),
+        ])
+        
+        self._create_globals_section(scrollable_frame, "Timing & Performance", [
+            ('startup_delay_ms', 'Startup Delay (ms)', 'Initial system startup delay (100-5000)', 'int', 100, 5000),
+            ('lidar_init_step_delay_ms', 'LiDAR Init Step Delay (ms)', 'Delay between LiDAR config commands (100-2000)', 'int', 100, 2000),
+            ('lidar_final_delay_ms', 'LiDAR Final Delay (ms)', 'Final delay before data collection (50-1000)', 'int', 50, 1000),
+            ('command_response_delay_ms', 'Command Response Delay (ms)', 'Delay for command acknowledgment (10-500)', 'int', 10, 500),
+        ])
+        
+        self._create_globals_section(scrollable_frame, "Debug & Monitoring", [
+            ('debug_output_interval_ms', 'Debug Output Interval (ms)', 'Frequency of debug output (50-5000)', 'int', 50, 5000),
+            ('status_check_interval_ms', 'Status Check Interval (ms)', 'Frequency of status reports (1000-30000)', 'int', 1000, 30000),
+            ('performance_report_interval_ms', 'Performance Report Interval (ms)', 'Frequency of performance statistics (5000-60000)', 'int', 5000, 60000),
+            ('critical_error_report_interval_ms', 'Critical Error Report Interval (ms)', 'Rate limiting for critical error messages (500-10000)', 'int', 500, 10000),
+        ])
+        
+        # Warning note
+        warning_frame = tb.Frame(scrollable_frame)
+        warning_frame.pack(fill=tk.X, padx=10, pady=10)
+        
+        warning_text = ("⚠️ NOTE: Safe runtime parameters only.\n"
+                       "• These changes take effect immediately after writing\n"
+                       "• Buffer sizes, frequencies, and protocol constants remain compile-time\n"
+                       "• Use 'Write Globals' to apply changes, 'Save to Flash' to make permanent")
+        tb.Label(warning_frame, text=warning_text, style='Note.TLabel', 
+                 justify=LEFT, foreground='orange').pack()
+
+    def _create_globals_section(self, parent, title, params):
+        """Create a section of global parameters"""
+        section_frame = tb.Labelframe(parent, text=title, padding=10)
+        section_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        for i, param in enumerate(params):
+            param_name = param[0]
+            display_name = param[1]
+            description = param[2]
+            param_type = param[3]
+            
+            row_frame = tb.Frame(section_frame)
+            row_frame.pack(fill=tk.X, pady=2)
+            row_frame.columnconfigure(1, weight=1)
+            
+            # Label
+            label = tb.Label(row_frame, text=display_name, width=25, anchor='w')
+            label.grid(row=0, column=0, padx=5, sticky='w')
+            
+            # Input widget
+            if param_type == 'boolean':
+                widget = tb.Checkbutton(row_frame, variable=self.global_vars[param_name], 
+                                        bootstyle="round-toggle")
+                widget.grid(row=0, column=1, padx=5, sticky='w')
+            elif param_type in ['int', 'float']:
+                widget = tb.Entry(row_frame, textvariable=self.global_vars[param_name], 
+                                  width=15, font=('Segoe UI', 11))
+                widget.grid(row=0, column=1, padx=5, sticky='w')
+                
+                if len(param) > 4:  # Has min/max values
+                    min_val, max_val = param[4], param[5]
+                    ToolTip(widget, f"{description}\nRange: {min_val} - {max_val}")
+                else:
+                    ToolTip(widget, description)
+            
+            # Description
+            desc_label = tb.Label(row_frame, text=description, style='Note.TLabel', anchor='w')
+            desc_label.grid(row=0, column=2, padx=10, sticky='w')
+
     def _create_log_tab(self, parent):
         """Create communication log tab"""
         parent.rowconfigure(0, weight=1)
@@ -632,6 +775,40 @@ class LidarGui(tb.Window):
                                  command=self.save_log_to_file, bootstyle=INFO)
         save_log_btn.pack(side=tk.LEFT, padx=10)
         ToolTip(save_log_btn, "Save the communication log to a text file")
+
+    # ===== GLOBALS METHODS =====
+    def read_globals(self):
+        """Read global configuration from Arduino"""
+        self.outgoing_queue.put(('L', b''))  # Read globals command
+
+    def write_globals(self):
+        """Write global configuration to Arduino"""
+        # Validate inputs first
+        try:
+            # Pack all global values into a payload (safe parameters only)
+            payload = bytearray()
+            
+            # Integers (4 bytes each, little-endian)
+            int_params = [
+                'config_mode_timeout_ms', 'min_strength_threshold', 'max_recovery_attempts', 
+                'recovery_attempt_delay_ms', 'startup_delay_ms', 'lidar_init_step_delay_ms', 
+                'lidar_final_delay_ms', 'command_response_delay_ms', 'debug_output_interval_ms', 
+                'status_check_interval_ms', 'performance_report_interval_ms',
+                'critical_error_report_interval_ms', 'distance_deadband_threshold_cm'
+            ]
+            
+            for param in int_params:
+                value = self.global_vars[param].get()
+                payload.extend(struct.pack('<I', value))
+            
+            # Floats (4 bytes each, little-endian)
+            velocity_deadband = self.global_vars['velocity_deadband_threshold_cm_s'].get()
+            payload.extend(struct.pack('<f', velocity_deadband))
+            
+            self.outgoing_queue.put(('l', bytes(payload)))
+            
+        except Exception as e:
+            messagebox.showerror("Validation Error", f"Invalid global configuration values: {e}")
 
     # ===== VISUAL FEEDBACK METHODS =====
     def _flash_button(self, button, original_style, flash_style, duration=1000):
@@ -849,12 +1026,14 @@ class LidarGui(tb.Window):
         self.read_thresholds()
         self.read_trigger_rules()
         self.read_settings()
+        self.read_globals()
 
     def write_all_to_device(self):
         """Write all configuration to Arduino"""
         self.write_thresholds()
         self.write_all_trigger_rules()
         self.write_settings()
+        self.write_globals()
 
     def read_thresholds(self):
         """Read distance and velocity thresholds"""
@@ -964,7 +1143,8 @@ class LidarGui(tb.Window):
             "vel_max": [v.get() for v in self.vel_max_vars],
             "mode": self.mode_var.get(),
             "debug": self.debug_var.get(),
-            "trigger_rules": [[v.get() for v in row] for row in self.trigger_rule_vars]
+            "trigger_rules": [[v.get() for v in row] for row in self.trigger_rule_vars],
+            "globals": {name: var.get() for name, var in self.global_vars.items()}
         }
         
         try:
@@ -996,6 +1176,12 @@ class LidarGui(tb.Window):
             
             self.mode_var.set(config_data["mode"])
             self.debug_var.set(config_data["debug"])
+            
+            # Load globals if present
+            if "globals" in config_data:
+                for name, value in config_data["globals"].items():
+                    if name in self.global_vars:
+                        self.global_vars[name].set(value)
             
             self.log_text_message(f"Configuration loaded from {filepath}")
             self._update_all_explosion_indicators() 
@@ -1084,6 +1270,32 @@ class LidarGui(tb.Window):
             if len(payload) >= 1:
                 self.mode_var.set(payload[0])
                 self._flash_button(self.read_settings_btn, PRIMARY, WARNING)
+        elif cmd == 'L':  # Globals response
+            if len(payload) >= 56:  # Expected size for reduced globals packet (13 ints * 4 + 1 float * 4)
+                try:
+                    idx = 0
+                    
+                    # Integers (4 bytes each)
+                    int_params = [
+                        'config_mode_timeout_ms', 'min_strength_threshold', 'max_recovery_attempts', 
+                        'recovery_attempt_delay_ms', 'startup_delay_ms', 'lidar_init_step_delay_ms', 
+                        'lidar_final_delay_ms', 'command_response_delay_ms', 'debug_output_interval_ms', 
+                        'status_check_interval_ms', 'performance_report_interval_ms',
+                        'critical_error_report_interval_ms', 'distance_deadband_threshold_cm'
+                    ]
+                    
+                    for param in int_params:
+                        value = struct.unpack('<I', payload[idx:idx+4])[0]
+                        self.global_vars[param].set(value)
+                        idx += 4
+                    
+                    # Float (4 bytes)
+                    velocity_deadband = struct.unpack('<f', payload[idx:idx+4])[0]
+                    self.global_vars['velocity_deadband_threshold_cm_s'].set(velocity_deadband)
+                    
+                    self._flash_button(self.read_globals_btn, PRIMARY, WARNING)
+                except Exception as e:
+                    self.log_text_message(f"Error parsing globals response: {e}", "error")
         elif cmd == 'S':  # Status response
             if len(payload) == 9:
                 switch, frames, errors = struct.unpack('<BII', payload)
@@ -1106,6 +1318,8 @@ class LidarGui(tb.Window):
                     self._flash_button(self.write_rules_btn, SUCCESS, WARNING)
                 elif original_cmd in ('g', 'm'):
                     self._flash_button(self.write_settings_btn, SUCCESS, WARNING)
+                elif original_cmd == 'l':
+                    self._flash_button(self.write_globals_btn, SUCCESS, WARNING)
         elif packet['command'] == RSP_NAK:  # NAK response
             if len(payload) >= 1:
                 error_code = payload[0]

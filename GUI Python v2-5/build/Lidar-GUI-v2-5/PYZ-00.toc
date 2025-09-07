@@ -1,4 +1,4 @@
-('C:\\Arduino\\LIDAR\\Lidar-RP2040-REV-0-3\\Lidar\\GUI Python '
+('C:\\Arduino\\LIDAR\\Lidar-RP2040-REV-0-4-pixel\\Lidar\\GUI Python '
  'v2-5\\build\\Lidar-GUI-v2-5\\PYZ-00.pyz',
  [('PIL',
    'C:\\Users\\edk7c\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python39\\site-packages\\PIL\\__init__.py',
