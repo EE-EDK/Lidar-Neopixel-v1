@@ -1,7 +1,7 @@
 /**
- * @file Lidar-RP2040-REV-0-3.ino
+ * @file Lidar-RP2040-REV-0-4.ino
  * @brief Main entry point for the Lidar-RP2040-REV-0-3 firmware.
- * @author The Lidar-RP2040-REV-0-3 Team
+ * @author Ethan Kunz
  * @version 1.0
  * @date 2025-09-06
  *
