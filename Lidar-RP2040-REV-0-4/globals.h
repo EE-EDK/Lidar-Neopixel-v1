@@ -164,7 +164,7 @@ enum Core0InitState {
   CORE0_LIDAR_STOP,             ///< Send stop command to the LiDAR.
   CORE0_LIDAR_RATE,             ///< Set the LiDAR's measurement frequency.
   CORE0_LIDAR_ENABLE,           ///< Enable the LiDAR's data streaming.
-  CORE_LIDAR_CLEANUP,           ///< Clean up serial buffer before starting data collection.
+  CORE0_LIDAR_CLEANUP,           ///< Clean up serial buffer before starting data collection.
   CORE0_READY                   ///< Core 0 is ready for data collection.
 };
 
