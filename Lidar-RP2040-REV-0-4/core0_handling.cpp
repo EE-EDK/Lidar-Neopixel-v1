@@ -1,17 +1,19 @@
 /**
  * @file core0_handling.cpp
  * @brief This file contains the implementation for functions that handle Core 0 operations.
- * @author The Lidar-RP2040-REV-0-3 Team
+ * @author The Lidar-RP2040-REV-0-4 Team
  * @version 1.0
- * @date 2025-09-06
+ * @date 2025-09-07
  *
  * @details The functions in this file are responsible for managing the main loop of Core 0,
  * which includes processing the Core 0 state machine, handling LiDAR serial data,
  * and performing health checks and recovery operations for the LiDAR sensor.
+ * Updated to support runtime global configuration parameters.
  */
 
 #include "core0_handling.h"
 #include "globals.h"
+#include "globals_config.h"  // NEW: Include runtime globals support
 #include "status.h"
 
 /**
@@ -29,7 +31,7 @@ void loop0_handler() {
   }
 
   static uint32_t last_status_report = 0;
-  if (safeMillisElapsed(last_status_report, millis()) >= STATUS_CHECK_INTERVAL_MS) {
+  if (safeMillisElapsed(last_status_report, millis()) >= RUNTIME_STATUS_CHECK_INTERVAL_MS) {
     reportCore0Status();
     last_status_report = millis();
   }
@@ -51,7 +53,7 @@ void processCore0StateMachine() {
     uint32_t current_time = millis();
     switch (core0_state) {
     case CORE0_STARTUP:
-      if (safeMillisElapsed(core0_state_timer, current_time) >= STARTUP_DELAY_MS) {
+      if (safeMillisElapsed(core0_state_timer, current_time) >= RUNTIME_STARTUP_DELAY_MS) {
         if (isDebugEnabled()) safeSerialPrintln("Core 0: Startup delay complete. Initializing serial at 115200 baud to configure sensor...");
         core0_state = CORE0_SERIAL_INIT_LOW;
         core0_state_timer = current_time;
@@ -117,7 +119,7 @@ void processCore0StateMachine() {
 
     case CORE0_LIDAR_STOP:
       {
-        if (safeMillisElapsed(core0_state_timer, current_time) >= LIDAR_INIT_STEP_DELAY_MS) {
+        if (safeMillisElapsed(core0_state_timer, current_time) >= RUNTIME_LIDAR_INIT_STEP_DELAY_MS) {
           if (isDebugEnabled()) safeSerialPrintln("Core 0: Stop command delay complete, setting frequency...");
           #if USE_1000HZ_MODE
           uint8_t rateCmd[] = { 0x5A, 0x06, 0x03, 0xE8, 0x03, 0x4E };
@@ -136,7 +138,7 @@ void processCore0StateMachine() {
 
     case CORE0_LIDAR_RATE:
       {
-        if (safeMillisElapsed(core0_state_timer, current_time) >= LIDAR_INIT_STEP_DELAY_MS) {
+        if (safeMillisElapsed(core0_state_timer, current_time) >= RUNTIME_LIDAR_INIT_STEP_DELAY_MS) {
           if (isDebugEnabled()) safeSerialPrintln("Core 0: Frequency command delay complete, enabling LiDAR...");
           uint8_t enableCmd[] = { 0x5A, 0x05, 0x07, 0x01, 0x67 };
           Serial1.write(enableCmd, sizeof(enableCmd));
@@ -149,7 +151,7 @@ void processCore0StateMachine() {
 
     case CORE0_LIDAR_ENABLE:
       {
-        if (safeMillisElapsed(core0_state_timer, current_time) >= LIDAR_FINAL_DELAY_MS) {
+        if (safeMillisElapsed(core0_state_timer, current_time) >= RUNTIME_LIDAR_FINAL_DELAY_MS) {
           if (isDebugEnabled()) safeSerialPrintln("Core 0: Enable command delay complete, clearing buffers...");
           while (Serial1.available()) Serial1.read();
 
@@ -376,9 +378,9 @@ void processLidarSerial() {
           last_frame_debug = current_time;
         }
 
-        // Validate frame data ranges
+        // Validate frame data ranges - USE RUNTIME GLOBAL for strength threshold
         if (new_frame.distance >= MIN_DISTANCE_CM && new_frame.distance <= MAX_DISTANCE_CM &&
-            new_frame.strength >= MIN_STRENGTH_THRESHOLD) {
+            new_frame.strength >= RUNTIME_MIN_STRENGTH_THRESHOLD) {
           
           new_frame.timestamp = micros();
           new_frame.valid = true;
@@ -394,7 +396,7 @@ void processLidarSerial() {
 
             if (!config_active) {
               static uint32_t last_overflow_report = 0;
-              if (safeMillisElapsed(last_overflow_report, current_time) > CRITICAL_ERROR_REPORT_INTERVAL_MS) {
+              if (safeMillisElapsed(last_overflow_report, current_time) > RUNTIME_CRITICAL_ERROR_REPORT_INTERVAL_MS) {
                 safeSerialPrintfln("Core 0: CRITICAL - Buffer overflow! Dropping frames (util: %d/%d)", 
                   getBufferUtilization(), FRAME_BUFFER_SIZE);
                 last_overflow_report = current_time;
@@ -415,7 +417,7 @@ void processLidarSerial() {
           if (isDebugEnabled()) {
             safeSerialPrintfln("Core 0: Frame validation failed - Dist: %d (range: %d-%d), Strength: %d (min: %d)", 
               new_frame.distance, MIN_DISTANCE_CM, MAX_DISTANCE_CM, 
-              new_frame.strength, MIN_STRENGTH_THRESHOLD);
+              new_frame.strength, RUNTIME_MIN_STRENGTH_THRESHOLD);
           }
           
           // Reset consecutive good frames counter
@@ -513,7 +515,7 @@ bool attemptRecovery(uint8_t recovery_level) {
   uint32_t current_time = millis();
   uint32_t current_attempts = 0;
 
-  if (safeMillisElapsed(last_recovery_attempt, current_time) < 5000) { // Increase delay
+  if (safeMillisElapsed(last_recovery_attempt, current_time) < RUNTIME_RECOVERY_ATTEMPT_DELAY_MS) {
     return false;
   }
 
@@ -555,7 +557,7 @@ bool attemptRecovery(uint8_t recovery_level) {
       
       // Reset recovery counter to prevent infinite reinit loops
       mutex_enter_blocking(&comm_mutex);
-      if (core_comm.recovery_attempts > 5) {
+      if (core_comm.recovery_attempts > RUNTIME_MAX_RECOVERY_ATTEMPTS) {
         safeSerialPrintln("Core 0: CRITICAL - Too many recovery attempts, system may be unstable");
         core_comm.recovery_attempts = 0; // Reset to prevent continuous reinit
         mutex_exit(&comm_mutex);

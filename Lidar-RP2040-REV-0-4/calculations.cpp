@@ -11,6 +11,7 @@
  */
 
 #include "calculations.h"
+#include "globals_config.h"
 
 /**
  * @brief Calculates the velocity based on the stored LiDAR frames.
@@ -32,7 +33,7 @@ float AdaptiveVelocityCalculator::calculateVelocity() {
       uint32_t time_diff = safeMicrosElapsed(history[i].timestamp, history[0].timestamp);
       if (time_diff > 1000 && time_diff < 50000) {
         int32_t dist_diff = (int32_t)history[0].distance - (int32_t)history[i].distance;
-        if (abs(dist_diff) <= DISTANCE_DEADBAND_THRESHOLD_CM) {
+        if (abs(dist_diff) <= RUNTIME_DISTANCE_DEADBAND_THRESHOLD_CM) {
           small_movement_count++;
         }
         float velocity = ((float)dist_diff * 1000000.0f) / (float)time_diff;
@@ -71,7 +72,7 @@ if (small_movement_count >= (valid_velocities / 2 + 1)) {
       median_velocity = velocities[valid_velocities / 2];
     }
     
-    if (abs(median_velocity) <= VELOCITY_DEADBAND_THRESHOLD_CM_S) {
+    if (abs(median_velocity) <= RUNTIME_VELOCITY_DEADBAND_THRESHOLD_CM_S) {
       median_velocity = 0.0f;
     }
     

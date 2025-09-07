@@ -1,16 +1,18 @@
 /**
  * @file storage.cpp
  * @brief This file contains the implementation for the storage handling functions.
- * @author The Lidar-RP2040-REV-0-3 Team
+ * @author The Lidar-RP2040-REV-0-4 Team
  * @version 1.0
- * @date 2025-09-06
+ * @date 2025-09-07
  *
  * @details This file provides the implementation for managing the device's
  * configuration, including loading, saving, and validating the configuration
- * data stored in non-volatile memory.
+ * data stored in non-volatile memory. Now includes support for global
+ * parameter configuration.
  */
 
 #include "storage.h"
+#include "globals_config.h"  // NEW: Include globals configuration
 
 /**
  * @brief Loads the default configuration.
@@ -151,13 +153,21 @@ bool saveConfiguration() {
 
   if (isDebugEnabled()) safeSerialPrintfln("Core 1: Wrote %zu bytes to config file", bytesWritten);
   
+  bool config_success = false;
   if (bytesWritten == sizeof(LidarConfiguration)) {
     if (isDebugEnabled()) safeSerialPrintln("Core 1: Configuration successfully saved to LittleFS");
-    return true;
+    config_success = true;
   } else {
     safeSerialPrintln("Core 1: ERROR - Incomplete write to config file");
-    return false;
   }
+  
+  // NEW: Also save global configuration
+  if (!saveGlobalConfiguration()) {
+    safeSerialPrintln("Core 1: WARNING - Failed to save global configuration");
+    // Don't fail the entire operation, just warn
+  }
+  
+  return config_success;
 }
 
 /**
@@ -171,6 +181,9 @@ void factoryReset() {
   if (LittleFS.remove(CONFIG_FILE_PATH)) {
     if (isDebugEnabled()) safeSerialPrintln("Core 1: Config file removed from LittleFS");
   } else if (isDebugEnabled()) safeSerialPrintln("Core 1: Config file removal failed (may not exist)");
+
+  // NEW: Also reset globals
+  factoryResetGlobals();
 
   loadDefaultConfig();
   if (isDebugEnabled()) safeSerialPrintln("Core 1: Factory reset complete, rebooting in 100ms...");

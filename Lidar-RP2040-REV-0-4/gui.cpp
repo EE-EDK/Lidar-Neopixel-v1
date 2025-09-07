@@ -1,19 +1,20 @@
 /**
  * @file gui.cpp
  * @brief This file contains the implementation for the GUI command processing.
- * @author The Lidar-RP2040-REV-0-3 Team
+ * @author The Lidar-RP2040-REV-0-4 Team
  * @version 1.0
- * @date 2025-09-06
+ * @date 2025-09-07
  *
  * @details This file implements a serial communication protocol for interacting with a
  * graphical user interface (GUI). It uses a state machine to parse incoming
  * packets and executes commands to configure the device, retrieve data, and
- * control its operation.
+ * control its operation. Now includes support for global parameter configuration.
  */
 
 #include "gui.h"
 #include "globals.h"
 #include "storage.h"
+#include "globals_config.h"  // NEW: Include globals configuration
 #include "neopixel_integration.h"
 
 /** @brief The start byte for a GUI packet. */
@@ -222,6 +223,67 @@ void executeGuiCommand(const GuiPacket& packet) {
             triggerGuiSuccessGlow();
           } else sendNak(NAK_ERR_INVALID_PAYLOAD);
         } else sendNak(NAK_ERR_INVALID_PAYLOAD);
+        break;
+    }
+    // NEW: Global configuration commands
+    case 'L': {
+        // Read globals response (safe parameters only)
+        uint8_t payload[56]; // Size for safe global parameters (13 ints * 4 + 1 float * 4)
+        uint8_t idx = 0;
+        
+        // Integers (4 bytes each, little-endian)
+        memcpy(&payload[idx], &runtimeGlobals.config_mode_timeout_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.min_strength_threshold, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.max_recovery_attempts, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.recovery_attempt_delay_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.startup_delay_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.lidar_init_step_delay_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.lidar_final_delay_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.command_response_delay_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.debug_output_interval_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.status_check_interval_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.performance_report_interval_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.critical_error_report_interval_ms, 4); idx += 4;
+        memcpy(&payload[idx], &runtimeGlobals.distance_deadband_threshold_cm, 4); idx += 4;
+        
+        // Float (4 bytes)
+        memcpy(&payload[idx], &runtimeGlobals.velocity_deadband_threshold_cm_s, 4); idx += 4;
+        
+        sendResponsePacket('L', payload, idx);
+        break;
+    }
+    case 'l': {
+        // Write globals command (safe parameters only)
+        if (packet.len >= 56) {
+          uint8_t idx = 0;
+          
+          // Integers (4 bytes each, little-endian)
+          memcpy(&runtimeGlobals.config_mode_timeout_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.min_strength_threshold, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.max_recovery_attempts, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.recovery_attempt_delay_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.startup_delay_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.lidar_init_step_delay_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.lidar_final_delay_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.command_response_delay_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.debug_output_interval_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.status_check_interval_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.performance_report_interval_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.critical_error_report_interval_ms, &packet.payload[idx], 4); idx += 4;
+          memcpy(&runtimeGlobals.distance_deadband_threshold_cm, &packet.payload[idx], 4); idx += 4;
+          
+          // Float (4 bytes)
+          memcpy(&runtimeGlobals.velocity_deadband_threshold_cm_s, &packet.payload[idx], 4); idx += 4;
+          
+          if (validateGlobalConfiguration(runtimeGlobals)) {
+            sendAck('l');
+            triggerGuiSuccessGlow();
+          } else {
+            sendNak(NAK_ERR_INVALID_PAYLOAD);
+          }
+        } else {
+          sendNak(NAK_ERR_INVALID_PAYLOAD);
+        }
         break;
     }
     case 'R': {

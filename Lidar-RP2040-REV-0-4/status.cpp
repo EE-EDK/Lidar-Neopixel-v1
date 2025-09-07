@@ -11,6 +11,7 @@
 
 #include "status.h"
 #include "globals.h"
+#include "globals_config.h"
 
 /**
  * @brief Handles the debug output.
@@ -20,7 +21,7 @@
  * strength, distance, error flags, and trigger status.
  */
 void handleDebugOutput() {
-  if (safeMillisElapsed(timing_info.last_debug_output, millis()) >= DEBUG_OUTPUT_INTERVAL_MS) {
+    if (safeMillisElapsed(timing_info.last_debug_output, millis()) >= RUNTIME_DEBUG_OUTPUT_INTERVAL_MS) {
     if (current_state == STATE_RUNNING && isDebugEnabled()) {
       uint32_t frames_received_local, error_flags_local;
       uint8_t switch_code_local, buffer_count_local;
@@ -85,8 +86,12 @@ void handleStatusLED() {
  * The implementation has been optimized out in the current version.
  */
 void reportCore0Status() {
-  if (core0_state == CORE0_READY && isDebugEnabled()) {
-    // Status reporting preserved but optimized
+  static uint32_t last_status_report = 0;
+  if (safeMillisElapsed(last_status_report, millis()) >= RUNTIME_STATUS_CHECK_INTERVAL_MS) {
+    if (core0_state == CORE0_READY && isDebugEnabled()) {
+      // Status reporting preserved but optimized
+    }
+    last_status_report = millis();
   }
 }
 
@@ -97,7 +102,11 @@ void reportCore0Status() {
  * The implementation has been optimized out in the current version.
  */
 void reportCore1Status() {
-  if ((current_state == STATE_RUNNING || current_state == STATE_CONFIG) && isDebugEnabled()) {
-    // Status reporting preserved but optimized
+  static uint32_t last_status_report = 0;
+  if (safeMillisElapsed(last_status_report, millis()) >= RUNTIME_STATUS_CHECK_INTERVAL_MS) {
+    if ((current_state == STATE_RUNNING || current_state == STATE_CONFIG) && isDebugEnabled()) {
+      // Status reporting preserved but optimized
+    }
+    last_status_report = millis();
   }
 }

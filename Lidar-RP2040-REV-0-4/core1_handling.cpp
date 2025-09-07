@@ -1,18 +1,19 @@
 /**
  * @file core1_handling.cpp
  * @brief This file contains the implementation for functions that handle Core 1 operations.
- * @author The Lidar-RP2040-REV-0-3 Team
+ * @author The Lidar-RP2040-REV-0-4 Team
  * @version 1.0
- * @date 2025-09-06
+ * @date 2025-09-07
  *
  * @details The functions in this file are responsible for managing the main loop of Core 1.
  * This includes processing the Core 1 state machine, handling GUI commands,
  * processing incoming LiDAR frames from Core 0, and managing the overall
- * system state.
+ * system state. Updated to support runtime global configuration parameters.
  */
 
 #include "core1_handling.h"
 #include "globals.h"
+#include "globals_config.h"  // NEW: Include runtime globals support
 #include "init.h"
 #include "storage.h"
 #include "gui.h"
@@ -85,7 +86,7 @@ void loop1_handler() {
   }
 
   static uint32_t last_status_report = 0;
-  if (safeMillisElapsed(last_status_report, millis()) >= STATUS_CHECK_INTERVAL_MS) {
+  if (safeMillisElapsed(last_status_report, millis()) >= RUNTIME_STATUS_CHECK_INTERVAL_MS) {
     reportCore1Status();
     last_status_report = millis();
   }
@@ -144,7 +145,7 @@ void processCore1StateMachine() {
         core1_state = CORE1_READY;
         break;
       }
-      if (safeMillisElapsed(core1_state_timer, current_time) >= CONFIG_MODE_TIMEOUT_MS) {
+      if (safeMillisElapsed(core1_state_timer, current_time) >= RUNTIME_CONFIG_MODE_TIMEOUT_MS) {
         if (isDebugEnabled()) safeSerialPrintln("Core 1: Config mode timeout - entering normal operation");
         current_state = STATE_RUNNING;
 
@@ -263,12 +264,33 @@ void processIncomingFrames() {
   }
 
   static uint32_t last_processing_report = 0;
-  if (isDebugEnabled() && safeMillisElapsed(last_processing_report, millis()) >= PERFORMANCE_REPORT_INTERVAL_MS) {
+  if (isDebugEnabled() && safeMillisElapsed(last_processing_report, millis()) >= RUNTIME_PERFORMANCE_REPORT_INTERVAL_MS) {
     if (frames_processed_count > 0) {
       safeSerialPrintfln("Core 1: Processed %lu frames in last %d ms",
-                         frames_processed_count, PERFORMANCE_REPORT_INTERVAL_MS);
+                         frames_processed_count, RUNTIME_PERFORMANCE_REPORT_INTERVAL_MS);
     }
     frames_processed_count = 0;
     last_processing_report = millis();
   }
+}
+
+/**
+ * @brief Setup handler for Core 1.
+ *
+ * @details This function is called from Core 1's setup1() function. It is responsible for
+ * initializing the functionalities that will be handled by Core 1. It records
+ * the start time for Core 1 initialization and kicks off the Core 1 state
+ * machine. Now includes global configuration loading.
+ */
+void setup1_handler() {
+  timing_info.core1_init_start = millis();
+  if (isDebugEnabled()) {
+    safeSerialPrintfln("Core 1: Initializing at %lu ms", timing_info.core1_init_start);
+  }
+  
+  // NEW: Load global configuration early in Core 1 initialization
+  loadGlobalConfiguration();
+  
+  core1_state_timer = millis();
+  core1_state = CORE1_STARTUP;
 }
