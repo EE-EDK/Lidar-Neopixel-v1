@@ -1,7 +1,0 @@
-<map id="initializePinsCore1" name="initializePinsCore1">
-<area shape="rect" id="Node000001" title="Initialize all GPIO pins for Core 1 operations." alt="" coords="336,5,465,32"/>
-<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af9535c962a7723d8738345239a800e76" title="Core 1 state machine processor for initialization sequence." alt="" coords="106,5,288,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="321,21,289,21,289,16,321,16"/>
-<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a39ceba300a80e348e278539f57e0ca79" title="Core 1 main loop &#45; handles processing, control, and GUI." alt="" coords="5,5,58,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="90,21,58,21,58,16,90,16"/>
-</map>

@@ -1,0 +1,9 @@
+<map id="checkLidarSensorHealth" name="checkLidarSensorHealth">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,56,169,83"/>
+<area shape="rect" id="Node000002" href="$globals_8cpp.html#a08e3a40d2bbfade972d374e55dfea047" title=" " alt="" coords="219,5,335,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="139,53,209,34,210,39,141,58"/>
+<area shape="rect" id="Node000003" href="$globals_8cpp.html#a205a8897e51a398ea1b7fd38b79310cd" title=" " alt="" coords="217,56,337,83"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="169,67,201,67,201,72,169,72"/>
+<area shape="rect" id="Node000004" href="$globals_8cpp.html#af6020ad975c3a06156bc4e985701be92" title=" " alt="" coords="219,107,335,133"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="141,81,210,100,209,105,139,86"/>
+</map>

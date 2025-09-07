@@ -1,5 +1,0 @@
-<map id="processGuiCommands" name="processGuiCommands">
-<area shape="rect" id="Node000001" title="Non&#45;blocking GUI packet parser and command processor." alt="" coords="106,5,260,32"/>
-<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a39ceba300a80e348e278539f57e0ca79" title="Core 1 main loop &#45; handles processing, control, and GUI." alt="" coords="5,5,58,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,21,58,21,58,16,90,16"/>
-</map>

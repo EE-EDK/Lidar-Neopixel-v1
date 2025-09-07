@@ -1,5 +1,0 @@
-<map id="getFrameFromBuffer" name="getFrameFromBuffer">
-<area shape="rect" id="Node000001" title="Get next frame from circular buffer (thread&#45;safe)" alt="" coords="5,5,146,32"/>
-<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a44666b40c4586e1995b8328740edd6f0" title="Thread&#45;safe increment of frames processed counter." alt="" coords="194,5,404,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="146,16,178,16,178,21,146,21"/>
-</map>

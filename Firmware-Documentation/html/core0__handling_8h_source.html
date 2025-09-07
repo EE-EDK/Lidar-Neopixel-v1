@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Dual-Core-Lidar-RP2040-Arduino-Pico: Lidar-RP2040-REV-0-3/core0_handling.h Source File</title>
+<title>Dual-Core-Lidar-RP2040-Arduino-Pico: C:/Arduino/LIDAR/Lidar-RP2040-REV-0-3/Lidar/Lidar-RP2040-REV-0-3/core0_handling.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -108,12 +108,14 @@ $(function(){initNavTree('core0__handling_8h_source.html','',''); });
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keywordtype">void</span> <a class="code hl_function" href="core0__handling_8h.html#a22c14a080dd8fe28a63afc62bc4fe962">processCore0StateMachine</a>();</div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keywordtype">void</span> <a class="code hl_function" href="core0__handling_8h.html#a90beefdebf1afefcfc67f2c1cdffae39">processLidarSerial</a>();</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keywordtype">bool</span> <a class="code hl_function" href="core0__handling_8h.html#a46bff3ddc50ca690ee6894071f77faa4">attemptRecovery</a>(uint8_t recovery_level);</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#endif </span><span class="comment">// CORE0_HANDLING_H</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keywordtype">bool</span> <a class="code hl_function" href="core0__handling_8h.html#af27c74715b0977b0660ca94920c057f7">checkLidarSensorHealth</a>(); </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#endif </span><span class="comment">// CORE0_HANDLING_H</span></div>
 <div class="ttc" id="acore0__handling_8h_html_a19c1ecc53cb49b25be427970f0ad4767"><div class="ttname"><a href="core0__handling_8h.html#a19c1ecc53cb49b25be427970f0ad4767">loop0_handler</a></div><div class="ttdeci">void loop0_handler()</div><div class="ttdef"><b>Definition</b> core0_handling.cpp:5</div></div>
 <div class="ttc" id="acore0__handling_8h_html_a22c14a080dd8fe28a63afc62bc4fe962"><div class="ttname"><a href="core0__handling_8h.html#a22c14a080dd8fe28a63afc62bc4fe962">processCore0StateMachine</a></div><div class="ttdeci">void processCore0StateMachine()</div><div class="ttdef"><b>Definition</b> core0_handling.cpp:20</div></div>
-<div class="ttc" id="acore0__handling_8h_html_a46bff3ddc50ca690ee6894071f77faa4"><div class="ttname"><a href="core0__handling_8h.html#a46bff3ddc50ca690ee6894071f77faa4">attemptRecovery</a></div><div class="ttdeci">bool attemptRecovery(uint8_t recovery_level)</div><div class="ttdef"><b>Definition</b> core0_handling.cpp:316</div></div>
-<div class="ttc" id="acore0__handling_8h_html_a90beefdebf1afefcfc67f2c1cdffae39"><div class="ttname"><a href="core0__handling_8h.html#a90beefdebf1afefcfc67f2c1cdffae39">processLidarSerial</a></div><div class="ttdeci">void processLidarSerial()</div><div class="ttdef"><b>Definition</b> core0_handling.cpp:212</div></div>
+<div class="ttc" id="acore0__handling_8h_html_a46bff3ddc50ca690ee6894071f77faa4"><div class="ttname"><a href="core0__handling_8h.html#a46bff3ddc50ca690ee6894071f77faa4">attemptRecovery</a></div><div class="ttdeci">bool attemptRecovery(uint8_t recovery_level)</div><div class="ttdef"><b>Definition</b> core0_handling.cpp:432</div></div>
+<div class="ttc" id="acore0__handling_8h_html_a90beefdebf1afefcfc67f2c1cdffae39"><div class="ttname"><a href="core0__handling_8h.html#a90beefdebf1afefcfc67f2c1cdffae39">processLidarSerial</a></div><div class="ttdeci">void processLidarSerial()</div><div class="ttdef"><b>Definition</b> core0_handling.cpp:213</div></div>
+<div class="ttc" id="acore0__handling_8h_html_af27c74715b0977b0660ca94920c057f7"><div class="ttname"><a href="core0__handling_8h.html#af27c74715b0977b0660ca94920c057f7">checkLidarSensorHealth</a></div><div class="ttdeci">bool checkLidarSensorHealth()</div><div class="ttdef"><b>Definition</b> core0_handling.cpp:502</div></div>
 <div class="ttc" id="aglobals_8h_html"><div class="ttname"><a href="globals_8h.html">globals.h</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -121,7 +123,7 @@ $(function(){initNavTree('core0__handling_8h_source.html','',''); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a href="dir_e83e4bdd7eb986fa83919e105844951f.html">Lidar-RP2040-REV-0-3</a></li><li class="navelem"><a href="core0__handling_8h.html">core0_handling.h</a></li>
+    <li class="navelem"><a href="dir_e83e4bdd7eb986fa83919e105844951f.html">Lidar-RP2040-REV-0-3</a></li><li class="navelem"><a href="dir_7cf69a5b6a2c993d0b2db20cff430edf.html">Lidar</a></li><li class="navelem"><a href="dir_00035793426f9369ef1bc3716fee5899.html">Lidar-RP2040-REV-0-3</a></li><li class="navelem"><a href="core0__handling_8h.html">core0_handling.h</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
   </ul>
 </div>

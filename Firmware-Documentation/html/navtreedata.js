@@ -53,7 +53,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_lidar-_r_p2040-_r_e_v-0-3_8ino.html",
-"gui_8cpp.html#ab045d07e05c15822335c17c065cecf19"
+"gui_8cpp.html#a6107d518302c3e551b151bccac4528cc"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

@@ -1,8 +1,0 @@
-<map id="safeGetCore1Ready" name="safeGetCore1Ready">
-<area shape="rect" id="Node000001" title="Thread&#45;safe Core 1 ready flag getter." alt="" coords="329,5,469,32"/>
-<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#afe461d27b9c48d5921c00d521181f12f" title="Core 0 main loop &#45; handles LiDAR data collection." alt="" coords="5,5,51,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="314,21,51,21,51,16,314,16"/>
-<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a22c14a080dd8fe28a63afc62bc4fe962" title="Core 0 state machine processor for initialization sequence." alt="" coords="99,31,281,57"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="314,32,282,36,281,30,313,26"/>
-<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="86,30,51,25,52,20,86,25"/>
-</map>

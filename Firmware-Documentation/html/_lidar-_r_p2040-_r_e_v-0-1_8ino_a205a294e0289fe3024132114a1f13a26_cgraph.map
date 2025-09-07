@@ -1,9 +1,0 @@
-<map id="handleDebugOutput" name="handleDebugOutput">
-<area shape="rect" id="Node000001" title="Handle debug output during operational mode." alt="" coords="5,56,142,83"/>
-<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a08e3a40d2bbfade972d374e55dfea047" title="Thread&#45;safe debug enable flag checker." alt="" coords="193,5,310,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,53,187,34,188,39,124,58"/>
-<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a57190bd6f3a9bed26f0a8fafb362b0d9" title="Calculate elapsed milliseconds with overflow protection." alt="" coords="190,56,313,83"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="142,67,175,67,175,72,142,72"/>
-<area shape="rect" id="Node000004" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af6020ad975c3a06156bc4e985701be92" title="Thread&#45;safe serial output with newline." alt="" coords="193,107,310,133"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="124,81,188,99,187,105,122,86"/>
-</map>

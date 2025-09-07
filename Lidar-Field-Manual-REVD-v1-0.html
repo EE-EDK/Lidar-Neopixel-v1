@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiDAR RP2040 Controller Field Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827;
+            color: #d1d5db;
+        }
+        .content-section h2 {
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #374151;
+        }
+        .content-section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f3f4f6;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        .content-section h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #e5e7eb;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border: 1px solid #374151;
+        }
+        th {
+            background-color: #1f2937;
+            color: #f9fafb;
+            font-weight: 600;
+        }
+        td {
+            background-color: #374151;
+        }
+        code {
+            background-color: #1f2937;
+            color: #93c5fd;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+        }
+        .led-indicator {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        .led-off { background-color: #4b5563; }
+        .led-slow-blink { animation: blink 2s infinite; background-color: #f59e0b; }
+        .led-medium-blink { animation: blink 0.66s infinite; background-color: #ef4444; }
+        .led-fast-blink { animation: blink 0.4s infinite; background-color: #dc2626; }
+        .led-solid { background-color: #ef4444; }
+        .led-pulse { animation: pulse 1.5s ease-out; background-color: #3b82f6; }
+        .led-rapid-flash { animation: blink 0.1s infinite; background-color: #fbbf24; }
+        @keyframes blink {
+            50% { opacity: 0.2; }
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .slider-container {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 1rem;
+            align-items: center;
+        }
+        .velocity-bar-container {
+            width: 100%;
+            height: 30px;
+            background-color: #374151;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #4b5563;
+        }
+        .velocity-bar {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            background-color: #3b82f6;
+        }
+        .effective-velocity-marker {
+            position: absolute;
+            top: -5px;
+            bottom: -5px;
+            width: 4px;
+            background-color: #f59e0b;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+        .status-pill {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .changelog-entry {
+            border-left: 3px solid #374151;
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .unlock-step {
+            background-color: #1f2937;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+            }
+            header, aside, #print-button {
+                display: none !important;
+            }
+            main {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .content-section {
+                display: block !important;
+                margin-bottom: 2rem;
+                page-break-after: always;
+            }
+            .content-section h2, .content-section h3, .content-section h4, .content-section p, .content-section li {
+                color: #000000 !important;
+            }
+            th, td, table, .unlock-step, .bg-gray-800, .bg-blue-900 {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                border: 1px solid #ccc !important;
+            }
+            .text-green-400, .text-yellow-400, .text-blue-400, .text-red-400, .text-orange-400 {
+                color: #000000 !important;
+            }
+            code {
+                background-color: #f0f0f0 !important;
+                color: #000000 !important;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-300">
+
+    <header class="relative h-64 md:h-80 w-full bg-gray-900 overflow-hidden">
+        <div id="lidar-canvas-container" class="absolute inset-0"></div>
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center p-4">
+            <h1 class="text-4xl md:text-6xl font-bold text-white tracking-tight">LiDAR RP2040 Controller Field Manual</h1>
+            <p class="mt-4 text-lg text-gray-300 max-w-2xl">Firmware v6.3 - Dual-Core RP2040 Architecture with Enhanced Performance</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col md:flex-row max-w-screen-xl mx-auto p-4 md:p-8">
+        <aside class="w-full md:w-1/4 md:sticky top-8 self-start mb-8 md:mb-0 md:mr-8">
+            <nav class="bg-gray-800 rounded-lg p-4">
+                <h3 class="text-white font-semibold text-lg mb-4 text-center border-b border-gray-700 pb-3">Contents</h3>
+                <button id="print-button" onclick="window.print()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-4 transition-colors">
+                    Print Manual (PDF)
+                </button>
+                <div id="nav-menu" class="space-y-1">
+                    <a href="#overview" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">1. Overview</a>
+                    <a href="#startup-selection" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">2. GUI Config</a>
+                    <a href="#mission-sequence" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">3. Dual-Core Flow</a>
+                    <a href="#sequence" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">4. Op. Sequence</a>
+                    <a href="#configuration" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">5. Configuration</a>
+                    <a href="#wiring" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">6. Hardware</a>
+                    <a href="#state-machine" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">7. State Flow</a>
+                    <a href="#calculator" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">8. Param. Calc</a>
+                    <a href="#tuning-calculator" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">9. Firmware Tuning</a>
+                    <a href="#troubleshooting" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">10. Troubleshooting</a>
+                    <a href="#debug" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">11. Debug Output</a>
+                    <a href="#programming" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">12. Programming</a>
+                    <a href="#appendix" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">13. Appendix</a>
+                    <a href="#changelog" class="nav-link block px-3 py-2 rounded-md hover:bg-gray-700 text-sm">14. Version Hist.</a>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="w-full md:w-3/4">
+            <section id="overview" class="content-section mb-12">
+                <h2>1. Overview</h2>
+                <p>The RP2040 LiDAR Controller is a dual-core system that uses a high-speed LiDAR sensor for precise distance and velocity measurements. The device continuously monitors for conditions that match configurable trigger rules and activates the trigger output <strong>TRIG_PULSE_LOW_PIN (GPIO16)</strong> based on real-time analysis. When triggered, the output remains active for <strong>3 seconds</strong> (latch duration) before returning to the inactive state.</p>
+                <p class="mt-4">The firmware is <strong>v6.3 Dual-Core Architecture</strong>, which features:</p>
+                <ul class="list-disc list-inside mt-2 space-y-2">
+                    <li><strong>Dual-Core Operation:</strong> Core 0 handles LiDAR communication at up to 1000Hz, while Core 1 processes data and manages system logic.</li>
+                    <li><strong>GUI Configuration:</strong> Real-time configuration via serial interface with packet-based protocol for reliable parameter updates.</li>
+                    <li><strong>NeoPixel Status Display:</strong> Visual feedback showing distance (heat map colors), velocity (saturation), trigger events (white flash), and system status.</li>
+                    <li><strong>Enhanced Performance:</strong> Adaptive velocity calculation with noise filtering and 800Hz/1000Hz operation modes.</li>
+                    <li><strong>LittleFS Storage:</strong> Non-volatile configuration storage with checksum validation and factory reset capability.</li>
+                    <li><strong>Thread-Safe Operation:</strong> Mutex-protected inter-core communication with atomic buffer operations.</li>
+                </ul>
+            </section>
+
+            <section id="startup-selection" class="content-section mb-12" style="display: none;">
+                <h2>2. GUI Configuration System</h2>
+                <p>The system features a sophisticated GUI configuration mode accessible via the serial interface. Upon power-up, the device enters a <strong>15-second configuration window</strong> where any serial input will trigger configuration mode. The NeoPixel displays a breathing blue pattern during normal startup and switches to purple flashing in configuration mode.</p>
+                
+                <h3>Entering Configuration Mode</h3>
+                <p>To access the configuration interface:</p>
+                
+                <div class="space-y-2 mt-4">
+                    <div class="unlock-step">
+                        <strong>Step 1:</strong> Power on the device and wait for the blue breathing pattern on the NeoPixel
+                    </div>
+                    <div class="unlock-step">
+                        <strong>Step 2:</strong> Open a serial terminal at <strong>115200 baud</strong> within 15 seconds
+                    </div>
+                    <div class="unlock-step">
+                        <strong>Step 3:</strong> Send any character to trigger configuration mode
+                    </div>
+                    <div class="unlock-step">
+                        <strong>Step 4:</strong> NeoPixel changes to purple flashing - configuration mode active
+                    </div>
+                </div>
+
+                <h3 class="mt-6">Configuration Commands</h3>
+                <p>The GUI uses a packet-based protocol with checksum validation. Each command follows the format:</p>
+                <code>0x7E [CMD] [LEN] [PAYLOAD...] [CHECKSUM]</code>
+
+                <div class="table-container mt-4">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Command</th>
+                                <th>Function</th>
+                                <th>Payload</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>'S'</strong></td>
+                                <td>Get system status</td>
+                                <td>None - returns switch code, frame count, error flags</td>
+                            </tr>
+                            <tr>
+                                <td><strong>'D'/'d'</strong></td>
+                                <td>Get/Set distance thresholds</td>
+                                <td>Position (0-7), Value (cm)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>'V'/'v'</strong></td>
+                                <td>Get/Set velocity thresholds</td>
+                                <td>Type ('m'/'x'), Position, Value</td>
+                            </tr>
+                            <tr>
+                                <td><strong>'M'/'m'</strong></td>
+                                <td>Get/Set trigger mode</td>
+                                <td>1=Distance only, 2=Distance+Velocity</td>
+                            </tr>
+                            <tr>
+                                <td><strong>'G'/'g'</strong></td>
+                                <td>Get/Set debug output</td>
+                                <td>0=Disabled, 1=Enabled</td>
+                            </tr>
+                            <tr>
+                                <td><strong>'W'</strong></td>
+                                <td>Save configuration</td>
+                                <td>None - saves current config to LittleFS</td>
+                            </tr>
+                            <tr>
+                                <td><strong>'R'</strong></td>
+                                <td>System reset</td>
+                                <td>None - reboots the device</td>
+                            </tr>
+                            <tr>
+                                <td><strong>'F'</strong></td>
+                                <td>Factory reset</td>
+                                <td>None - restores defaults and reboots</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 p-4 bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg">
+                    <p class="text-blue-300"><strong>Important:</strong> Configuration mode must be exited by reset. The NeoPixel shows a green glow overlay when commands are successfully executed. The system continues to drain LiDAR frames to prevent buffer overflow but does not process them for triggers during configuration.</p>
+                </div>
+            </section>
+
+            <section id="mission-sequence" class="content-section mb-12" style="display: none;">
+                <h2>3. Dual-Core Operation Flow</h2>
+                <p>This section details the parallel operation of both RP2040 cores and their specialized responsibilities.</p>
+                
+                <h3>Core 0: LiDAR Communication & Data Acquisition</h3>
+                <p><strong>Primary Responsibility:</strong> High-speed LiDAR sensor communication and frame parsing.</p>
+                <ol class="list-decimal list-inside mt-4 space-y-3">
+                    <li><strong>Serial Initialization:</strong> Configures LiDAR sensor from 115200 baud to 460800 baud for high-speed communication.</li>
+                    <li><strong>Frequency Configuration:</strong> Sets LiDAR to 800Hz or 1000Hz operation mode based on compile-time configuration.</li>
+                    <li><strong>Frame Synchronization:</strong> Continuously parses incoming 9-byte frames (0x59 0x59 header) with checksum validation.</li>
+                    <li><strong>Data Validation:</strong> Validates distance (7-1200cm), strength (≥200), and frame integrity before buffering.</li>
+                    <li><strong>Atomic Buffering:</strong> Thread-safe insertion of valid frames into circular buffer for Core 1 processing.</li>
+                    <li><strong>Health Monitoring:</strong> Tracks communication timeouts and implements graduated recovery (buffer flush → soft reset → full reinit).</li>
+                </ol>
+
+                <h3>Core 1: Data Processing & System Logic</h3>
+                <p><strong>Primary Responsibility:</strong> Frame processing, velocity calculation, trigger logic, and user interface.</p>
+                <ol class="list-decimal list-inside mt-4 space-y-3">
+                    <li><strong>Frame Processing:</strong> Pops frames from atomic buffer and feeds them to adaptive velocity calculator.</li>
+                    <li><strong>Velocity Calculation:</strong> Uses median filtering across 15-frame history with deadband processing for stable readings.</li>
+                    <li><strong>Trigger Logic:</strong> Evaluates distance and velocity conditions with debouncing (30ms on, 50ms off) and 3-second latching.</li>
+                    <li><strong>NeoPixel Management:</strong> Updates visual status with distance heat map, velocity saturation, and trigger flash priorities.</li>
+                    <li><strong>Configuration Management:</strong> Handles GUI commands, validates configuration, and manages LittleFS storage operations.</li>
+                    <li><strong>Switch Reading:</strong> Monitors configuration switches every 10ms for real-time threshold selection.</li>
+                </ol>
+
+                <h3>Inter-Core Communication</h3>
+                <p>The cores communicate through thread-safe mechanisms:</p>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Atomic Frame Buffer:</strong> Lock-free circular buffer with overflow protection and utilization monitoring.</li>
+                    <li><strong>CoreComm Structure:</strong> Mutex-protected shared state including error flags, performance counters, and system status.</li>
+                    <li><strong>Error Coordination:</strong> Cross-core error propagation with priority-based NeoPixel status display.</li>
+                </ul>
+            </section>
+
+            <section id="sequence" class="content-section mb-12" style="display: none;">
+                <h2>4. Operational Sequence (Summary)</h2>
+                <p>On power-up, the device performs parallel initialization across both cores:</p>
+                
+                <h3>Core 0 Initialization Sequence</h3>
+                <ol class="list-decimal list-inside mt-4 space-y-2">
+                    <li><strong>Startup Delay:</strong> 1000ms initial delay for system stabilization</li>
+                    <li><strong>Serial Configuration:</strong> Initialize at 115200 baud, send baud rate change command</li>
+                    <li><strong>Sensor Setup:</strong> Save settings, wait 1000ms, reinitialize at 460800 baud</li>
+                    <li><strong>LiDAR Configuration:</strong> Stop output → Set frequency (800/1000Hz) → Enable output</li>
+                    <li><strong>Buffer Initialization:</strong> Clear buffers and begin frame reception</li>
+                </ol>
+
+                <h3>Core 1 Initialization Sequence</h3>
+                <ol class="list-decimal list-inside mt-4 space-y-2">
+                    <li><strong>GPIO Setup:</strong> Configure pins, initialize NeoPixel with blue breathing pattern</li>
+                    <li><strong>Configuration Load:</strong> Read configuration from LittleFS or load factory defaults</li>
+                    <li><strong>Mode Detection:</strong> 15-second window for configuration mode entry via serial input</li>
+                    <li><strong>System Ready:</strong> Signal readiness to Core 0 and begin normal operation</li>
+                </ol>
+
+                <h3>Normal Operation</h3>
+                <p>Once initialized, the system operates continuously:</p>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Frame Rate:</strong> 800-1000 frames per second with adaptive timeout management</li>
+                    <li><strong>Processing:</strong> Real-time velocity calculation and trigger evaluation</li>
+                    <li><strong>Visual Feedback:</strong> NeoPixel displays distance (red→yellow→blue) with velocity-based saturation</li>
+                    <li><strong>Error Handling:</strong> Automatic recovery with graduated escalation strategies</li>
+                </ul>
+            </section>
+            
+            <section id="configuration" class="content-section mb-12" style="display: none;">
+                <h2>5. Configuration</h2>
+                <p>The device behavior is configured through physical switches and the GUI interface. The trigger output logic depends on switch position, velocity settings, and external control pins.</p>
+                
+                <h3>5.1 Switch Settings (S1, S2, S4)</h3>
+                <p>The detection parameters are set by the 8-position switch combination. The firmware reads the 3-bit value (S4, S2, S1) to select configuration parameters.</p>
+                
+                <div class="mt-6 bg-gray-800 p-4 rounded-lg">
+                    <label for="switch-selector" class="block text-white font-medium mb-2">Select Switch Position:</label>
+                    <select id="switch-selector" class="w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                        <option value="0">Position 0 (000)</option>
+                        <option value="1">Position 1 (001)</option>
+                        <option value="2">Position 2 (010)</option>
+                        <option value="3">Position 3 (011)</option>
+                        <option value="4">Position 4 (100)</option>
+                        <option value="5">Position 5 (101)</option>
+                        <option value="6">Position 6 (110)</option>
+                        <option value="7">Position 7 (111)</option>
+                    </select>
+                </div>
+
+                <div class="table-container mt-4">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                                <th>Firmware Version</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Max Distance</td>
+                                <td id="config-distance">50 cm</td>
+                                <td>v6.3</td>
+                            </tr>
+                            <tr>
+                                <td>Velocity Range (Approaching)</td>
+                                <td id="config-velocity">-250 to -2200 cm/s</td>
+                                <td>v6.3</td>
+                            </tr>
+                            <tr>
+                                <td>Frame Rate</td>
+                                <td>800Hz / 1000Hz (configurable)</td>
+                                <td>v6.3</td>
+                            </tr>
+                            <tr>
+                                <td>Trigger Latch Duration</td>
+                                <td>3 seconds</td>
+                                <td>v6.3</td>
+                            </tr>
+                            <tr>
+                                <td>Communication Timeout</td>
+                                <td>2000ms with graduated recovery</td>
+                                <td>v6.3</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="mt-8">5.2 Trigger Logic</h3>
+                <p>The trigger output (<strong>TRIG_PULSE_LOW_PIN</strong>) follows this logic:</p>
+                <ol class="list-decimal list-inside mt-4 space-y-2">
+                    <li><strong>Distance Check:</strong> Object distance ≤ configured threshold for switch position</li>
+                    <li><strong>Velocity Check:</strong> (If enabled) Object velocity within configured min/max range</li>
+                    <li><strong>Debouncing:</strong> 30ms on-delay, 50ms off-delay, 20ms minimum pulse width</li>
+                    <li><strong>Latching:</strong> Once triggered, output remains active for 3000ms</li>
+                </ol>
+
+                <div class="table-container mt-4">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Condition</th>
+                                <th>GPIO16 Output</th>
+                                <th>NeoPixel Behavior</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Normal Operation</td><td class="text-yellow-400"><strong>HIGH</strong> (Inactive)</td><td>Distance heat map</td></tr>
+                            <tr><td>Trigger Active</td><td class="text-green-400"><strong>LOW</strong> (Active - 3s latch)</td><td>White 5Hz flash</td></tr>
+                            <tr><td>Configuration Mode</td><td class="text-yellow-400"><strong>HIGH</strong> (Inactive)</td><td>Purple flashing</td></tr>
+                            <tr><td>Error State</td><td class="text-yellow-400"><strong>HIGH</strong> (Inactive)</td><td>Red 4Hz flash</td></tr>
+                            <tr><td>Initialization</td><td class="text-yellow-400"><strong>HIGH</strong> (Inactive)</td><td>Blue breathing</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section id="wiring" class="content-section mb-12" style="display: none;">
+                <h2>6. Hardware & Wiring Diagram</h2>
+                <p>Proper wiring is critical for the RP2040 LiDAR controller operation. The following diagram illustrates key connections between the RP2040 microcontroller, LiDAR sensor, and peripheral components.</p>
+                <div class="mt-6 p-4 bg-gray-800 rounded-lg flex justify-center items-center">
+                    <svg width="100%" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" class="max-w-4xl">
+                        <style>
+                            .label { font-family: 'Inter', sans-serif; font-size: 14px; fill: #d1d5db; }
+                            .pin-label { font-family: monospace; font-size: 12px; fill: #9ca3af; }
+                            .chip-label { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: bold; fill: #ffffff; }
+                            .line { stroke: #6b7280; stroke-width: 2; }
+                            .line-blue { stroke: #60a5fa; }
+                            .line-green { stroke: #4ade80; }
+                            .line-yellow { stroke: #facc15; }
+                            .line-red { stroke: #f87171; }
+                            .line-purple { stroke: #a855f7; }
+                        </style>
+                        <!-- RP2040 Main Chip -->
+                        <rect x="350" y="200" width="200" height="200" rx="10" fill="#1f2937" stroke="#4b5563" stroke-width="2"/>
+                        <text x="450" y="230" text-anchor="middle" class="chip-label">RP2040</text>
+                        <text x="450" y="250" text-anchor="middle" class="pin-label">Dual-Core ARM Cortex-M0+</text>
+
+                        <!-- Left side pins -->
+                        <text x="340" y="274" text-anchor="end" class="label">GP10 (S1)</text><circle cx="350" cy="270" r="4" fill="#d1d5db"/>
+                        <text x="340" y="294" text-anchor="end" class="label">GP11 (S2)</text><circle cx="350" cy="290" r="4" fill="#d1d5db"/>
+                        <text x="340" y="314" text-anchor="end" class="label">GP12 (S4)</text><circle cx="350" cy="310" r="4" fill="#d1d5db"/>
+                        <text x="340" y="334" text-anchor="end" class="label">GP13 (CONN)</text><circle cx="350" cy="330" r="4" fill="#d1d5db"/>
+                        <text x="340" y="354" text-anchor="end" class="label">GP0 (TX)</text><circle cx="350" cy="350" r="4" fill="#d1d5db"/>
+                        <text x="340" y="374" text-anchor="end" class="label">GP1 (RX)</text><circle cx="350" cy="370" r="4" fill="#d1d5db"/>
+
+                        <!-- Right side pins -->
+                        <text x="560" y="274" text-anchor="start" class="label">GP25 (LED)</text><circle cx="550" cy="270" r="4" fill="#d1d5db"/>
+                        <text x="560" y="294" text-anchor="start" class="label">GP16 (TRIG)</text><circle cx="550" cy="290" r="4" fill="#d1d5db"/>
+                        <text x="560" y="314" text-anchor="start" class="label">GP18 (NEO)</text><circle cx="550" cy="310" r="4" fill="#d1d5db"/>
+                        <text x="560" y="334" text-anchor="start" class="label">GP14 (EXT_TRIG)</text><circle cx="550" cy="330" r="4" fill="#d1d5db"/>
+                        <text x="560" y="354" text-anchor="start" class="label">GP15 (EXT_EN)</text><circle cx="550" cy="350" r="4" fill="#d1d5db"/>
+
+                        <!-- Power pins -->
+                        <text x="560" y="424" text-anchor="start" class="label">3V3</text><circle cx="550" cy="420" r="4" fill="#d1d5db"/>
+                        <text x="560" y="444" text-anchor="start" class="label">GND</text><circle cx="550" cy="440" r="4" fill="#d1d5db"/>
+
+                        <!-- LiDAR Sensor -->
+                        <rect x="50" y="320" width="150" height="80" rx="5" fill="#374151" stroke="#6b7280"/>
+                        <text x="125" y="310" text-anchor="middle" class="label">High-Speed LiDAR</text>
+                        <text x="60" y="340" class="pin-label">TX</text><line x1="110" y1="335" x2="350" y2="370" class="line line-blue"/>
+                        <text x="60" y="360" class="pin-label">RX</text><line x1="110" y1="355" x2="350" y2="350" class="line line-green"/>
+                        <text x="60" y="380" class="pin-label">VCC</text><path d="M 110 375 Q 200 420, 550 420" stroke="#f87171" stroke-width="2" fill="none"/>
+                        <text x="60" y="395" class="pin-label">GND</text><path d="M 110 390 Q 200 440, 550 440" stroke="#9ca3af" stroke-width="2" fill="none"/>
+
+                        <!-- Configuration Switches -->
+                        <rect x="50" y="180" width="150" height="80" rx="5" fill="#374151" stroke="#6b7280"/>
+                        <text x="125" y="170" text-anchor="middle" class="label">Config Switches</text>
+                        <text x="60" y="200" class="pin-label">S1</text><line x1="110" y1="195" x2="350" y2="270" class="line line-yellow"/>
+                        <text x="60" y="220" class="pin-label">S2</text><line x1="110" y1="215" x2="350" y2="290" class="line line-yellow"/>
+                        <text x="60" y="240" class="pin-label">S4</text><line x1="110" y1="235" x2="350" y2="310" class="line line-yellow"/>
+                        <text x="60" y="255" class="pin-label">CONN</text><line x1="110" y1="250" x2="350" y2="330" class="line line-yellow"/>
+
+                        <!-- NeoPixel -->
+                        <rect x="650" y="280" width="120" height="60" rx="5" fill="#374151" stroke="#6b7280"/>
+                        <text x="710" y="270" text-anchor="middle" class="label">NeoPixel LED</text>
+                        <text x="660" y="305" class="pin-label">DIN</text><line x1="690" y1="300" x2="550" y2="310" class="line line-purple"/>
+                        <text x="660" y="325" class="pin-label">VCC</text><path d="M 690 320 Q 620 420, 550 420" stroke="#f87171" stroke-width="2" fill="none"/>
+                        <text x="660" y="340" class="pin-label">GND</text><path d="M 690 335 Q 620 440, 550 440" stroke="#9ca3af" stroke-width="2" fill="none"/>
+
+                        <!-- Status LED -->
+                        <rect x="650" y="200" width="120" height="60" rx="5" fill="#374151" stroke="#6b7280"/>
+                        <text x="710" y="190" text-anchor="middle" class="label">Status LED</text>
+                        <text x="710" y="225" text-anchor="middle" class="pin-label">Anode</text><line x1="690" y1="220" x2="550" y2="270" class="line line-red"/>
+
+                        <!-- External Control -->
+                        <rect x="650" y="360" width="120" height="80" rx="5" fill="#374151" stroke="#6b7280"/>
+                        <text x="710" y="350" text-anchor="middle" class="label">External Control</text>
+                        <text x="660" y="380" class="pin-label">EXT_TRIG</text><line x1="690" y1="375" x2="550" y2="330" class="line line-green"/>
+                        <text x="660" y="400" class="pin-label">EXT_EN</text><line x1="690" y1="395" x2="550" y2="350" class="line line-green"/>
+                        <text x="660" y="420" class="pin-label">TRIG_OUT</text><line x1="690" y1="415" x2="550" y2="290" class="line line-red"/>
+
+                        <!-- Labels for communication speeds -->
+                        <text x="230" y="390" text-anchor="middle" class="pin-label">460800 baud</text>
+                        <text x="230" y="250" text-anchor="middle" class="pin-label">Digital I/O</text>
+                        <text x="600" y="300" text-anchor="middle" class="pin-label">WS2812B Protocol</text>
+                    </svg>
+                </div>
+
+                <h3>Pin Assignments Summary</h3>
+                <div class="table-container mt-4">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>GPIO Pin</th>
+                                <th>Function</th>
+                                <th>Direction</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>GP0</td><td>UART TX</td><td>Output</td><td>Serial transmit to LiDAR sensor</td></tr>
+                            <tr><td>GP1</td><td>UART RX</td><td>Input</td><td>Serial receive from LiDAR sensor</td></tr>
+                            <tr><td>GP10</td><td>S1 Switch</td><td>Input (Pull-up)</td><td>Configuration switch bit 0</td></tr>
+                            <tr><td>GP11</td><td>S2 Switch</td><td>Input (Pull-up)</td><td>Configuration switch bit 1</td></tr>
+                            <tr><td>GP12</td><td>S4 Switch</td><td>Input (Pull-up)</td><td>Configuration switch bit 2</td></tr>
+                            <tr><td>GP13</td><td>Rotary Connection</td><td>Input (Pull-up)</td><td>Switch board connection detect</td></tr>
+                            <tr><td>GP14</td><td>External Trigger</td><td>Input</td><td>External trigger input signal</td></tr>
+                            <tr><td>GP15</td><td>External Enable</td><td>Input</td><td>External enable/disable signal</td></tr>
+                            <tr><td>GP16</td><td>Trigger Output</td><td>Output</td><td>Main trigger output (active low)</td></tr>
+                            <tr><td>GP18</td><td>NeoPixel Data</td><td>Output</td><td>WS2812B data signal</td></tr>
+                            <tr><td>GP25</td><td>Status LED</td><td>Output</td><td>Onboard status indicator</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="state-machine" class="content-section mb-12" style="display: none;">
+                <h2>7. Dual-Core State Machine Flow</h2>
+                <p>The firmware operates with independent state machines on each core, coordinating through shared memory structures.</p>
+                <div class="mt-6 p-4 bg-gray-800 rounded-lg flex justify-center items-center">
+                    <svg width="100%" viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg" class="max-w-3xl">
+                        <style>
+                            .state { fill: #1f2937; stroke: #60a5fa; stroke-width: 2; rx: 10; }
+                            .state-core0 { fill: #1f2937; stroke: #10b981; }
+                            .state-core1 { fill: #1f2937; stroke: #f59e0b; }
+                            .state-error { fill: #372020; stroke: #f87171; }
+                            .label { font-family: 'Inter', sans-serif; font-size: 13px; fill: #d1d5db; text-anchor: middle; }
+                            .label-small { font-size: 10px; fill: #9ca3af; }
+                            .core-label { font-size: 16px; font-weight: bold; fill: #ffffff; }
+                            .arrow { stroke: #9ca3af; stroke-width: 1.5; marker-end: url(#arrowhead); }
+                            .arrow-sync { stroke: #a855f7; stroke-width: 2; stroke-dasharray: 5,5; }
+                        </style>
+                        <defs>
+                            <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af" />
+                            </marker>
+                        </defs>
+                        
+                        <!-- Core 0 Column -->
+                        <text x="200" y="30" text-anchor="middle" class="core-label">CORE 0 - LiDAR Interface</text>
+                        
+                        <rect x="125" y="60" width="150" height="40" class="state state-core0"/><text x="200" y="85" class="label">STARTUP</text>
+                        <rect x="125" y="130" width="150" height="40" class="state state-core0"/><text x="200" y="155" class="label">SERIAL_INIT_LOW</text>
+                        <rect x="125" y="200" width="150" height="40" class="state state-core0"/><text x="200" y="225" class="label">SET_BAUD_RATE</text>
+                        <rect x="125" y="270" width="150" height="40" class="state state-core0"/><text x="200" y="295" class="label">BAUD_RATE_WAIT</text>
+                        <rect x="125" y="340" width="150" height="40" class="state state-core0"/><text x="200" y="365" class="label">SERIAL_INIT_HIGH</text>
+                        <rect x="125" y="410" width="150" height="40" class="state state-core0"/><text x="200" y="435" class="label">LIDAR_CONFIG</text>
+                        <rect x="125" y="480" width="150" height="40" class="state state-core0"/><text x="200" y="505" class="label">READY</text>
+                        <rect x="125" y="550" width="150" height="40" class="state state-core0"/><text x="200" y="575" class="label">FRAME_PROCESSING</text>
+
+                        <!-- Core 1 Column -->
+                        <text x="600" y="30" text-anchor="middle" class="core-label">CORE 1 - Data Processing</text>
+                        
+                        <rect x="525" y="60" width="150" height="40" class="state state-core1"/><text x="600" y="85" class="label">STARTUP</text>
+                        <rect x="525" y="130" width="150" height="40" class="state state-core1"/><text x="600" y="155" class="label">PINS_INIT</text>
+                        <rect x="525" y="200" width="150" height="40" class="state state-core1"/><text x="600" y="225" class="label">CONFIG_LOAD</text>
+                        <rect x="525" y="270" width="150" height="40" class="state state-core1"/><text x="600" y="295" class="label">CONFIG_MODE_CHECK</text>
+                        <rect x="525" y="340" width="150" height="40" class="state state-core1"/><text x="600" y="365" class="label">READY</text>
+                        <rect x="525" y="410" width="150" height="40" class="state state-core1"/><text x="600" y="435" class="label">NORMAL_OPERATION</text>
+                        <rect x="525" y="480" width="150" height="40" class="state state-core1"/><text x="600" y="505" class="label">CONFIG_MODE</text>
+
+                        <!-- Core 0 Flow -->
+                        <line x1="200" y1="100" x2="200" y2="130" class="arrow"/>
+                        <line x1="200" y1="170" x2="200" y2="200" class="arrow"/>
+                        <line x1="200" y1="240" x2="200" y2="270" class="arrow"/>
+                        <line x1="200" y1="310" x2="200" y2="340" class="arrow"/>
+                        <line x1="200" y1="380" x2="200" y2="410" class="arrow"/>
+                        <line x1="200" y1="450" x2="200" y2="480" class="arrow"/>
+                        <line x1="200" y1="520" x2="200" y2="550" class="arrow"/>
+                        
+                        <!-- Core 1 Flow -->
+                        <line x1="600" y1="100" x2="600" y2="130" class="arrow"/>
+                        <line x1="600" y1="170" x2="600" y2="200" class="arrow"/>
+                        <line x1="600" y1="240" x2="600" y2="270" class="arrow"/>
+                        
+                        <!-- Config mode branch -->
+                        <path d="M 525 295 Q 475 295, 475 365 Q 475 435, 525 435" class="arrow" fill="none"/>
+                        <text x="465" y="365" class="label-small">Serial Input</text>
+                        
+                        <!-- Normal operation branch -->
+                        <line x1="600" y1="310" x2="600" y2="340" class="arrow"/>
+                        <line x1="600" y1="380" x2="600" y2="410" class="arrow"/>
+                        <text x="610" y="330" class="label-small">Timeout</text>
+
+                        <!-- Core sync lines -->
+                        <line x1="275" y1="505" x2="525" y2="365" class="arrow-sync"/>
+                        <text x="400" y="430" class="label-small">Core Sync</text>
+                        
+                        <!-- Processing loop -->
+                        <path d="M 275 575 Q 350 620, 350 680 Q 350 720, 275 720 Q 200 720, 125 720 Q 50 720, 50 575 Q 50 520, 125 520" class="arrow" fill="none"/>
+                        <text x="50" y="640" class="label-small">Continuous</text>
+                        <text x="50" y="655" class="label-small">Frame Loop</text>
+
+                        <!-- Error states -->
+                        <rect x="300" y="650" width="120" height="40" class="state state-error"/><text x="360" y="675" class="label">RECOVERY</text>
+                        <path d="M 200 590 Q 250 620, 300 670" class="arrow" fill="none"/>
+                        <text x="250" y="640" class="label-small">Timeout/Error</text>
+
+                        <!-- Buffer communication -->
+                        <rect x="350" y="550" width="100" height="40" rx="5" fill="#4c1d95" stroke="#8b5cf6"/>
+                        <text x="400" y="575" class="label">Atomic Buffer</text>
+                        <line x1="275" y1="570" x2="350" y2="570" class="arrow-sync"/>
+                        <line x1="450" y1="570" x2="525" y2="435" class="arrow-sync"/>
+
+                        <!-- Timing annotations -->
+                        <text x="50" y="850" class="label-small">Core 0: 460800 baud, 800-1000Hz frame rate</text>
+                        <text x="50" y="870" class="label-small">Core 1: GUI processing, velocity calculation, trigger logic</text>
+                    </svg>
+                </div>
+
+                <h3>Critical Synchronization Points</h3>
+                <ul class="list-disc list-inside mt-4 space-y-2">
+                    <li><strong>Startup Coordination:</strong> Core 1 waits for Core 0 LiDAR initialization before enabling processing</li>
+                    <li><strong>Frame Buffer:</strong> Thread-safe circular buffer with mutex protection for frame handoff</li>
+                    <li><strong>Error Propagation:</strong> Cross-core error flags enable coordinated recovery strategies</li>
+                    <li><strong>Configuration Synchronization:</strong> Core 1 config changes immediately visible to Core 0 trigger logic</li>
+                </ul>
+            </section>
+            
+            <section id="calculator" class="content-section mb-12" style="display: none;">
+                <h2>8. Interactive Parameter Calculator</h2>
+                <p>This calculator helps visualize the relationship between <strong>Detection Distance</strong> and maximum detectable velocity at high frame rates. The RP2040 system operates at 800-1000Hz, significantly improving velocity detection capabilities over previous systems.</p>
+                <p class="mt-2">Higher frame rates allow detection of faster-moving objects by providing more data points as they traverse the detection zone. The adaptive velocity calculator uses median filtering across multiple samples for robust measurements.</p>
+                
+                <div class="mt-8 p-6 bg-gray-800 rounded-lg space-y-6">
+                    <div>
+                        <label for="distance-slider" class="block text-white font-medium mb-2">Detection Distance</label>
+                        <div class="slider-container">
+                            <span class="font-mono text-lg">7 cm</span>
+                            <input id="distance-slider" type="range" min="7" max="1200" value="300" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                            <span class="font-mono text-lg">1200 cm</span>
+                        </div>
+                         <div class="text-center mt-2">
+                             <span class="text-2xl font-bold text-blue-400" id="distance-output">300</span> <span class="text-gray-400">cm</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-white font-medium mb-2">Frame Rate Mode</label>
+                        <div class="flex space-x-4 mb-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="frame-rate" value="800" class="mr-2" checked>
+                                <span class="text-gray-300">800Hz Mode (Standard)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="frame-rate" value="1000" class="mr-2">
+                                <span class="text-gray-300">1000Hz Mode (High Performance)</span>
+                            </label>
+                        </div>
+                        <div class="text-center mt-2">
+                            <span class="text-2xl font-bold text-green-400" id="framerate-output">800</span> <span class="text-gray-400">Hz</span>
+                        </div>
+                    </div>
+                    
+                    <div>
+                         <label class="block text-white font-medium mb-2">Expected Signal Strength</label>
+                         <p class="text-gray-400 text-sm">Signal strength varies with distance and target reflectivity. Minimum threshold is 200.</p>
+                         <div class="w-full bg-gray-700 rounded-full h-4 mt-2 border border-gray-600">
+                             <div id="strength-bar" class="bg-green-500 h-4 rounded-full" style="width: 50%;"></div>
+                         </div>
+                         <div class="text-center mt-2">
+                             <span class="text-2xl font-bold text-green-400" id="strength-output">1000</span> <span class="text-gray-400">units</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-white font-medium mb-2">Velocity Detection Performance</label>
+                        <p class="text-gray-400 text-sm">The <span class="text-blue-400">blue bar</span> shows the configured velocity range (-250 to -2200 cm/s). The <span class="text-yellow-400">yellow marker</span> shows maximum practical detection speed with current settings.</p>
+                         <div class="velocity-bar-container mt-2">
+                            <div class="velocity-bar" style="left: 11.4%; right: 0%;"></div>
+                            <div id="effective-velocity-marker" class="effective-velocity-marker" style="left: 50%;"></div>
+                         </div>
+                         <div class="flex justify-between text-sm font-mono mt-1">
+                             <span>-250 cm/s</span>
+                             <span>-2200 cm/s</span>
+                         </div>
+                         <div class="text-center mt-2">
+                             <span class="text-gray-400">Max Detectable Speed: </span>
+                             <span class="text-2xl font-bold text-yellow-400" id="velocity-output">800</span> <span class="text-gray-400">cm/s</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mt-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">System Latency</h4>
+                                <p id="latency-output" class="text-2xl font-bold text-purple-400 mt-2">3.75 ms</p>
+                                <p class="text-gray-400 text-sm">Time for 3 samples</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Velocity Precision</h4>
+                                <p id="precision-output" class="text-2xl font-bold text-teal-400 mt-2">±5 cm/s</p>
+                                <p class="text-gray-400 text-sm">Measurement accuracy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tuning-calculator" class="content-section mb-12" style="display: none;">
+                <h2>9. Firmware Tuning Calculator</h2>
+                <p>This tool models the performance impact of key firmware parameters in the RP2040 dual-core system.</p>
+                
+                <div class="mt-8 p-6 bg-gray-800 rounded-lg space-y-8">
+                    <div class="p-4 border border-gray-700 rounded-lg">
+                        <h3 class="text-xl font-semibold text-white mb-4">Buffer Management & Performance</h3>
+                        <div>
+                            <label for="buffer-slider" class="block text-white font-medium mb-2"><code>FRAME_BUFFER_SIZE</code></label>
+                            <p class="text-gray-400 text-sm mb-2">Circular buffer size for inter-core frame passing. Larger = more buffering, higher RAM usage.</p>
+                            <div class="slider-container">
+                                <span class="font-mono text-lg">16</span>
+                                <input id="buffer-slider" type="range" min="16" max="64" value="32" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                                <span class="font-mono text-lg">64</span>
+                            </div>
+                             <div class="text-center mt-2">
+                                 <span class="text-2xl font-bold text-blue-400" id="buffer-output">32</span> <span class="text-gray-400">frames</span>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <label for="frame-rate-tuning-slider" class="block text-white font-medium mb-2"><code>TARGET_FREQUENCY_HZ</code></label>
+                            <p class="text-gray-400 text-sm mb-2">LiDAR frame rate - affects all timing calculations and buffer utilization.</p>
+                            <div class="slider-container">
+                                <span class="font-mono text-lg">800</span>
+                                <input id="frame-rate-tuning-slider" type="range" min="800" max="1000" value="800" step="200" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                                <span class="font-mono text-lg">1000</span>
+                            </div>
+                             <div class="text-center mt-2">
+                                 <span class="text-2xl font-bold text-blue-400" id="frame-rate-tuning-output">800</span> <span class="text-gray-400">Hz</span>
+                            </div>
+                        </div>
+                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mt-8">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Buffer Duration</h4>
+                                <p id="buffer-duration-output" class="text-3xl font-bold text-purple-400 mt-2">40 ms</p>
+                                <p class="text-gray-400 text-sm">Full buffer time span</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Overflow Risk</h4>
+                                <p id="overflow-risk-output" class="status-pill bg-green-500 text-green-900 mt-2">Low</p>
+                                <p class="text-gray-400 text-sm">Based on processing rate</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Memory Usage</h4>
+                                <p id="memory-usage-output" class="text-3xl font-bold text-cyan-400 mt-2">1.8 KB</p>
+                                <p class="text-gray-400 text-sm">Frame buffer RAM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border border-gray-700 rounded-lg">
+                        <h3 class="text-xl font-semibold text-white mb-4">Velocity Calculation Parameters</h3>
+                        <div class="mt-6">
+                            <label for="velocity-history-slider" class="block text-white font-medium mb-2"><code>MAX_HISTORY</code></label>
+                            <p class="text-gray-400 text-sm mb-2">Number of frames stored for velocity calculation - affects smoothing and memory.</p>
+                            <div class="slider-container">
+                                <span class="font-mono text-lg">5</span>
+                                <input id="velocity-history-slider" type="range" min="5" max="30" value="15" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                                <span class="font-mono text-lg">30</span>
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="text-2xl font-bold text-blue-400" id="velocity-history-output">15</span> <span class="text-gray-400">frames</span>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <label for="deadband-slider" class="block text-white font-medium mb-2"><code>VELOCITY_DEADBAND_THRESHOLD</code></label>
+                            <p class="text-gray-400 text-sm mb-2">Minimum velocity change to register movement - reduces noise sensitivity.</p>
+                            <div class="slider-container">
+                                <span class="font-mono text-lg">0.5</span>
+                                <input id="deadband-slider" type="range" min="0.5" max="5.0" value="1.0" step="0.1" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                                <span class="font-mono text-lg">5.0</span>
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="text-2xl font-bold text-blue-400" id="deadband-output">1.0</span> <span class="text-gray-400">cm/s</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mt-8">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Velocity Smoothing</h4>
+                                <p id="velocity-smoothing-output" class="text-3xl font-bold text-orange-400 mt-2">18.8 ms</p>
+                                <p class="text-gray-400 text-sm">History time span</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Noise Rejection</h4>
+                                <p id="noise-rejection-output" class="status-pill bg-yellow-500 text-yellow-900 mt-2">Medium</p>
+                                <p class="text-gray-400 text-sm">Deadband effectiveness</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 border border-gray-700 rounded-lg">
+                        <h3 class="text-xl font-semibold text-white mb-4">Trigger & Timing Parameters</h3>
+                        <div class="mt-6">
+                            <label for="trigger-latch-slider" class="block text-white font-medium mb-2"><code>TRIGGER_LATCH_DURATION</code></label>
+                            <p class="text-gray-400 text-sm mb-2">How long the trigger output stays active after detection.</p>
+                            <div class="slider-container">
+                                <span class="font-mono text-lg">1000</span>
+                                <input id="trigger-latch-slider" type="range" min="1000" max="10000" value="3000" step="500" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                                <span class="font-mono text-lg">10000</span>
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="text-2xl font-bold text-blue-400" id="trigger-latch-output">3000</span> <span class="text-gray-400">ms</span>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <label for="debounce-on-slider" class="block text-white font-medium mb-2"><code>DEBOUNCE_ON_MS</code></label>
+                            <p class="text-gray-400 text-sm mb-2">Delay before trigger activation to filter noise.</p>
+                            <div class="slider-container">
+                                <span class="font-mono text-lg">10</span>
+                                <input id="debounce-on-slider" type="range" min="10" max="100" value="30" step="5" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                                <span class="font-mono text-lg">100</span>
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="text-2xl font-bold text-blue-400" id="debounce-on-output">30</span> <span class="text-gray-400">ms</span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center mt-8">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Response Time</h4>
+                                <p id="response-time-output" class="text-3xl font-bold text-red-400 mt-2">30 ms</p>
+                                <p class="text-gray-400 text-sm">Trigger activation delay</p>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-300">Stability</h4>
+                                <p id="stability-output" class="status-pill bg-green-500 text-green-900 mt-2">High</p>
+                                <p class="text-gray-400 text-sm">Noise immunity</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="troubleshooting" class="content-section mb-12" style="display: none;">
+                <h2>10. Troubleshooting with NeoPixel & LED Indicators</h2>
+                <p>The system provides visual feedback through both a NeoPixel LED and traditional status LED on the RP2040 board.</p>
+                
+                <h3>NeoPixel Status Indicators</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>NeoPixel Pattern</th>
+                                <th>Meaning & What to Check</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="led-indicator" style="background: linear-gradient(90deg, #ef4444, #eab308, #3b82f6);"></span><strong>Heat Map Colors</strong></td>
+                                <td><strong>Normal Operation.</strong> Red (close) → Yellow (medium) → Blue (far). Brightness indicates signal strength. Saturation shows velocity (approaching = vivid, receding = muted).</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-rapid-flash" style="background-color: #ffffff;"></span><strong>White 5Hz Flash</strong></td>
+                                <td><strong>Trigger Active.</strong> Synchronized with 3-second trigger output latch. Flash persists for entire latch duration.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-pulse" style="background-color: #3b82f6;"></span><strong>Blue Breathing</strong></td>
+                                <td><strong>System Initialization.</strong> Slow, deep breathing pattern during startup and LiDAR configuration.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-medium-blink" style="background-color: #a855f7;"></span><strong>Purple Flashing</strong></td>
+                                <td><strong>Configuration Mode.</strong> System ready for GUI commands via serial. Green glow overlay indicates successful command execution.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-fast-blink" style="background-color: #ef4444;"></span><strong>Red 4Hz Flash</strong></td>
+                                <td><strong>Error State.</strong> Communication timeout, buffer overflow, or sensor malfunction. Check LiDAR connections and power.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-off"></span><strong>Off</strong></td>
+                                <td><strong>Power/Hardware Issue.</strong> No power to NeoPixel, GPIO18 connection problem, or NeoPixel initialization failure.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Traditional Status LED (GPIO25)</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>LED Pattern</th>
+                                <th>Meaning & System State</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="led-indicator led-slow-blink"></span><strong>1000ms Blink</strong></td>
+                                <td><strong>Normal Operation.</strong> Steady heartbeat indicating healthy system operation.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-rapid-flash"></span><strong>100ms Blink</strong></td>
+                                <td><strong>Configuration Mode.</strong> Rapid blinking when GUI interface is active.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-medium-blink"></span><strong>200ms Blink</strong></td>
+                                <td><strong>Buffer Warning.</strong> Frame buffer approaching capacity - processing lag detected.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-fast-blink"></span><strong>300ms Blink</strong></td>
+                                <td><strong>Communication Timeout.</strong> LiDAR sensor not responding or connection lost.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="led-indicator led-rapid-flash"></span><strong>10ms Blink</strong></td>
+                                <td><strong>Critical Buffer State.</strong> Imminent frame loss - system overloaded.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Common Troubleshooting Steps</h3>
+                <ol class="list-decimal list-inside mt-4 space-y-3">
+                    <li><strong>Red NeoPixel Flash:</strong> Check LiDAR power (3.3V), verify TX/RX connections (GP0/GP1), ensure baud rate configuration succeeded.</li>
+                    <li><strong>No NeoPixel:</strong> Verify GPIO18 connection, check 3.3V power to NeoPixel, confirm NeoPixel library initialization.</li>
+                    <li><strong>Trigger Not Working:</strong> Check switch connections (GP10-12), verify configuration via GUI, test external trigger pins (GP14/GP15).</li>
+                    <li><strong>Buffer Warnings:</strong> Reduce frame rate from 1000Hz to 800Hz, check Core 1 processing efficiency, verify adequate CPU resources.</li>
+                    <li><strong>Configuration Lost:</strong> LittleFS corruption - perform factory reset via GUI command 'F', check flash memory integrity.</li>
+                </ol>
+            </section>
+
+             <section id="debug" class="content-section mb-12" style="display: none;">
+                <h2>11. Interpreting Debug Output</h2>
+                <p>Debug output can be enabled through the GUI configuration system. When enabled, the system provides detailed status information via USB serial at 115200 baud for comprehensive system monitoring and troubleshooting.</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Debug Message</th>
+                                <th>Source & Context</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>RP2040 LiDAR Controller v6.3 Starting</code></td>
+                                <td>System startup message confirming firmware version and dual-core architecture.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 0: Initializing at [timestamp] ms</code></td>
+                                <td>Core 0 LiDAR interface initialization beginning - includes serial setup timing.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 1: Initializing at [timestamp] ms</code></td>
+                                <td>Core 1 data processing initialization - includes GPIO and NeoPixel setup.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 0: Serial1 re-initialized at 460800 baud</code></td>
+                                <td>High-speed LiDAR communication established - sensor ready for data streaming.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 1: NeoPixel initialized successfully on pin 18</code></td>
+                                <td>Visual status system ready - WS2812B protocol operational.</td>
+                            </tr>
+                            <tr>
+                                <td><code>ENTERING CONFIGURATION MODE</code></td>
+                                <td>GUI interface active - ready for serial commands, health monitoring suspended.</td>
+                            </tr>
+                            <tr>
+                                <td><code>ENTERING NORMAL OPERATION MODE</code></td>
+                                <td>Full system operational - LiDAR processing active, NeoPixel distance display enabled.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 1: Valid configuration loaded from LittleFS</code></td>
+                                <td>Configuration successfully read from flash storage with checksum validation passed.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 0: LiDAR initialization complete in [X] ms</code></td>
+                                <td>Sensor configuration finished - timing indicates hardware response quality.</td>
+                            </tr>
+                             <tr>
+                                <td><code>DEBUG: Velocity=[X]cm/s Strength=[Y] Dist=[Z]cm Trigger=[STATE]</code></td>
+                                <td>Real-time processing status - velocity calculation, signal quality, distance measurement, and trigger state.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 1: TRIGGER! Distance=[X]cm, Velocity=[Y]cm/s</code></td>
+                                <td>Trigger activation event with causing parameters - logged on rising edge only.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 0: Communication timeout [X] ms, attempting recovery</code></td>
+                                <td>LiDAR communication failure detected - graduated recovery process starting.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 0: CRITICAL - Buffer overflow! Dropping frames</code></td>
+                                <td>Frame processing cannot keep up with acquisition rate - consider reducing frame rate.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 1: Processed [X] frames in last [Y] ms</code></td>
+                                <td>Performance monitoring - frame processing rate and system load indication.</td>
+                            </tr>
+                            <tr>
+                                <td><code>Core 1: Configuration successfully saved to LittleFS</code></td>
+                                <td>GUI configuration changes written to non-volatile storage with checksum.</td>
+                            </tr>
+                             <tr>
+                                <td><code>Core 1: System reset requested via GUI</code></td>
+                                <td>Controlled restart initiated through configuration interface.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Performance Monitoring Output</h3>
+                <p>When debug is enabled, the system periodically reports performance metrics:</p>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Frame Rates:</strong> Current acquisition and processing rates per core</li>
+                    <li><strong>Buffer Utilization:</strong> Current and peak buffer fill levels</li>
+                    <li><strong>Error Counters:</strong> Communication timeouts, frame corruption, velocity calculation errors</li>
+                    <li><strong>Timing Analysis:</strong> Core initialization times, processing latencies, recovery attempt frequencies</li>
+                </ul>
+            </section>
+            
+            <section id="programming" class="content-section mb-12" style="display: none;">
+                <h2>12. RP2040 Programming Guide</h2>
+                <p>This guide covers programming the RP2040 microcontroller using the Arduino IDE with the RP2040 board package.</p>
+
+                <h3>Step 1: Arduino IDE Setup for RP2040</h3>
+                <p>Configure the Arduino IDE to support the RP2040 microcontroller and install required libraries.</p>
+                <ol class="list-decimal list-inside mt-4 space-y-3">
+                    <li><strong>Install Arduino IDE:</strong> Download and install Arduino IDE 2.0 or later from the official Arduino website.</li>
+                    <li><strong>Add RP2040 Board Package:</strong> Go to <strong>File > Preferences</strong> and add this URL to "Additional Boards Manager URLs": 
+                        <br><code>https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json</code></li>
+                    <li><strong>Install Board Package:</strong> Open <strong>Tools > Board > Boards Manager</strong>, search for "pico", and install <strong>"Raspberry Pi Pico/RP2040" by Earle F. Philhower, III</strong>.</li>
+                    <li><strong>Install Required Libraries:</strong> Use <strong>Library Manager</strong> to install:
+                        <ul class="list-disc list-inside ml-6 mt-1">
+                            <li><strong>Adafruit NeoPixel</strong> (for WS2812B LED control)</li>
+                            <li><strong>LittleFS</strong> (included with RP2040 package)</li>
+                        </ul>
+                    </li>
+                </ol>
+
+                <h3>Step 2: Board Configuration</h3>
+                <p>Set up the Arduino IDE for the specific RP2040 board and configure compilation options.</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Setting</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Board</td><td>Generic RP2040</td><td>Basic RP2040 without specific pinout</td></tr>
+                            <tr><td>CPU Speed</td><td>133 MHz</td><td>Standard operating frequency</td></tr>
+                            <tr><td>Optimize</td><td>Small (-Os) (standard)</td><td>Balance size and speed</td></tr>
+                            <tr><td>USB Stack</td><td>Adafruit TinyUSB</td><td>Required for USB serial</td></tr>
+                            <tr><td>Debug Port</td><td>Serial</td><td>Enable debug output</td></tr>
+                            <tr><td>Debug Level</td><td>None</td><td>Disable extra debug overhead</td></tr>
+                            <tr><td>Flash Size</td><td>2MB (Sketch: 1MB, FS: 1MB)</td><td>Reserve space for LittleFS</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Step 3: Programming Methods</h3>
+
+                <h4>A. USB Programming (Boot Mode)</h4>
+                <ol class="list-decimal list-inside mt-4 space-y-2">
+                    <li><strong>Enter Boot Mode:</strong> Hold the BOOTSEL button while connecting USB or pressing RESET.</li>
+                    <li><strong>Mount as Drive:</strong> The RP2040 appears as "RPI-RP2" mass storage device.</li>
+                    <li><strong>Select Port:</strong> In Arduino IDE, select the appropriate serial port under <strong>Tools > Port</strong>.</li>
+                    <li><strong>Upload Sketch:</strong> Click <strong>Upload</strong> or use <code>Ctrl+U</code>. No special programmer needed.</li>
+                </ol>
+
+                <h4>B. Picoprobe/Debug Probe Programming</h4>
+                <ol class="list-decimal list-inside mt-4 space-y-2">
+                    <li><strong>Hardware Setup:</strong> Connect SWD pins (SWDIO, SWCLK, GND) between programmer and target RP2040.</li>
+                    <li><strong>Select Programmer:</strong> Under <strong>Tools > Programmer</strong>, select <strong>"Picoprobe (CMSIS-DAP)"</strong>.</li>
+                    <li><strong>Upload via Programmer:</strong> Use <strong>Sketch > Upload Using Programmer</strong> or <code>Ctrl+Shift+U</code>.</li>
+                </ol>
+
+                <h3>Step 4: Compilation Constants</h3>
+                <p>Key preprocessor definitions that affect system behavior:</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Constant</th><th>Purpose</th><th>Values</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>USE_1000HZ_MODE</code></td><td>Frame rate selection</td><td>true (1000Hz) / false (800Hz)</td></tr>
+                            <tr><td><code>DEBUG_BAUD_RATE</code></td><td>Serial debug speed</td><td>115200 (standard)</td></tr>
+                            <tr><td><code>LIDAR_BAUD_RATE</code></td><td>LiDAR communication speed</td><td>460800 (high-speed)</td></tr>
+                            <tr><td><code>FRAME_BUFFER_SIZE</code></td><td>Inter-core buffer capacity</td><td>32 (1000Hz) / 24 (800Hz)</td></tr>
+                            <tr><td><code>CONFIG_MODE_TIMEOUT_MS</code></td><td>GUI entry window</td><td>15000 (15 seconds)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Step 5: Project Structure</h3>
+                <p>The firmware is organized into multiple files for modularity:</p>
+                <ul class="list-disc list-inside mt-2 space-y-1">
+                    <li><strong>Main Files:</strong> <code>main.ino</code>, <code>globals.h/cpp</code></li>
+                    <li><strong>Core Management:</strong> <code>core0_handling.h/cpp</code>, <code>core1_handling.h/cpp</code></li>
+                    <li><strong>System Components:</strong> <code>init.h/cpp</code>, <code>storage.h/cpp</code>, <code>trigger.h/cpp</code></li>
+                    <li><strong>User Interface:</strong> <code>gui.h/cpp</code>, <code>neopixel_integration.h/cpp</code></li>
+                    <li><strong>Utilities:</strong> <code>calculations.h/cpp</code>, <code>status.h/cpp</code>, <code>switch.h/cpp</code></li>
+                </ul>
+            </section>
+            
+            <section id="appendix" class="content-section mb-12" style="display: none;">
+                <h2>13. Appendix: Configuration Parameters</h2>
+                <p>The following parameters can be adjusted by editing the source code before compilation. Unlike the previous ATtiny1634 system, most configuration is now handled through the GUI interface with persistent storage.</p>
+                
+                <h3>13.1 GUI-Configurable Parameters</h3>
+                <div class="mt-4 p-4 bg-blue-900 bg-opacity-30 border border-blue-500 rounded-lg">
+                    <p class="text-blue-300"><strong>Note:</strong> These parameters can be changed at runtime through the GUI interface and are automatically saved to LittleFS storage with checksum protection.</p>
+                </div>
+
+                <div class="table-container mt-4">
+                     <table>
+                        <thead>
+                            <tr><th>Parameter Category</th><th>Description</th><th>GUI Command</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Distance Thresholds</strong></td>
+                                <td>Maximum detection distance for each switch position (0-7) in centimeters.</td>
+                                <td>'D' (get) / 'd' (set)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Velocity Thresholds</strong></td>
+                                <td>Minimum and maximum velocity ranges for each switch position in cm/s.</td>
+                                <td>'V' (get min) / 'v' (get max) / 'w' (set)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Trigger Mode</strong></td>
+                                <td>Enable/disable velocity-based triggering (1=distance only, 2=distance+velocity).</td>
+                                <td>'M' (get) / 'm' (set)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Debug Output</strong></td>
+                                <td>Enable/disable detailed debug output on USB serial.</td>
+                                <td>'G' (get) / 'g' (set)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="mt-6">13.2 Compile-Time Hardware Configuration</h3>
+                <div class="table-container">
+                     <table>
+                        <thead>
+                            <tr><th>Parameter Name</th><th>Default</th><th>Description & Impact</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>USE_1000HZ_MODE</code></td>
+                                <td>true</td>
+                                <td>Selects 1000Hz operation (true) or 800Hz (false). Affects buffer sizes, timeouts, and processing load.</td>
+                            </tr>
+                            <tr>
+                                <td><code>FRAME_BUFFER_SIZE</code></td>
+                                <td>32 (1000Hz) / 24 (800Hz)</td>
+                                <td>Inter-core circular buffer capacity. Larger values provide more buffering but use more RAM.</td>
+                            </tr>
+                            <tr>
+                                <td><code>MIN_STRENGTH_THRESHOLD</code></td>
+                                <td>200</td>
+                                <td>Minimum LiDAR signal quality required. Higher values reduce false positives but may reject weak valid signals.</td>
+                            </tr>
+                            <tr>
+                                <td><code>CONFIG_MODE_TIMEOUT_MS</code></td>
+                                <td>15000</td>
+                                <td>Time window for GUI configuration entry. Shorter = faster boot, longer = more time to connect.</td>
+                            </tr>
+                            <tr>
+                                <td><code>LIDAR_BAUD_RATE</code></td>
+                                <td>460800</td>
+                                <td>High-speed communication rate with LiDAR sensor. Must match sensor configuration.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="mt-6">13.3 Advanced Timing Parameters</h3>
+                <div class="table-container">
+                     <table>
+                        <thead>
+                            <tr><th>Parameter Name</th><th>Default</th><th>Description & Tuning</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>FRAME_TIMEOUT_US</code></td>
+                                <td>3000 (1000Hz) / 2000 (800Hz)</td>
+                                <td>Maximum time to wait for complete frame. Adaptive timeout based on observed frame rate.</td>
+                            </tr>
+                            <tr>
+                                <td><code>VELOCITY_DEADBAND_THRESHOLD</code></td>
+                                <td>1.0 cm/s</td>
+                                <td>Minimum velocity change to register movement. Higher values reduce noise but may miss slow objects.</td>
+                            </tr>
+                            <tr>
+                                <td><code>DEBOUNCE_ON_MS / DEBOUNCE_OFF_MS</code></td>
+                                <td>30ms / 50ms</td>
+                                <td>Trigger activation/deactivation delays. Prevents false triggers from electrical noise.</td>
+                            </tr>
+                            <tr>
+                                <td><code>TRIGGER_LATCH_DURATION_MS</code></td>
+                                <td>3000</td>
+                                <td>How long trigger output stays active. Ensures reliable downstream detection equipment.</td>
+                            </tr>
+                            <tr>
+                                <td><code>MAX_HISTORY</code></td>
+                                <td>15</td>
+                                <td>Velocity calculation frame history. More frames = smoother but higher latency.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="mt-6">13.4 Performance Optimization Guidelines</h3>
+                <ul class="list-disc list-inside mt-4 space-y-2">
+                    <li><strong>High Frame Rate Mode:</strong> Use 1000Hz only when maximum temporal resolution is required. 800Hz provides excellent performance with lower CPU load.</li>
+                    <li><strong>Buffer Sizing:</strong> Increase FRAME_BUFFER_SIZE if experiencing buffer overflows. Each frame uses ~14 bytes of RAM.</li>
+                    <li><strong>Velocity Sensitivity:</strong> Adjust VELOCITY_DEADBAND_THRESHOLD based on application. Lower values for detecting slow movement, higher for noisy environments.</li>
+                    <li><strong>Communication Reliability:</strong> FRAME_TIMEOUT_US should be 3-5x the expected frame interval for stable operation.</li>
+                </ul>
+            </section>
+            
+            <section id="changelog" class="content-section" style="display: none;">
+                <h2>14. Version History</h2>
+                <div class="mt-8 space-y-8">
+                    <div class="changelog-entry">
+                        <h3 class="text-2xl font-semibold text-white">Version 6.3 <span class="text-sm font-medium text-green-400 ml-2">Current Release</span></h3>
+                        <p class="text-gray-400">Released: September 2025</p>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li><strong>Dual-Core RP2040 Architecture:</strong> Complete redesign with parallel processing - Core 0 handles LiDAR I/O, Core 1 manages data processing and system logic.</li>
+                            <li><strong>GUI Configuration System:</strong> Real-time parameter adjustment via serial interface with packet-based protocol and checksum validation.</li>
+                            <li><strong>NeoPixel Status Display:</strong> Advanced visual feedback with distance heat mapping, velocity indication, trigger flash, and system status patterns.</li>
+                            <li><strong>LittleFS Configuration Storage:</strong> Non-volatile parameter storage with automatic checksum validation and factory reset capability.</li>
+                            <li><strong>Enhanced Performance:</strong> 800Hz/1000Hz operation modes with adaptive velocity calculation using median filtering across 15-frame history.</li>
+                            <li><strong>Graduated Error Recovery:</strong> Multi-level error handling with buffer flush → soft reset → full reinitialization escalation.</li>
+                            <li><strong>Thread-Safe Operation:</strong> Mutex-protected inter-core communication with atomic buffer operations and lock-free frame passing.</li>
+                            <li><strong>Advanced Trigger Logic:</strong> Configurable debouncing (30ms on/50ms off) with 3-second latching and velocity-based filtering.</li>
+                        </ul>
+                    </div>
+                    <div class="changelog-entry">
+                        <h3 class="text-2xl font-semibold text-white">Version 5.x Series <span class="text-sm font-medium text-gray-400 ml-2">Development</span></h3>
+                        <p class="text-gray-400">Development Phase: 2024-2025</p>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li><strong>RP2040 Platform Migration:</strong> Transition from ATtiny1634 to RP2040 dual-core architecture.</li>
+                            <li><strong>High-Speed Communication:</strong> Implementation of 460800 baud LiDAR interface with frame synchronization.</li>
+                            <li><strong>Multi-Core Framework:</strong> Development of thread-safe communication structures and atomic buffer system.</li>
+                            <li><strong>Advanced Signal Processing:</strong> Adaptive velocity calculator with noise rejection and deadband processing.</li>
+                            <li><strong>Visual Status System:</strong> NeoPixel integration with priority-based status display and trigger synchronization.</li>
+                            <li><strong>Configuration Infrastructure:</strong> GUI protocol development and LittleFS storage implementation.</li>
+                        </ul>
+                    </div>
+                     <div class="changelog-entry">
+                        <h3 class="text-2xl font-semibold text-white">Version 14.0 (ATtiny1634) <span class="text-sm font-medium text-gray-400 ml-2">Legacy System</span></h3>
+                        <p class="text-gray-400">Released: August 2025</p>
+                        <ul class="list-disc list-inside mt-4 space-y-2">
+                            <li><strong>Final ATtiny1634 Release:</strong> Last version of single-core architecture before RP2040 migration.</li>
+                            <li><strong>Persistent Settings:</strong> EEPROM-based configuration storage with startup mode selection.</li>
+                            <li><strong>50Hz Operation:</strong> TFmini-S sensor integration with basic velocity filtering.</li>
+                            <li><strong>Runtime Mode Selection:</strong> Startup configuration window with unlock sequence for parameter changes.</li>
+                            <li><strong>3-Second Trigger Latch:</strong> Extended output duration for reliable downstream equipment triggering.</li>
+                        </ul>
+                    </div>
+                     <div class="changelog-entry">
+                        <h3 class="text-2xl font-semibold text-white">Earlier Versions <span class="text-sm font-medium text-gray-400 ml-2">Historical</span></h3>
+                        <ul class="list-disc list-inside mt-4 space-y-2 text-sm">
+                            <li><strong>v13.x:</strong> Frame synchronization improvements, 50Hz support, trigger logic refinements</li>
+                            <li><strong>v12.x:</strong> LiDAR command timing optimization, data rate management, debug output cleanup</li>
+                            <li><strong>v11.x:</strong> Watchdog implementation, timing fixes, SoftwareSerial removal for frame sync</li>
+                            <li><strong>v10.x:</strong> Velocity calculation corrections, raw data trigger support, 16-bit PROGMEM fixes</li>
+                            <li><strong>v9.x:</strong> EEPROM responsiveness improvements, pin mapping optimization, UART buffer management</li>
+                            <li><strong>v8.x:</strong> Bounds checking for array access, volatile variable declarations, interrupt cleanup</li>
+                            <li><strong>v7.x:</strong> Race condition fixes, rapid state transition handling, wraparound-safe calculations</li>
+                            <li><strong>v6.x:</strong> TFmini-S specific validation, sensor health checks, stale data bug fixes</li>
+                            <li><strong>v5.x:</strong> Distance and strength validation, timeout protection, command processing delays</li>
+                            <li><strong>v4.x and earlier:</strong> Initial development, basic functionality, hardware integration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="changelog-entry">
+                        <h3 class="text-2xl font-semibold text-white">Migration Benefits: ATtiny1634 → RP2040</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <h4 class="text-lg font-semibold text-green-400">Performance Improvements</h4>
+                                <ul class="list-disc list-inside text-sm space-y-1">
+                                    <li>Frame rate: 50Hz → 800-1000Hz (16-20x faster)</li>
+                                    <li>Processing: Single-core → Dual-core parallel</li>
+                                    <li>Memory: 1KB RAM → 264KB RAM (264x more)</li>
+                                    <li>Storage: EEPROM → LittleFS with checksums</li>
+                                    <li>Communication: 9600 baud → 460800 baud</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-blue-400">Feature Enhancements</h4>
+                                <ul class="list-disc list-inside text-sm space-y-1">
+                                    <li>Configuration: Switch-only → GUI + switches</li>
+                                    <li>Visual feedback: LED only → NeoPixel + LED</li>
+                                    <li>Recovery: Basic → Graduated multi-level</li>
+                                    <li>Velocity calc: Simple → Adaptive with filtering</li>
+                                    <li>Error handling: Limited → Comprehensive</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // --- Tabbed Navigation Logic ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            function showSection(targetId) {
+                contentSections.forEach(section => {
+                    section.style.display = 'none';
+                });
+
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+
+                navLinks.forEach(link => {
+                    if (link.getAttribute('href') === `#${targetId}`) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    const targetId = link.getAttribute('href').substring(1);
+                    showSection(targetId);
+                });
+            });
+
+            // Show the first section by default
+            if (navLinks.length > 0) {
+                const firstSectionId = navLinks[0].getAttribute('href').substring(1);
+                showSection(firstSectionId);
+            }
+        });
+
+        // --- Interactive Configuration Table ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const switchSelector = document.getElementById('switch-selector');
+            const configDistance = document.getElementById('config-distance');
+            const configVelocity = document.getElementById('config-velocity');
+
+            if (switchSelector && configDistance && configVelocity) {
+                const distanceThresholds = [50, 100, 200, 300, 400, 500, 600, 700];
+                const velocityText = "-250 to -2200 cm/s";
+
+                function updateConfigTable() {
+                    const selectedIndex = parseInt(switchSelector.value, 10);
+                    configDistance.textContent = `${distanceThresholds[selectedIndex]} cm`;
+                    configVelocity.textContent = velocityText;
+                }
+
+                switchSelector.addEventListener('change', updateConfigTable);
+                updateConfigTable();
+            }
+        });
+
+        // --- Interactive Parameter Calculator ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const distanceSlider = document.getElementById('distance-slider');
+            const distanceOutput = document.getElementById('distance-output');
+            const strengthOutput = document.getElementById('strength-output');
+            const strengthBar = document.getElementById('strength-bar');
+            const velocityOutput = document.getElementById('velocity-output');
+            const effectiveVelocityMarker = document.getElementById('effective-velocity-marker');
+            const framerateOutput = document.getElementById('framerate-output');
+            const latencyOutput = document.getElementById('latency-output');
+            const precisionOutput = document.getElementById('precision-output');
+
+            if (distanceSlider && distanceOutput) {
+                function updateCalculator() {
+                    const distCm = parseInt(distanceSlider.value, 10);
+                    const frameRateRadio = document.querySelector('input[name="frame-rate"]:checked');
+                    const frameRate = frameRateRadio ? parseInt(frameRateRadio.value, 10) : 800;
+                    
+                    const MIN_SAMPLES_FOR_TRIGGER = 3;
+                    const MIN_STRENGTH = 200;
+                    const MAX_VELOCITY_CMS = 2200;
+                    
+                    distanceOutput.textContent = distCm;
+                    if (framerateOutput) framerateOutput.textContent = frameRate;
+
+                    // Calculate strength
+                    const maxDist = 1200;
+                    const minDist = 7;
+                    let normalizedDist = (maxDist - distCm) / (maxDist - minDist);
+                    let strength = MIN_STRENGTH + (4096 - MIN_STRENGTH) * Math.pow(normalizedDist, 1.5);
+                    strength = Math.round(strength);
+                    
+                    if (strengthOutput) strengthOutput.textContent = strength;
+                    if (strengthBar) {
+                        let strengthPercent = ((strength - MIN_STRENGTH) / (4096 - MIN_STRENGTH)) * 100;
+                        strengthBar.style.width = `${Math.max(0, Math.min(100, strengthPercent))}%`;
+                    }
+
+                    // Calculate velocity
+                    const distM = distCm / 100.0;
+                    const timeToDetectS = MIN_SAMPLES_FOR_TRIGGER * (1 / frameRate);
+                    const maxVelocityMs = distM / timeToDetectS;
+                    const maxVelocityCms = maxVelocityMs * 100;
+                    
+                    if (velocityOutput) velocityOutput.textContent = maxVelocityCms.toFixed(0);
+
+                    if (effectiveVelocityMarker) {
+                        const cappedVelocityForMarker = Math.min(maxVelocityCms, MAX_VELOCITY_CMS);
+                        let velocityPercent = (cappedVelocityForMarker / MAX_VELOCITY_CMS) * 100;
+                        effectiveVelocityMarker.style.left = `${Math.max(0, Math.min(100, velocityPercent))}%`;
+                    }
+
+                    // Update performance metrics
+                    if (latencyOutput) latencyOutput.textContent = `${(timeToDetectS * 1000).toFixed(2)} ms`;
+                    
+                    const precisionCms = 100 / frameRate;
+                    if (precisionOutput) precisionOutput.textContent = `±${precisionCms.toFixed(1)} cm/s`;
+                }
+
+                distanceSlider.addEventListener('input', updateCalculator);
+                document.querySelectorAll('input[name="frame-rate"]').forEach(radio => {
+                    radio.addEventListener('change', updateCalculator);
+                });
+                updateCalculator();
+            }
+        });
+
+        // --- Firmware Tuning Calculator ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const bufferSlider = document.getElementById('buffer-slider');
+            const bufferOutput = document.getElementById('buffer-output');
+            const frameRateTuningSlider = document.getElementById('frame-rate-tuning-slider');
+            const frameRateTuningOutput = document.getElementById('frame-rate-tuning-output');
+            const bufferDurationOutput = document.getElementById('buffer-duration-output');
+            const overflowRiskOutput = document.getElementById('overflow-risk-output');
+            const memoryUsageOutput = document.getElementById('memory-usage-output');
+
+            const velocityHistorySlider = document.getElementById('velocity-history-slider');
+            const velocityHistoryOutput = document.getElementById('velocity-history-output');
+            const deadbandSlider = document.getElementById('deadband-slider');
+            const deadbandOutput = document.getElementById('deadband-output');
+            const velocitySmoothingOutput = document.getElementById('velocity-smoothing-output');
+            const noiseRejectionOutput = document.getElementById('noise-rejection-output');
+
+            const triggerLatchSlider = document.getElementById('trigger-latch-slider');
+            const triggerLatchOutput = document.getElementById('trigger-latch-output');
+            const debounceOnSlider = document.getElementById('debounce-on-slider');
+            const debounceOnOutput = document.getElementById('debounce-on-output');
+            const responseTimeOutput = document.getElementById('response-time-output');
+            const stabilityOutput = document.getElementById('stability-output');
+
+            if (bufferSlider && frameRateTuningSlider) {
+                function updateTuningCalculators() {
+                    const bufferSize = parseInt(bufferSlider.value, 10);
+                    const frameRate = parseInt(frameRateTuningSlider.value, 10);
+                    const velocityHistory = velocityHistorySlider ? parseInt(velocityHistorySlider.value, 10) : 15;
+                    const deadband = deadbandSlider ? parseFloat(deadbandSlider.value) : 1.0;
+                    const triggerLatch = triggerLatchSlider ? parseInt(triggerLatchSlider.value, 10) : 3000;
+                    const debounceOn = debounceOnSlider ? parseInt(debounceOnSlider.value, 10) : 30;
+
+                    // Update display values
+                    if (bufferOutput) bufferOutput.textContent = bufferSize;
+                    if (frameRateTuningOutput) frameRateTuningOutput.textContent = frameRate;
+                    if (velocityHistoryOutput) velocityHistoryOutput.textContent = velocityHistory;
+                    if (deadbandOutput) deadbandOutput.textContent = deadband.toFixed(1);
+                    if (triggerLatchOutput) triggerLatchOutput.textContent = triggerLatch;
+                    if (debounceOnOutput) debounceOnOutput.textContent = debounceOn;
+
+                    // Calculate derived metrics
+                    const frameIntervalMs = 1000 / frameRate;
+                    const bufferDurationMs = bufferSize * frameIntervalMs;
+                    const velocitySmoothingMs = velocityHistory * frameIntervalMs;
+                    const bytesPerFrame = 14;
+                    const memoryUsageBytes = bufferSize * bytesPerFrame;
+
+                    if (bufferDurationOutput) bufferDurationOutput.textContent = `${bufferDurationMs.toFixed(1)} ms`;
+                    if (velocitySmoothingOutput) velocitySmoothingOutput.textContent = `${velocitySmoothingMs.toFixed(1)} ms`;
+                    if (memoryUsageOutput) memoryUsageOutput.textContent = `${(memoryUsageBytes / 1024).toFixed(1)} KB`;
+                    if (responseTimeOutput) responseTimeOutput.textContent = `${debounceOn} ms`;
+
+                    // Risk assessments
+                    let overflowRisk = "Low";
+                    let overflowColor = "bg-green-500 text-green-900";
+                    if (bufferSize < 20 || frameRate > 900) {
+                        overflowRisk = "High";
+                        overflowColor = "bg-red-500 text-red-900";
+                    } else if (bufferSize < 28 || frameRate > 850) {
+                        overflowRisk = "Medium";
+                        overflowColor = "bg-yellow-500 text-yellow-900";
+                    }
+
+                    let noiseRejection = "Low";
+                    let noiseColor = "bg-red-500 text-red-900";
+                    if (deadband >= 2.0) {
+                        noiseRejection = "High";
+                        noiseColor = "bg-green-500 text-green-900";
+                    } else if (deadband >= 1.0) {
+                        noiseRejection = "Medium";
+                        noiseColor = "bg-yellow-500 text-yellow-900";
+                    }
+
+                    let stability = "Low";
+                    let stabilityColor = "bg-red-500 text-red-900";
+                    if (debounceOn >= 25) {
+                        stability = "High";
+                        stabilityColor = "bg-green-500 text-green-900";
+                    } else if (debounceOn >= 15) {
+                        stability = "Medium";
+                        stabilityColor = "bg-yellow-500 text-yellow-900";
+                    }
+
+                    if (overflowRiskOutput) {
+                        overflowRiskOutput.textContent = overflowRisk;
+                        overflowRiskOutput.className = `status-pill ${overflowColor}`;
+                    }
+                    if (noiseRejectionOutput) {
+                        noiseRejectionOutput.textContent = noiseRejection;
+                        noiseRejectionOutput.className = `status-pill ${noiseColor}`;
+                    }
+                    if (stabilityOutput) {
+                        stabilityOutput.textContent = stability;
+                        stabilityOutput.className = `status-pill ${stabilityColor}`;
+                    }
+                }
+
+                bufferSlider.addEventListener('input', updateTuningCalculators);
+                frameRateTuningSlider.addEventListener('input', updateTuningCalculators);
+                if (velocityHistorySlider) velocityHistorySlider.addEventListener('input', updateTuningCalculators);
+                if (deadbandSlider) deadbandSlider.addEventListener('input', updateTuningCalculators);
+                if (triggerLatchSlider) triggerLatchSlider.addEventListener('input', updateTuningCalculators);
+                if (debounceOnSlider) debounceOnSlider.addEventListener('input', updateTuningCalculators);
+                updateTuningCalculators();
+            }
+        });
+
+        // --- Three.js LiDAR Animation ---
+        document.addEventListener('DOMContentLoaded', () => {
+            let scene, camera, renderer, lidar, target, beams = [];
+            const container = document.getElementById('lidar-canvas-container');
+
+            if (!container) return;
+
+            function initThree() {
+                try {
+                    scene = new THREE.Scene();
+                    camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+                    camera.position.set(0, 3, 10);
+                    camera.lookAt(0, 0, 0);
+                    
+                    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    container.appendChild(renderer.domElement);
+                    
+                    const ambientLight = new THREE.AmbientLight(0x404040, 2);
+                    scene.add(ambientLight);
+                    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+                    directionalLight.position.set(5, 10, 7.5);
+                    scene.add(directionalLight);
+                    
+                    // Create LiDAR sensor
+                    const lidarGroup = new THREE.Group();
+                    const bodyGeo = new THREE.CylinderGeometry(1.5, 1.5, 1, 32);
+                    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x374151, metalness: 0.8, roughness: 0.4 });
+                    const lidarBody = new THREE.Mesh(bodyGeo, bodyMat);
+                    lidarBody.rotation.x = Math.PI / 2;
+                    
+                    const lensGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 32);
+                    const lensMat = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.1, metalness: 0.2 });
+                    const lidarLens = new THREE.Mesh(lensGeo, lensMat);
+                    lidarLens.position.z = 0.55;
+                    lidarLens.rotation.x = Math.PI / 2;
+                    
+                    lidarGroup.add(lidarBody);
+                    lidarGroup.add(lidarLens);
+                    lidar = lidarGroup;
+                    lidar.rotation.y = -Math.PI / 4;
+                    scene.add(lidar);
+                    
+                    // Create target
+                    const targetGeo = new THREE.BoxGeometry(2, 4, 0.5);
+                    const targetMat = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.5, roughness: 0.6 });
+                    target = new THREE.Mesh(targetGeo, targetMat);
+                    target.position.set(10, 0, -15);
+                    scene.add(target);
+                    
+                    // Create laser beams
+                    const beamMat = new THREE.LineBasicMaterial({ color: 0x3b82f6, transparent: true, opacity: 0.7 });
+                    for (let i = 0; i < 20; i++) {
+                        const geometry = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1)]);
+                        const beam = new THREE.Line(geometry, beamMat);
+                        beam.visible = false;
+                        beams.push(beam);
+                        scene.add(beam);
+                    }
+                    
+                    window.addEventListener('resize', onWindowResize, false);
+                    animate();
+                } catch (error) {
+                    console.error("Three.js initialization failed:", error);
+                    container.innerHTML = '<div class="text-center p-4 text-gray-400">3D Animation Failed to Load</div>';
+                }
+            }
+
+            function onWindowResize() {
+                if (!container || !camera || !renderer) return;
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+
+            let frame = 0;
+            function animate() {
+                if (!renderer || !scene || !camera) return;
+                requestAnimationFrame(animate);
+                
+                // Animate target movement
+                if (target) {
+                    target.position.x = Math.sin(Date.now() * 0.0003) * 15;
+                    target.position.z = Math.cos(Date.now() * 0.0003) * 15 - 5;
+                    target.lookAt(lidar.position);
+                }
+                
+                // Rotate LiDAR
+                if (lidar) {
+                    lidar.rotation.y += 0.01;
+                }
+                
+                // Animate laser beams
+                frame++;
+                if (frame % 3 === 0 && beams.length > 0) {
+                    const beam = beams[Math.floor(Math.random() * beams.length)];
+                    const startPoint = new THREE.Vector3(0, 0, 0.6);
+                    if (lidar) lidar.localToWorld(startPoint);
+                    
+                    const direction = new THREE.Vector3((Math.random() - 0.5) * 0.2, (Math.random() - 0.5) * 0.2, 1);
+                    if (lidar) direction.applyQuaternion(lidar.quaternion).normalize();
+                    
+                    const raycaster = new THREE.Raycaster(startPoint, direction);
+                    const intersects = target ? raycaster.intersectObject(target) : [];
+                    let endPoint;
+                    if (intersects.length > 0) {
+                        endPoint = intersects[0].point;
+                    } else {
+                        endPoint = startPoint.clone().add(direction.multiplyScalar(50));
+                    }
+                    
+                    beam.geometry.setFromPoints([startPoint, endPoint]);
+                    beam.visible = true;
+                    setTimeout(() => { 
+                        if (beam) beam.visible = false; 
+                    }, 100);
+                }
+                
+                renderer.render(scene, camera);
+            }
+
+            // Initialize Three.js
+            if (typeof THREE !== 'undefined') {
+                initThree();
+            } else {
+                container.innerHTML = '<div class="text-center p-4 text-gray-400">Three.js Library Not Loaded</div>';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,9 +1,0 @@
-<map id="Lidar&#45;GUI&#45;v2&#45;4.LidarGui.load_config_from_file" name="Lidar&#45;GUI&#45;v2&#45;4.LidarGui.load_config_from_file">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,39,192,81"/>
-<area shape="rect" id="Node000002" href="$class_lidar-_g_u_i-v2-4_1_1_lidar_gui.html#a205ef365b6c42821f6a8771e8eea3051" title=" " alt="" coords="240,5,452,48"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,45,224,40,224,46,193,50"/>
-<area shape="rect" id="Node000004" href="$class_lidar-_g_u_i-v2-4_1_1_lidar_gui.html#a4b722deb00fea690555164fcfb0de774" title=" " alt="" coords="256,72,436,115"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="193,70,241,77,240,82,192,75"/>
-<area shape="rect" id="Node000003" href="$class_lidar-_g_u_i-v2-4_1_1_lidar_gui.html#af278c4c7bccdf648eea9feb2bbc29ca5" title=" " alt="" coords="500,5,685,48"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="452,24,484,24,484,29,452,29"/>
-</map>

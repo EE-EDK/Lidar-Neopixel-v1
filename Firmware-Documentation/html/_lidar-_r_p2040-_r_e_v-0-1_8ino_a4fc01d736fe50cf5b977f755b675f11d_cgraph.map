@@ -1,9 +1,0 @@
-<map id="setup" name="setup">
-<area shape="rect" id="Node000001" title="Core 0 setup function &#45; initializes LiDAR communication." alt="" coords="5,56,59,83"/>
-<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a08e3a40d2bbfade972d374e55dfea047" title="Thread&#45;safe debug enable flag checker." alt="" coords="107,5,223,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="58,57,113,35,115,40,60,62"/>
-<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a6ad4b694f90641aa05829c1b90f172e2" title="Thread&#45;safe serial output without newline." alt="" coords="112,56,218,83"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="59,67,96,67,96,72,59,72"/>
-<area shape="rect" id="Node000004" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af6020ad975c3a06156bc4e985701be92" title="Thread&#45;safe serial output with newline." alt="" coords="107,107,223,133"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="60,77,115,98,113,103,58,82"/>
-</map>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiDAR Controller Evolution: ATtiny vs. RP2040</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://css.gg/css?=|cpu|drive|lock|monitor|move|pause|settings|play-button|redo" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1B2A;
+            color: #E0E1DD;
+        }
+        #simulation-container {
+            height: 50vh;
+            max-height: 500px;
+            min-height: 350px;
+            background-color: #070e17;
+            cursor: grab;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .kpi-card {
+            background-color: #1B263B;
+            border-left: 4px solid #F7B801;
+        }
+        .flow-box {
+            background-color: #415A77;
+            border: 1px solid #778DA9;
+        }
+        .flow-arrow {
+            color: #F7B801;
+        }
+        .table-header {
+            background-color: #415A77;
+        }
+        .table-row-dark {
+            background-color: #1B263B;
+        }
+        .table-row-light {
+            background-color: #2a344a;
+        }
+        .roadmap-line {
+            width: 4px;
+            background-color: #415A77;
+            position: relative;
+        }
+        .roadmap-dot {
+            width: 20px;
+            height: 20px;
+            background-color: #F7B801;
+            border: 4px solid #1B263B;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .roadmap-content {
+            border-left: 4px solid #F7B801;
+        }
+        .icon-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            background-color: #0D1B2A;
+            border-radius: 0.5rem;
+            color: #F7B801;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .control-button {
+            background-color: #1B263B;
+            color: #E0E1DD;
+            border: 1px solid #415A77;
+        }
+        .control-button:hover {
+            background-color: #415A77;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container mx-auto p-4 md:p-8">
+
+        <section id="simulation" class="mb-20 bg-1B263B rounded-lg shadow-2xl overflow-hidden">
+            <div class="p-6 border-b border-415A77">
+                <h2 class="text-2xl font-bold text-center text-white">Interactive System Visualization</h2>
+                <p class="text-sm text-778DA9 text-center">A simulation of the RP2040 controller detecting an approaching object.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4">
+                <div id="simulation-container" class="md:col-span-3 w-full h-full"></div>
+                <div class="p-6 bg-0D1B2A md:bg-transparent flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg mb-4 text-white">System Status</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs font-semibold text-778DA9">DISTANCE (cm)</label>
+                                <p id="dist-readout" class="text-2xl font-mono font-bold text-white">---</p>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-778DA9">VELOCITY (cm/s)</label>
+                                <p id="velo-readout" class="text-2xl font-mono font-bold text-white">---</p>
+                            </div>
+                            <div>
+                                <label class="text-xs font-semibold text-778DA9">TRIGGER STATUS</label>
+                                <p id="status-readout" class="text-2xl font-mono font-bold text-slateGray">INACTIVE</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <h3 class="font-bold text-lg mb-4 text-white">Controls</h3>
+                        <div class="flex space-x-2">
+                            <button id="play-pause-btn" class="control-button p-3 rounded-md flex-grow flex items-center justify-center"><i class="gg-play-button"></i></button>
+                            <button id="reset-btn" class="control-button p-3 rounded-md flex-grow flex items-center justify-center"><i class="gg-redo"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <header class="text-center mb-16">
+            <h1 class="text-4xl md:text-6xl font-black text-white mb-4">A Generational Leap in Capability</h1>
+            <p class="text-lg md:text-xl text-778DA9 max-w-4xl mx-auto">From a tactical proof-of-concept to a strategic platform, this is the technical evolution of the LiDAR controller from the constrained ATtiny to the high-performance, dual-core RP2040.</p>
+        </header>
+
+        <section id="performance" class="mb-20">
+            <h2 class="text-3xl font-bold text-center text-white mb-10">From Bottlenecked to Real-Time</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-12">
+                <div class="kpi-card p-8 rounded-lg shadow-2xl text-center md:text-left h-full">
+                    <h3 class="text-xl font-bold text-white mb-2">Frame Rate</h3>
+                    <p class="text-778DA9 mb-4 text-sm">The dual-core architecture removes processing bottlenecks, enabling a massive leap in data acquisition speed.</p>
+                    <div class="text-6xl font-black text-F7B801">~60x</div>
+                    <p class="text-lg font-bold text-white mt-2">Increase</p>
+                </div>
+                 <div class="kpi-card p-8 rounded-lg shadow-2xl text-center md:text-left h-full">
+                    <h3 class="text-xl font-bold text-white mb-2">Data Throughput</h3>
+                    <p class="text-778DA9 mb-4 text-sm">Higher communication bandwidth ensures the hardware can handle the increased data flow without creating a new bottleneck.</p>
+                    <div class="text-6xl font-black text-F7B801">4x</div>
+                    <p class="text-lg font-bold text-white mt-2">Higher Bandwidth</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                 <div class="bg-1B263B p-6 rounded-lg shadow-xl lg:col-span-2">
+                    <h3 class="text-xl font-bold text-center mb-4">Frame Rate & Bandwidth Comparison</h3>
+                    <div class="chart-container h-64 md:h-80"><canvas id="performanceChart"></canvas></div>
+                </div>
+                 <div class="bg-1B263B p-8 rounded-lg shadow-xl flex flex-col justify-center text-center">
+                    <h3 class="text-xl font-bold text-white mb-2">The Critical Enabler</h3>
+                    <p class="text-778DA9">A high frame rate is useless if the communication channel can't keep up. The RP2040's superior baud rate is essential to realize the benefits of its processing power, ensuring that the 1000Hz data stream from the LiDAR can be reliably ingested.</p>
+                </div>
+            </div>
+            <div class="bg-1B263B p-6 rounded-lg shadow-xl">
+                 <h3 class="text-xl font-bold text-center mb-1">Data Stream Stability: Latency & Jitter</h3>
+                 <p class="text-sm text-778DA9 text-center mb-4 max-w-3xl mx-auto">Low, predictable latency (jitter) is critical for high-speed tracking and predictive algorithms. The ATtiny's single-core design introduces massive jitter under load, while the RP2040's dedicated cores ensure a stable data stream.</p>
+                <div class="chart-container h-80"><canvas id="latencyChart"></canvas></div>
+            </div>
+        </section>
+        
+        <section id="integrity" class="mb-20">
+            <h2 class="text-3xl font-bold text-center text-white mb-10">From Fragile to Failsafe: System Integrity & Tooling</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="bg-1B263B p-8 rounded-lg shadow-xl h-full">
+                    <h3 class="text-xl font-bold mb-6 text-center">ATtiny: Fragile Foundations</h3>
+                    <ul class="space-y-6">
+                        <li class="flex items-start space-x-4">
+                            <div class="icon-box">💾</div>
+                            <div>
+                                <h4 class="font-bold text-white">EEPROM Storage</h4>
+                                <p class="text-sm text-778DA9">Single-byte settings stored directly in memory. Limited complexity, no versioning, and susceptible to wear over time.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-4">
+                            <div class="icon-box">⏸️</div>
+                            <div>
+                                <h4 class="font-bold text-white">Interrupt Halting</h4>
+                                <p class="text-sm text-778DA9">Processor must freeze all operations (a "stop-the-world" event) to ensure data is read safely, a crude method that introduces latency.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-4">
+                           <div class="icon-box">⚙️</div>
+                            <div>
+                                <h4 class="font-bold text-white">Physical Configuration</h4>
+                                <p class="text-sm text-778DA9">Relies on manual, time-sensitive switch sequences at boot to change core operating modes. Impractical for fielded units.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-1B263B p-8 rounded-lg shadow-xl h-full">
+                    <h3 class="text-xl font-bold mb-6 text-center">RP2040: Failsafe by Design</h3>
+                     <ul class="space-y-6">
+                        <li class="flex items-start space-x-4">
+                            <div class="icon-box">📁</div>
+                            <div>
+                                <h4 class="font-bold text-white">LittleFS File System</h4>
+                                <p class="text-sm text-778DA9">Robust, versionable configuration files stored on flash, enabling complex settings and easy updates, just like a computer.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-4">
+                            <div class="icon-box">🔒</div>
+                            <div>
+                                <h4 class="font-bold text-white">Mutex Locks</h4>
+                                <p class="text-sm text-778DA9">Surgical data protection. Allows cores to share information safely without halting unrelated, high-priority tasks like data acquisition.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start space-x-4">
+                           <div class="icon-box">🖥️</div>
+                            <div>
+                                <h4 class="font-bold text-white">Professional GUI Protocol</h4>
+                                <p class="text-sm text-778DA9">A dedicated, packet-based communication protocol for advanced configuration, diagnostics, and real-time monitoring.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="mb-20">
+            <h2 class="text-3xl font-bold text-center text-white mb-10">The Architecture Revolution</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="bg-1B263B p-8 rounded-lg shadow-xl h-full">
+                    <h3 class="text-xl font-bold mb-6 text-center">ATtiny: The Single-Core Bottleneck</h3>
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="flow-box p-4 rounded-lg w-full text-center">Data Acquisition (HardwareSerial)</div>
+                        <div class="text-2xl font-bold flow-arrow">&darr;</div>
+                        <div class="flow-box p-4 rounded-lg w-full text-center">Sequential Processing & Calculation</div>
+                        <div class="text-2xl font-bold flow-arrow">&darr;</div>
+                        <div class="flow-box p-4 rounded-lg w-full text-center">Handle Inputs & Debug (Blocking)</div>
+                        <p class="text-sm text-778DA9 italic text-center pt-4">All tasks run sequentially in a single loop. Enabling debug output via SoftwareSerial can halt data acquisition, crashing the effective frame rate from 16Hz to less than 1Hz.</p>
+                    </div>
+                </div>
+                <div class="bg-1B263B p-8 rounded-lg shadow-xl h-full">
+                    <h3 class="text-xl font-bold mb-6 text-center">RP2040: Dual-Core Specialization</h3>
+                    <div class="flex justify-around items-start">
+                        <div class="flex flex-col items-center space-y-4 w-1/2 px-2">
+                            <h4 class="font-semibold text-F7B801">Core 0 (Acquisition)</h4>
+                            <div class="flow-box p-4 rounded-lg w-full text-center h-full flex items-center justify-center">Uninterrupted High-Frequency Data Acquisition via UART</div>
+                        </div>
+                        <div class="flex flex-col items-center space-y-4 w-1/2 px-2">
+                            <h4 class="font-semibold text-F7B801">Core 1 (Processing)</h4>
+                            <div class="flow-box p-4 rounded-lg w-full text-center">Advanced Data Processing (Mutex-Protected Buffer)</div>
+                            <div class="text-2xl font-bold flow-arrow">&darr;</div>
+                            <div class="flow-box p-4 rounded-lg w-full text-center">Trigger Logic & GUI Comms</div>
+                        </div>
+                    </div>
+                     <p class="text-sm text-778DA9 italic text-center pt-8">Dedicated cores work in parallel. Data collection is never blocked by processing or other tasks, ensuring maximum performance and stability.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section id="logic-evolution" class="mb-20">
+            <h2 class="text-3xl font-bold text-center text-white mb-10">From Simple Triggering to Context-Aware Logic</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div class="bg-1B263B p-8 rounded-lg shadow-xl h-full">
+                    <h3 class="text-xl font-bold mb-6 text-center">ATtiny: Simple, One-Dimensional Triggering</h3>
+                    <p class="text-sm text-778DA9 text-center mb-8">The logic is direct and binary. It can only answer one question: "Is an object within the set distance?" This is vulnerable to false positives from sensor noise or ambiguous readings.</p>
+                    <div class="flex flex-col items-center space-y-4">
+                        <div class="flow-box p-4 rounded-lg w-4/5 text-center">Raw Distance Reading</div>
+                        <div class="text-2xl font-bold flow-arrow">&darr;</div>
+                        <div class="flow-box p-4 rounded-lg w-4/5 text-center font-mono">Is distance &lt; threshold?</div>
+                        <div class="text-2xl font-bold flow-arrow">&darr;</div>
+                        <div class="flow-box p-4 rounded-lg w-4/5 text-center font-bold text-F7B801 border-F7B801">TRIGGER</div>
+                    </div>
+                </div>
+                <div class="bg-1B263B p-8 rounded-lg shadow-xl h-full">
+                    <h3 class="text-xl font-bold mb-6 text-center">RP2040: Multi-Factor, Contextual Logic</h3>
+                    <p class="text-sm text-778DA9 text-center mb-8">The RP2040 can analyze multiple variables from the LiDAR frame simultaneously. It can be programmed to ignore a valid distance reading if other factors suggest it's unreliable.</p>
+                    <div class="flex flex-col items-center">
+                        <div class="grid grid-cols-2 gap-4 w-full mb-4">
+                            <div class="flow-box p-3 rounded-md text-sm text-center">Distance</div>
+                            <div class="flow-box p-3 rounded-md text-sm text-center">Velocity</div>
+                            <div class="flow-box p-3 rounded-md text-sm text-center">Signal Strength</div>
+                            <div class="flow-box p-3 rounded-md text-sm text-center">Temperature</div>
+                        </div>
+                        <div class="text-2xl font-bold flow-arrow">&darr;</div>
+                        <div class="flow-box p-4 rounded-lg w-4/5 text-center my-4">
+                            <h4 class="font-bold">Logic Core</h4>
+                            <p class="text-xs font-mono text-778DA9">e.g., IF dist&lt;thresh AND velocity&gt;min AND strength&gt;200</p>
+                        </div>
+                        <div class="text-2xl font-bold flow-arrow">&darr;</div>
+                        <div class="flow-box p-4 rounded-lg w-4/5 text-center font-bold text-F7B801 border-F7B801">SMART TRIGGER</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="future-potential" class="mb-20">
+            <h2 class="text-3xl font-bold text-center text-white mb-10">RP2040: A Strategic Platform for the Future</h2>
+            <div class="bg-1B263B p-8 rounded-lg shadow-xl">
+                <div class="relative pl-8">
+                    <div class="roadmap-line absolute left-0 top-0 bottom-0"></div>
+                    <div class="mb-8">
+                        <div class="roadmap-dot top-0"></div>
+                        <div class="roadmap-content ml-8 pl-6 pb-4 rounded-r-lg">
+                            <h4 class="text-lg font-bold text-white">Machine Learning on the Edge</h4>
+                            <p class="text-sm text-778DA9">Utilize TinyML frameworks to perform on-device object classification (e.g., person vs. vehicle), moving beyond simple presence detection.</p>
+                        </div>
+                    </div>
+                    <div class="mb-8">
+                        <div class="roadmap-dot top-0"></div>
+                        <div class="roadmap-content ml-8 pl-6 pb-4 rounded-r-lg">
+                            <h4 class="text-lg font-bold text-white">Multi-Sensor Fusion</h4>
+                            <p class="text-sm text-778DA9">Integrate data from other sensors like IMUs or thermal cameras for enhanced environmental understanding and more robust tracking.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="roadmap-dot top-0"></div>
+                        <div class="roadmap-content ml-8 pl-6 pb-4 rounded-r-lg">
+                            <h4 class="text-lg font-bold text-white">Programmable I/O (PIO) for Custom Interfaces</h4>
+                            <p class="text-sm text-778DA9">Leverage the RP2040's unique PIO to create hardware-level support for any communication protocol (e.g., CAN bus, DMX), offloading the work from the main CPUs for perfect timing.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="summary-table" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-white mb-10">Detailed Comparison Matrix</h2>
+            <div class="overflow-x-auto bg-1B263B rounded-lg shadow-xl">
+                <table class="w-full text-left text-sm md:text-base">
+                    <thead class="table-header text-white">
+                        <tr>
+                            <th class="p-4">Feature</th>
+                            <th class="p-4">ATtiny-1634 (Legacy)</th>
+                            <th class="p-4 text-F7B801">RP2040 (Professional Upgrade)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="table-row-dark border-t border-gray-700">
+                            <td class="p-4 font-semibold">Core Architecture</td><td class="p-4">Single-Core MCU</td><td class="p-4 font-medium">Dual-Core MCU</td>
+                        </tr>
+                        <tr class="table-row-light border-t border-gray-700">
+                            <td class="p-4 font-semibold">Data Throughput</td><td class="p-4">115,200 baud</td><td class="p-4 font-medium">460,800 baud</td>
+                        </tr>
+                         <tr class="table-row-dark border-t border-gray-700">
+                            <td class="p-4 font-semibold">Concurrency Control</td><td class="p-4">Interrupt Halting</td><td class="p-4 font-medium">Mutex Locks</td>
+                        </tr>
+                         <tr class="table-row-light border-t border-gray-700">
+                            <td class="p-4 font-semibold">Configuration Storage</td><td class="p-4">EEPROM</td><td class="p-4 font-medium">LittleFS File System</td>
+                        </tr>
+                        <tr class="table-row-dark border-t border-gray-700">
+                            <td class="p-4 font-semibold">Algorithm Complexity</td><td class="p-4">Simple Filtering (3-sample)</td><td class="p-4 font-medium">Adaptive Median Filtering (15-sample)</td>
+                        </tr>
+                        <tr class="table-row-light border-t border-gray-700">
+                            <td class="p-4 font-semibold">Error Recovery</td><td class="p-4">Full Re-initialization</td><td class="p-4 font-medium">Graduated Recovery System</td>
+                        </tr>
+                         <tr class="table-row-dark border-t border-gray-700">
+                            <td class="p-4 font-semibold">Future Upgrade Path</td><td class="p-4">None (Hardware limited)</td><td class="p-4 font-medium">Extensive (ML, PIO, Sensor Fusion)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const vibrantPalette = {
+            darkBlue: '#0D1B2A', gunmetal: '#1B263B', shadowBlue: '#415A77',
+            slateGray: '#778DA9', platinum: '#E0E1DD', accentYellow: '#F7B801'
+        };
+
+        const chartTooltipConfig = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) { return label.join(' '); }
+                            return label;
+                        }
+                    }
+                },
+                legend: { labels: { color: vibrantPalette.platinum } }
+            },
+            scales: {
+                y: { ticks: { color: vibrantPalette.slateGray, beginAtZero: true }, grid: { color: 'rgba(119, 141, 169, 0.2)' } },
+                x: { ticks: { color: vibrantPalette.slateGray }, grid: { color: 'rgba(119, 141, 169, 0.1)' } }
+            },
+            maintainAspectRatio: false
+        };
+        
+        const simulationContainer = document.getElementById('simulation-container');
+        const distReadout = document.getElementById('dist-readout');
+        const veloReadout = document.getElementById('velo-readout');
+        const statusReadout = document.getElementById('status-readout');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+
+        let scene, camera, renderer, drone, target, triggerZone, lidarBeam;
+        let isPlaying = false;
+        let lastTime = 0;
+        let droneVelocity = -150; 
+        const initialDroneZ = 200;
+        const distanceThreshold = 50;
+        const velocityThreshold = -100;
+
+        function initSimulation() {
+            scene = new THREE.Scene();
+            const aspectRatio = simulationContainer.clientWidth / simulationContainer.clientHeight;
+            const viewSize = 300;
+            camera = new THREE.OrthographicCamera(-aspectRatio * viewSize / 2, aspectRatio * viewSize / 2, viewSize / 2, -viewSize / 2, 1, 1000);
+            camera.position.set(0, 100, 0);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(simulationContainer.clientWidth, simulationContainer.clientHeight);
+            renderer.setClearColor(0x070e17);
+            simulationContainer.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 100, 25);
+            scene.add(directionalLight);
+
+            const gridHelper = new THREE.GridHelper(400, 20, 0x1B263B, 0x1B263B);
+            gridHelper.rotation.x = Math.PI / 2;
+            scene.add(gridHelper);
+
+            const droneBody = new THREE.Mesh(new THREE.BoxGeometry(20, 5, 20), new THREE.MeshLambertMaterial({ color: vibrantPalette.platinum }));
+            const droneArm1 = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 30), new THREE.MeshLambertMaterial({ color: vibrantPalette.slateGray }));
+            droneArm1.position.set(10, 0, 0);
+            const droneArm2 = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 30), new THREE.MeshLambertMaterial({ color: vibrantPalette.slateGray }));
+            droneArm2.position.set(-10, 0, 0);
+            drone = new THREE.Group();
+            drone.add(droneBody, droneArm1, droneArm2);
+            drone.position.z = initialDroneZ;
+            scene.add(drone);
+            
+            target = new THREE.Mesh(new THREE.BoxGeometry(40, 40, 40), new THREE.MeshLambertMaterial({ color: vibrantPalette.shadowBlue }));
+            scene.add(target);
+            
+            const triggerGeom = new THREE.BoxGeometry(100, 40, distanceThreshold);
+            triggerZone = new THREE.Mesh(triggerGeom, new THREE.MeshBasicMaterial({ color: vibrantPalette.accentYellow, transparent: true, opacity: 0.1, wireframe: true }));
+            triggerZone.position.z = distanceThreshold / 2;
+            scene.add(triggerZone);
+
+            lidarBeam = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1, 8), new THREE.MeshBasicMaterial({ color: vibrantPalette.accentYellow }));
+            lidarBeam.rotation.x = Math.PI / 2;
+            lidarBeam.visible = false;
+            scene.add(lidarBeam);
+
+            window.addEventListener('resize', onWindowResize, false);
+            playPauseBtn.addEventListener('click', togglePlay);
+            resetBtn.addEventListener('click', resetSimulation);
+
+            resetSimulation();
+            animate();
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            playPauseBtn.innerHTML = isPlaying ? '<i class="gg-pause"></i>' : '<i class="gg-play-button"></i>';
+        }
+
+        function resetSimulation() {
+            isPlaying = false;
+            playPauseBtn.innerHTML = '<i class="gg-play-button"></i>';
+            drone.position.z = initialDroneZ;
+            lastTime = 0;
+            distReadout.textContent = '---';
+            veloReadout.textContent = '---';
+            statusReadout.textContent = 'INACTIVE';
+            statusReadout.style.color = vibrantPalette.slateGray;
+            triggerZone.material.color.set(vibrantPalette.accentYellow);
+            triggerZone.material.opacity = 0.1;
+        }
+
+        function onWindowResize() {
+            const aspectRatio = simulationContainer.clientWidth / simulationContainer.clientHeight;
+            const viewSize = 300;
+            camera.left = -aspectRatio * viewSize / 2;
+            camera.right = aspectRatio * viewSize / 2;
+            camera.top = viewSize / 2;
+            camera.bottom = -viewSize / 2;
+            camera.updateProjectionMatrix();
+            renderer.setSize(simulationContainer.clientWidth, simulationContainer.clientHeight);
+        }
+
+        function animate(time) {
+            requestAnimationFrame(animate);
+            const now = time * 0.001;
+            const deltaTime = lastTime > 0 ? now - lastTime : 0;
+            lastTime = now;
+
+            if (isPlaying) {
+                drone.position.z += droneVelocity * deltaTime;
+                if (drone.position.z < -200) {
+                    drone.position.z = initialDroneZ;
+                }
+            }
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.set(drone.position, new THREE.Vector3(0, 0, -1));
+            const intersects = raycaster.intersectObject(target);
+            
+            let distance = 999;
+            if (intersects.length > 0) {
+                distance = intersects[0].distance;
+                lidarBeam.visible = true;
+                lidarBeam.scale.z = distance;
+                lidarBeam.position.z = drone.position.z - distance / 2;
+            } else {
+                lidarBeam.visible = false;
+            }
+
+            distReadout.textContent = distance.toFixed(1);
+            veloReadout.textContent = droneVelocity.toFixed(1);
+
+            if (distance < distanceThreshold && droneVelocity < velocityThreshold) {
+                statusReadout.textContent = 'ACTIVE';
+                statusReadout.style.color = vibrantPalette.accentYellow;
+                triggerZone.material.color.set(0xff0000);
+                triggerZone.material.opacity = 0.5;
+            } else {
+                statusReadout.textContent = 'INACTIVE';
+                statusReadout.style.color = vibrantPalette.slateGray;
+                triggerZone.material.color.set(vibrantPalette.accentYellow);
+                triggerZone.material.opacity = 0.1;
+            }
+
+            renderer.render(scene, camera);
+        }
+        
+        initSimulation();
+
+        new Chart(document.getElementById('performanceChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['ATtiny', 'RP2040'],
+                datasets: [{
+                    label: 'Frames per Second', data: [16, 1000],
+                    backgroundColor: vibrantPalette.accentYellow,
+                    borderColor: '#F7B801', borderWidth: 1, categoryPercentage: 0.6
+                }, {
+                    label: 'Baud Rate (kbps)', data: [115.2, 460.8],
+                    backgroundColor: vibrantPalette.shadowBlue,
+                    borderColor: vibrantPalette.slateGray, borderWidth: 1, categoryPercentage: 0.6
+                }]
+            },
+            options: { ...chartTooltipConfig, indexAxis: 'y', scales: { ...chartTooltipConfig.scales, x: {...chartTooltipConfig.scales.x, type: 'logarithmic'}} }
+        });
+
+        new Chart(document.getElementById('latencyChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: ['0s', '1s', '2s (Debug On)', '3s', '4s', '5s'],
+                datasets: [{
+                    label: 'ATtiny Latency (ms)', data: [61, 63, 650, 645, 62, 61],
+                    borderColor: vibrantPalette.slateGray, tension: 0.1, fill: false
+                }, {
+                    label: 'RP2040 Latency (ms)', data: [1, 1, 1, 1, 1, 1],
+                    borderColor: vibrantPalette.accentYellow, backgroundColor: 'rgba(247, 184, 1, 0.2)', tension: 0.1, fill: true
+                }]
+            },
+            options: { ...chartTooltipConfig, scales: { ...chartTooltipConfig.scales, y: {...chartTooltipConfig.scales.y, title: {display: true, text: 'Time Between Frames (ms)', color: vibrantPalette.platinum}}}}
+        });
+        
+    </script>
+</body>
+</html>
+

@@ -1,9 +1,0 @@
-<map id="initializePinsCore1" name="initializePinsCore1">
-<area shape="rect" id="Node000001" title="Initialize all GPIO pins for Core 1 operations." alt="" coords="5,56,135,83"/>
-<area shape="rect" id="Node000002" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a08e3a40d2bbfade972d374e55dfea047" title="Thread&#45;safe debug enable flag checker." alt="" coords="183,5,299,32"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="117,53,178,34,180,39,119,58"/>
-<area shape="rect" id="Node000003" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#a6ad4b694f90641aa05829c1b90f172e2" title="Thread&#45;safe serial output without newline." alt="" coords="188,56,294,83"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="135,67,172,67,172,72,135,72"/>
-<area shape="rect" id="Node000004" href="$_lidar-_r_p2040-_r_e_v-0-1_8ino.html#af6020ad975c3a06156bc4e985701be92" title="Thread&#45;safe serial output with newline." alt="" coords="183,107,299,133"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="119,81,180,99,178,104,117,86"/>
-</map>
